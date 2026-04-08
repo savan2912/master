@@ -1,0 +1,29 @@
+<svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg">
+
+    <!-- Bag body -->
+    <path
+        d="M6 8H18L17 20H7L6 8Z"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linejoin="round"/>
+
+    <!-- Bag handle -->
+    <path
+        d="M9 8V6C9 4.9 9.9 4 11 4H13C14.1 4 15 4.9 15 6V8"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"/>
+
+    <!-- Product box line -->
+    <path
+        d="M9 12H15"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"/>
+
+</svg>
