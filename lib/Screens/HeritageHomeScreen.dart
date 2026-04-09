@@ -4,10 +4,15 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
   import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Screens/AllCollection/AllCollectionScreen.dart';
+import 'package:gotilo_new/Screens/AllCollection/CollectionDetailScreen.dart';
 import 'package:gotilo_new/Screens/Login/view/LoginScreen.dart';
   import 'dart:ui';
 
-  import 'LuxuryCardItem.dart';
+  import 'Deals/DealsScreen.dart';
+import 'LatestRelease/LatestReleaseScreen.dart';
+import 'LuxuryCardItem.dart';
+import 'NewlyAddedListing/NewlyAddedListing.dart';
+import 'OurFeaturedServices/OurFeaturedServicesScreen.dart';
 
   class ModernHeritageApp extends StatefulWidget {
     const ModernHeritageApp({super.key});
@@ -164,22 +169,22 @@ class _ModernHeritageAppState extends State<ModernHeritageApp> {
               _buildPremiumBentoCollections(),
               const SizedBox(height: 45),
               _buildSectionLabel("LATEST RELEASES",() {
-
+                  Get.to(()=>const LatestReleaseScreen());
               },),
               _buildLuxuryProductGallery(),
               const SizedBox(height: 45),
               _buildSectionLabel("NEWLY ADDED LISTING",() {
-
+                  Get.to(()=>const NewlyAddedListing());
               },),
               _buildNewlyAddedListings(),
               const SizedBox(height: 45),
               _buildSectionLabel("OUR FEATURED SERVICES",() {
-
+                  Get.to(()=>const OurFeaturedServicesScreen());
               },),
               _buildFeaturedServices(),
               const SizedBox(height: 45),
               _buildSectionLabel("EXCLUSIVE DEALS",() {
-
+                  Get.to(()=>const DealsScreen());
               },),
               _buildExclusiveDeals(),
               const SizedBox(height: 45),
@@ -357,92 +362,97 @@ class _ModernHeritageAppState extends State<ModernHeritageApp> {
         "color": const Color(0xFFE8F5E9)
       },
     ];
-    return SizedBox(
-      height: 180,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.only(left: 25, right: 10),
-        itemCount: cats.length,
-        physics: const BouncingScrollPhysics(),
-        itemBuilder: (context, index) {
-          bool isLong = index % 2 == 0;
+    return GestureDetector(
+      onTap: () {
+        Get.to(()=>const CollectionDetailScreen());
+      },
+      child: SizedBox(
+        height: 180,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.only(left: 25, right: 10),
+          itemCount: cats.length,
+          physics: const BouncingScrollPhysics(),
+          itemBuilder: (context, index) {
+            bool isLong = index % 2 == 0;
 
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 500),
-            width: 150,
-            margin: EdgeInsets.only(
-                right: 18,
-                top: isLong ? 0 : 25,
-                bottom: isLong ? 25 : 0
-            ),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(32),
-                boxShadow: [
-                  BoxShadow(
-                      color: const Color(0xFF0D1B1E).withOpacity(0.05),
-                      blurRadius: 25,
-                      offset: const Offset(0, 12)
-                  )
-                ]
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(32),
-              child: Stack(
-
-                clipBehavior: Clip.antiAlias,
-                children: [
-
-                  Positioned(
-                      top: -25,
-                      right: -25,
-                      child: CircleAvatar(
-                          radius: 50,
-                          backgroundColor: cats[index]['color'].withOpacity(0.7)
-                      )
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(22),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SvgPicture.asset(
-                          cats[index]['icon'],
-                          height: 42,
-                          width: 42,
-                          colorFilter: const ColorFilter.mode(
-                              Color(0xFF0D1B1E),
-                              BlendMode.srcIn
-                          ),
-                          placeholderBuilder: (context) => const Icon(Icons.category_outlined),
-                        ),
-                        const Spacer(),
-                        Text(
-                            cats[index]['name'],
-                            style: GoogleFonts.montserrat(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF0D1B1E)
-                            )
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                            cats[index]['items'],
-                            style: GoogleFonts.montserrat(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF00ACC1)
-                            )
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 500),
+              width: 150,
+              margin: EdgeInsets.only(
+                  right: 18,
+                  top: isLong ? 0 : 25,
+                  bottom: isLong ? 25 : 0
               ),
-            ),
-          );
-        },
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(32),
+                  boxShadow: [
+                    BoxShadow(
+                        color: const Color(0xFF0D1B1E).withOpacity(0.05),
+                        blurRadius: 25,
+                        offset: const Offset(0, 12)
+                    )
+                  ]
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(32),
+                child: Stack(
+
+                  clipBehavior: Clip.antiAlias,
+                  children: [
+
+                    Positioned(
+                        top: -25,
+                        right: -25,
+                        child: CircleAvatar(
+                            radius: 50,
+                            backgroundColor: cats[index]['color'].withOpacity(0.7)
+                        )
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.all(22),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SvgPicture.asset(
+                            cats[index]['icon'],
+                            height: 42,
+                            width: 42,
+                            colorFilter: const ColorFilter.mode(
+                                Color(0xFF0D1B1E),
+                                BlendMode.srcIn
+                            ),
+                            placeholderBuilder: (context) => const Icon(Icons.category_outlined),
+                          ),
+                          const Spacer(),
+                          Text(
+                              cats[index]['name'],
+                              style: GoogleFonts.montserrat(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF0D1B1E)
+                              )
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                              cats[index]['items'],
+                              style: GoogleFonts.montserrat(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF00ACC1)
+                              )
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -518,7 +528,7 @@ class _ModernHeritageAppState extends State<ModernHeritageApp> {
     );
   }
 
-  Widget _buildSectionLabel(String text, VoidCallback onViewAllTap) { // onViewAllTap add karyu chhe
+  Widget _buildSectionLabel(String text, VoidCallback onViewAllTap) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(25, 0, 25, 18),
       child: Row(
@@ -534,7 +544,7 @@ class _ModernHeritageAppState extends State<ModernHeritageApp> {
               )
           ),
           GestureDetector(
-            onTap: onViewAllTap, // Click thava par aa function call thase
+            onTap: onViewAllTap,
             child: Text(
                 "VIEW ALL",
                 style: GoogleFonts.montserrat(
@@ -964,7 +974,6 @@ class _ModernHeritageAppState extends State<ModernHeritageApp> {
         ),
         child: Column(
           children: [
-            // હેડર
             RichText(
               text: TextSpan(
                 style: GoogleFonts.montserrat(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white),

@@ -38,10 +38,8 @@ class _LuxuryCardItemState extends State<LuxuryCardItem> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    // આ મેઈન લોજિક છે: જ્યારે આ વિજેટ સ્ક્રીન પર આવે ત્યારે એનિમેશન પ્લે થશે
     return Builder(
       builder: (context) {
-        // સ્ક્ર્રોલ વખતે વિઝિબિલિટી ચેક કરવા માટે હળવું લોજિક
         Future.delayed(const Duration(milliseconds: 200), () {
           if (mounted && !_hasAnimated) {
             _controller.forward();
@@ -57,7 +55,6 @@ class _LuxuryCardItemState extends State<LuxuryCardItem> with SingleTickerProvid
               margin: const EdgeInsets.only(bottom: 30),
               child: Stack(
                 children: [
-                  // ૧. પાછળનું Main Card (Static)
                   Align(
                     alignment: Alignment.centerRight,
                     child: Container(
@@ -107,7 +104,6 @@ class _LuxuryCardItemState extends State<LuxuryCardItem> with SingleTickerProvid
                     ),
                   ),
 
-                  // ૨. આગળની Image (Animated on Scroll)
                   Positioned(
                     left: 0, top: 0, bottom: 20,
                     child: Transform.translate(

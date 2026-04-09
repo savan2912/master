@@ -55,8 +55,6 @@ class AppPages {
       page: () => const AboutUsScreen(),
     ),
 
-
-
     GetPage(
       name: AppRoutes.blog,
       page: () => const BlogScreen(),

@@ -25,8 +25,6 @@ class _SplashVideoScreenState extends State<SplashVideoScreen> {
         setState(() {});
         _controller.play();
       });
-
-    /// When video finished -> Go to Home
     _controller.addListener(() {
       if (_controller.value.position ==
           _controller.value.duration) {

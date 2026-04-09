@@ -23,9 +23,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   CompanyLogo? logo;
-
   List<BannerData>? banner;
-
   ValueNotifier<bool> isApiComplete=ValueNotifier(false);
   ValueNotifier<bool> isDataAvailable=ValueNotifier(false);
 
@@ -40,7 +38,9 @@ class _HomeScreenState extends State<HomeScreen> {
     "assets/banner4.png",
     "assets/banner5.png",
   ];
+
   int bannerIndex  = 0;
+
   final List<Map<String, String>> categories =
   [
     {
@@ -218,13 +218,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: List.generate(
-                                  // 👇 અહીં ફેરફાર કર્યો: જો banner નલ હોય તો 0 બતાવો, બાકી એની લંબાઈ
                                   banner?.length ?? 0,
                                       (index) => AnimatedContainer(
                                     duration: const Duration(milliseconds: 300),
                                     margin: const EdgeInsets.symmetric(horizontal: 4),
                                     height: 8,
-                                    // bannerIndex ચેક કરતી વખતે પણ સાવચેતી રાખો
                                     width: (banner != null && bannerIndex == index) ? 20 : 8,
                                     decoration: BoxDecoration(
                                       color: (banner != null && bannerIndex == index)
@@ -440,16 +438,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                                   Row(
                                                     children: [
-                                                      // ⭐ Rating Badge
                                                       Container(
                                                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                                         decoration: BoxDecoration(
                                                           color: Colors.amber.withOpacity(0.1),
                                                           borderRadius: BorderRadius.circular(8),
                                                         ),
-                                                        child: Row(
-                                                          mainAxisSize: MainAxisSize.min, // 👈 કન્ટેન્ટ મુજબ સાઈઝ રાખવા માટે
-                                                          children: const [
+                                                        child: const Row(
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
                                                             Icon(Icons.star, size: 16, color: Colors.amber),
                                                             SizedBox(width: 4),
                                                             Text("4.5", style: TextStyle(fontWeight: FontWeight.bold)),
@@ -459,8 +456,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                                       const SizedBox(width: 12),
 
-                                                      // 📍 Location Badge (Content મુજબ સાઈઝ લેશે)
-                                                      Flexible( // 👈 Expanded ની જગ્યાએ Flexible વાપર્યું જેથી કન્ટેનર લખાણ મુજબ જ રહે
+                                                      Flexible(
                                                         child: Container(
                                                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                                           decoration: BoxDecoration(
@@ -468,11 +464,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             borderRadius: BorderRadius.circular(8),
                                                           ),
                                                           child: Row(
-                                                            mainAxisSize: MainAxisSize.min, // 👈 કન્ટેનરને મોટું થતા અટકાવશે
+                                                            mainAxisSize: MainAxisSize.min,
                                                             children: [
                                                               const Icon(CupertinoIcons.location, size: 16, color: AppColors.gradientEnd),
                                                               const SizedBox(width: 4),
-                                                              Flexible( // 👈 અંદરનું Flexible Marquee ને કંટ્રોલમાં રાખશે
+                                                              Flexible(
                                                                 child: SizedBox(
                                                                   height: 18,
                                                                   child: LayoutBuilder(
@@ -488,8 +484,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                         maxLines: 1,
                                                                         textDirection: TextDirection.ltr,
                                                                       )..layout(maxWidth: double.infinity);
-
-                                                                      // જો લખાણ બોક્સ કરતા મોટું હોય તો જ Marquee
                                                                       if (locPainter.width > constraints.maxWidth) {
                                                                         return Marquee(
                                                                           text: loc,
@@ -500,7 +494,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                           pauseAfterRound: const Duration(seconds: 1),
                                                                         );
                                                                       }
-
                                                                       return Text(
                                                                         loc,
                                                                         style: locStyle,
@@ -1065,9 +1058,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text("Rajkot", style: TextStyle(fontSize: 12)),
                     ],
                   ),
-
                   const SizedBox(height: 6),
-
                   Text(
                     "Category Name",
                     style: TextStyle(
@@ -1078,7 +1069,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-
             const Icon(
               Icons.arrow_forward_ios,
               size: 16,
@@ -1158,7 +1148,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Step Item UI
   Widget _buildStepItem({required String stepNum, required String title, required String desc, required IconData icon}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,

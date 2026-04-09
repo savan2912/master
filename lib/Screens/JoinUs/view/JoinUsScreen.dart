@@ -5,19 +5,17 @@ import 'package:google_fonts/google_fonts.dart';
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
-  // લક્ઝરી થીમ કલર્સ (બ્રાન્ડ મુજબ)
   static const Color appBg = Color(0xFFF0F4F7);
   static const Color textDark = Color(0xFF0D1B1E);
-  static const Color primaryCyan = Color(0xFF00ACC1); // મેઈન Cyan
-  static const Color accentCyan = Color(0xFF26C6DA);  // હાઈલાઈટ Cyan
-  static const Color softPink = Color(0xFFFF4081);   // હળવો પિંક (Accents)
+  static const Color primaryCyan = Color(0xFF00ACC1);
+  static const Color accentCyan = Color(0xFF26C6DA);
+  static const Color softPink = Color(0xFFFF4081);
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  // સ્ટેટ મેનેજમેન્ટ
   String _selectedRole = 'User';
   bool _obscureText1 = true;
   bool _obscureText2 = true;
@@ -27,7 +25,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: RegisterScreen.appBg,
-      // કીબોર્ડ ઓપન થાય ત્યારે UI આપમેળે ઉપર જાય એ માટે
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: LayoutBuilder(
@@ -35,25 +32,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
             return SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Container(
-                // નાની સ્ક્રીનમાં ઓવરફ્લો અટકાવવા
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 30),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center, // બધું સેન્ટરમાં રહેશે
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 10),
-                    // ૧. બ્રાન્ડ લોગો સેક્શન
                     _buildLogoSection(),
-
                     const SizedBox(height: 30),
-
-                    // ૨. મેઈન રજીસ્ટ્રેશન કાર્ડ (The Professional Box)
                     _buildRegisterCard(),
-
                     const SizedBox(height: 30),
-
-                    // ૩. કોપીરાઈટ ફૂટર
                     _buildFooter(),
                     const SizedBox(height: 10),
                   ],
@@ -66,7 +55,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  // --- ૧. લોગો સેક્શન ---
   Widget _buildLogoSection() {
     return Column(
       children: [
@@ -94,7 +82,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  // --- ૨. મેઈન રજીસ્ટ્રેશન કાર્ડ ---
   Widget _buildRegisterCard() {
     return Container(
       width: double.infinity,
@@ -172,7 +159,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(child: _roleButton('User', Icons.person_rounded)),
-            const SizedBox(width: 10), // બટન્સ વચ્ચે થોડી જગ્યા
+            const SizedBox(width: 10),
             Expanded(child: _roleButton('Vendor', Icons.store_rounded)),
           ],
         ),
@@ -220,7 +207,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _buildInputFields() {
     return Column(
       children: [
-        // ફર્સ્ટ નેમ અને લાસ્ટ નેમ (Row માં)
         Row(
           children: [
             Expanded(child: _customTextField(hintText: "Enter First Name", icon: Icons.person_outline_rounded)),
@@ -229,8 +215,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ],
         ),
         const SizedBox(height: 15),
-
-        // ફોન નંબર ફિલ્ડ
         _customTextField(
           hintText: "Enter Your Mobile Number",
           prefixIcon: Row(
@@ -245,8 +229,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ),
         const SizedBox(height: 15),
-
-        // પાસવર્ડ ફિલ્ડ
         _customTextField(
           hintText: "Enter Password",
           isPassword: true,
@@ -262,12 +244,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ),
         const SizedBox(height: 10),
-
-        // પાસવર્ડ સ્ટ્રેન્થ ઇન્ડિકેટર (ઈમેજ મુજબ)
         _buildPasswordStrengthBar(),
         const SizedBox(height: 15),
-
-        // કન્ફર્મ પાસવર્ડ ફિલ્ડ
         _customTextField(
           hintText: "Confirm Password",
           isPassword: true,
@@ -315,14 +293,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  // ઈમેજ ૧ મુજબની પાસવર્ડ સ્ટ્રેન્થ બાર (Fixed!)
   Widget _buildPasswordStrengthBar() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(child: _strengthIndicatorBar(Colors.green)), // મજબૂત (ઈમેજ મુજબ ગ્રીન)
+          Expanded(child: _strengthIndicatorBar(Colors.green)),
           const SizedBox(width: 4),
           Expanded(child: _strengthIndicatorBar(Colors.grey[300]!)),
           const SizedBox(width: 4),
@@ -366,16 +343,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const TextSpan(text: "I agree to "),
                 TextSpan(
                   text: "Terms of use",
-                  recognizer: TapGestureRecognizer()..onTap = () {}, // Terms Click
+                  recognizer: TapGestureRecognizer()..onTap = () {},
                   style: GoogleFonts.montserrat(
                     fontWeight: FontWeight.w600,
-                    color: RegisterScreen.softPink, // પિંક કલર જે ઈમેજ ૨ માં હતો
+                    color: RegisterScreen.softPink,
                   ),
                 ),
                 const TextSpan(text: " & "),
                 TextSpan(
                   text: "Privacy policy",
-                  recognizer: TapGestureRecognizer()..onTap = () {}, // Privacy Click
+                  recognizer: TapGestureRecognizer()..onTap = () {},
                   style: GoogleFonts.montserrat(
                     fontWeight: FontWeight.w600,
                     color: RegisterScreen.softPink,
@@ -455,11 +432,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
             text: "Sign In",
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                Navigator.pop(context); // લોગિન સ્ક્રીન પર પાછા જવા
+                Navigator.pop(context);
               },
             style: GoogleFonts.montserrat(
               fontWeight: FontWeight.bold,
-              color: RegisterScreen.primaryCyan, // Cyan Link
+              color: RegisterScreen.primaryCyan,
             ),
           ),
         ],
@@ -467,7 +444,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  // --- ૩. ફૂટર સેક્શન ---
   Widget _buildFooter() {
     return Text(
       "Copyright © 2026 Gotilo - All rights reserved.",
