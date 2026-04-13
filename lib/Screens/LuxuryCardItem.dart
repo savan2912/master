@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../Api/Response/Home/ResponseHome.dart';
+import '../Api/Response/Home/ResponseHomeLatestRelease.dart';
 
 class LuxuryCardItem extends StatefulWidget {
-  final Map<String, String> product;
+  final NearbyListings product;
   final int index;
 
   const LuxuryCardItem({super.key, required this.product, required this.index});
@@ -76,22 +78,17 @@ class _LuxuryCardItemState extends State<LuxuryCardItem> with SingleTickerProvid
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(widget.product["name"]!,
+                          Text(widget.product.listingTitle!,
                               style: GoogleFonts.montserrat(
                                   color: const Color(0xFF0D1B1E),
                                   fontSize: 14,
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: 1.2)),
-                          Text(widget.product["sub"]!,
-                              style: GoogleFonts.playfairDisplay(
-                                  color: Colors.grey,
-                                  fontSize: 15,
-                                  fontStyle: FontStyle.italic)),
                           const SizedBox(height: 12),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(widget.product["price"]!,
+                              Text(widget.product.cityName!,
                                   style: GoogleFonts.montserrat(
                                       color: const Color(0xFF00ACC1),
                                       fontSize: 15,
@@ -117,7 +114,7 @@ class _LuxuryCardItemState extends State<LuxuryCardItem> with SingleTickerProvid
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(25),
                               image: DecorationImage(
-                                image: AssetImage(widget.product["img"]!),
+                                image: NetworkImage(widget.product.listingImage!),
                                 fit: BoxFit.cover,
                               ),
                               boxShadow: [

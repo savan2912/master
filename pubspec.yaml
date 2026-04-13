@@ -47,6 +47,9 @@ dependencies:
   marquee: ^2.3.0
   dio: ^5.9.2
   google_fonts: ^8.0.2
+  url_launcher: ^6.3.2
+  stack_trace: ^1.12.1
+  connectivity_plus: ^7.1.1
 
 dev_dependencies:
   flutter_test:

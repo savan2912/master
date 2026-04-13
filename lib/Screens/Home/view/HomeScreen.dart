@@ -4,8 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:gotilo_new/Api/ApiCall.dart';
-import 'package:gotilo_new/Api/ApiList.dart';
 import 'package:gotilo_new/Api/Response/Banner/ResponseBanner.dart';
 import 'package:gotilo_new/Api/Response/CompanyLogo/ResponseCompanyLogo.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
@@ -123,8 +121,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    _callGetCompanyLogo();
-    _callGetBanner();
     super.initState();
   }
 
@@ -1197,44 +1193,5 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> _callGetCompanyLogo() async {
-    final api = ApiCall();
-    final json = await api.getRequest(ApiList.getCompanyLogo);
 
-    if (json != null) {
-      ResponseCompanyLogo responseData = ResponseCompanyLogo.fromJson(json);
-      if (responseData.result == "pass" || responseData.data != null) {
-        setState(() {
-          logo = responseData.data;
-        });
-        print("Logo URL: ${logo?.siteLogo}");
-      }
-    }
-
-    setState(() {
-
-    });
-  }
-  Future<void> _callGetBanner() async {
-    isApiComplete.value = false;
-    isDataAvailable.value = false;
-
-    final api = ApiCall();
-    final json = await api.getBanner(ApiList.getBanner);
-
-    if (json != null) {
-      ResponseBanner responseData = ResponseBanner.fromJson(json);
-
-      if (responseData.result == "pass" && responseData.data != null) {
-        setState(() {
-          banner ??= [];
-          banner!.clear();
-          banner!.addAll(responseData.data!);
-        });
-        isDataAvailable.value = banner!.isNotEmpty;
-      }
-    }
-
-    isApiComplete.value = true;
-  }
 }

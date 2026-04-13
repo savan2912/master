@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
-
-import '../../../Api/ApiCall.dart';
-import '../../../Api/ApiList.dart';
 import '../../../Api/Response/CompanyLogo/ResponseCompanyLogo.dart';
 import '../../../CustomeWidgets/AppColors.dart';
 import '../../../Routes/app_routes.dart';
@@ -23,7 +20,7 @@ class _PrisePlanScreenState extends State<PrisePlanScreen> {
 
   @override
   void initState() {
-    _callGetCompanyLogo();
+
     super.initState();
   }
   @override
@@ -121,28 +118,10 @@ class _PrisePlanScreenState extends State<PrisePlanScreen> {
     );
   }
 
-  Future<void> _callGetCompanyLogo() async {
-    final api = ApiCall();
-    final json = await api.getRequest(ApiList.getCompanyLogo);
 
-    if (json != null) {
-      ResponseCompanyLogo responseData = ResponseCompanyLogo.fromJson(json);
-      if (responseData.result == "success" || responseData.data != null) {
-        setState(() {
-          logo = responseData.data;
-        });
-        print("Logo URL: ${logo?.siteLogo}");
-      }
-    }
-
-    setState(() {
-
-    });
-  }
 
 }
 
-// Custom Widget for Pricing Card
 class PriceCard extends StatelessWidget {
   final String title;
   final String price;

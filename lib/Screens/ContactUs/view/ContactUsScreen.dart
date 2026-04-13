@@ -3,13 +3,8 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:gotilo_new/CustomeWidgets/AppColors.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
-
-import '../../../Api/ApiCall.dart';
-import '../../../Api/ApiList.dart';
 import '../../../Api/Response/CompanyLogo/ResponseCompanyLogo.dart';
 import '../../../Routes/app_routes.dart';
-import '../../JoinUs/view/JoinUsScreen.dart';
-import '../../Login/view/LoginScreen.dart';
 
 class ContactUsScreen extends StatefulWidget {
 
@@ -29,7 +24,6 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
 
   @override
   void initState() {
-    _callGetCompanyLogo();
     super.initState();
   }
   @override
@@ -332,25 +326,5 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
       ),
     );
   }
-
-  Future<void> _callGetCompanyLogo() async {
-    final api = ApiCall();
-    final json = await api.getRequest(ApiList.getCompanyLogo);
-
-    if (json != null) {
-      ResponseCompanyLogo responseData = ResponseCompanyLogo.fromJson(json);
-      if (responseData.result == "success" || responseData.data != null) {
-        setState(() {
-          logo = responseData.data;
-        });
-        print("Logo URL: ${logo?.siteLogo}");
-      }
-    }
-
-    setState(() {
-
-    });
-  }
-
 
 }

@@ -6,24 +6,27 @@ class ResponseBanner {
   ResponseBanner({this.result, this.message, this.data});
 
   ResponseBanner.fromJson(Map<String, dynamic> json) {
-    result = json['result'];
-    message = json['message'];
-    if (json['data'] != null) {
-      data = <BannerData>[];
-      json['data'].forEach((v) {
-        data!.add(new BannerData.fromJson(v));
-      });
+    result = json['result']?.toString();
+    message = json['message']?.toString();
+
+    if (json['data'] != null && json['data'] is List) {
+      data = [];
+      for (var v in json['data']) {
+        data!.add(BannerData.fromJson(v));
+      }
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
-    if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> dataMap = {};
+    dataMap['result'] = result;
+    dataMap['message'] = message;
+
+    if (data != null) {
+      dataMap['data'] = data!.map((v) => v.toJson()).toList();
     }
-    return data;
+
+    return dataMap;
   }
 }
 
@@ -35,31 +38,40 @@ class BannerData {
   String? createdAt;
   String? updatedAt;
 
-  BannerData(
-      {this.id,
-        this.type,
-        this.status,
-        this.image,
-        this.createdAt,
-        this.updatedAt});
+  BannerData({
+    this.id,
+    this.type,
+    this.status,
+    this.image,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   BannerData.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    type = json['type'];
-    status = json['status'];
-    image = json['image'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
+    id = json['id'] is int
+        ? json['id']
+        : int.tryParse(json['id']?.toString() ?? '');
+
+    type = json['type']?.toString();
+
+    status = json['status'] is int
+        ? json['status']
+        : int.tryParse(json['status']?.toString() ?? '');
+
+    image = json['image']?.toString();
+    createdAt = json['created_at']?.toString();
+    updatedAt = json['updated_at']?.toString();
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['type'] = this.type;
-    data['status'] = this.status;
-    data['image'] = this.image;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    return data;
+    final Map<String, dynamic> dataMap = {};
+    dataMap['id'] = id;
+    dataMap['type'] = type;
+    dataMap['status'] = status;
+    dataMap['image'] = image;
+    dataMap['created_at'] = createdAt;
+    dataMap['updated_at'] = updatedAt;
+
+    return dataMap;
   }
 }

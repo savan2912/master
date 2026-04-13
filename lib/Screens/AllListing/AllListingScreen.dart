@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gotilo_new/Screens/AllListing/AllListingDetailScreen.dart';
 
 class AllListingScreen extends StatefulWidget {
   const AllListingScreen({super.key});
@@ -323,119 +325,124 @@ class _AllListingScreenState extends State<AllListingScreen> {
   }
 
   Widget _buildBentoListingCard(Map<String, dynamic> item) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(25),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF0D1B1E).withOpacity(0.04),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          )
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 5,
-            child: Container(
-              margin: const EdgeInsets.all(8),
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        item["img"],
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            Container(color: Colors.grey[100], child: const Icon(Icons.image)),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: Column(
-                      children: [
-                        _buildGlassActionButton(icon: Icons.favorite_border_rounded, onTap: () {}),
-                        const SizedBox(height: 8),
-                        _buildGlassActionButton(icon: Icons.share_outlined, onTap: () {}),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(15, 2, 15, 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item["category"].toString().toUpperCase(),
-                        style: GoogleFonts.montserrat(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF6C63FF),
-                          letterSpacing: 1.2,
+    return GestureDetector(
+      onTap: () {
+        Get.to(()=>const AllListingDetailScreen());
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(25),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF0D1B1E).withOpacity(0.04),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            )
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 5,
+              child: Container(
+                margin: const EdgeInsets.all(8),
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.asset(
+                          item["img"],
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(color: Colors.grey[100], child: const Icon(Icons.image)),
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        item["name"],
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.montserrat(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                          color: const Color(0xFF0D1B1E),
-                          height: 1.2,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
+                    ),
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Column(
                         children: [
-                          const Icon(Icons.star_rounded, color: Colors.orange, size: 16),
-                          const SizedBox(width: 2),
-                          Text(item["rating"], style: GoogleFonts.montserrat(fontWeight: FontWeight.w800, fontSize: 12)),
+                          _buildGlassActionButton(icon: Icons.favorite_border_rounded, onTap: () {}),
+                          const SizedBox(height: 8),
+                          _buildGlassActionButton(icon: Icons.share_outlined, onTap: () {}),
                         ],
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFEBF2),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          item["city"],
-                          style: GoogleFonts.montserrat(
-                            color: const Color(0xFFFF4081),
-                            fontWeight: FontWeight.w900,
-                            fontSize: 10,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+            Expanded(
+              flex: 4,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(15, 2, 15, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item["category"].toString().toUpperCase(),
+                          style: GoogleFonts.montserrat(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF6C63FF),
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          item["name"],
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.montserrat(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 13,
+                            color: const Color(0xFF0D1B1E),
+                            height: 1.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.star_rounded, color: Colors.orange, size: 16),
+                            const SizedBox(width: 2),
+                            Text(item["rating"], style: GoogleFonts.montserrat(fontWeight: FontWeight.w800, fontSize: 12)),
+                          ],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFEBF2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            item["city"],
+                            style: GoogleFonts.montserrat(
+                              color: const Color(0xFFFF4081),
+                              fontWeight: FontWeight.w900,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
