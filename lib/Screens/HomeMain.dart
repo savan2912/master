@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 
 import '../Api/ApiCalls.dart';
 import '../Api/Response/Home/ResponseHome.dart';
@@ -58,90 +59,113 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
     return ValueListenableBuilder<bool>(
       valueListenable: isApiComplete,
       builder: (context, apiDone, child) {
-        return CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            // 1. AppBar હંમેશા દેખાશે
-            _buildProfessionalAppBar(),
+        return RefreshIndicator(
+          edgeOffset: kToolbarHeight,
+          onRefresh:() async {
+              callHome();
+          },
+          displacement: 80,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            slivers: [
+              _buildProfessionalAppBar(),
 
-            // 2. લોડિંગ સ્ટેટ (જ્યારે API બાકી હોય)
-            if (!apiDone)
-              const SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              )
-
-            // 3. ડેટા ચેક (જ્યારે API પૂરું થઈ જાય)
-            else
-              ValueListenableBuilder<bool>(
-                valueListenable: isDataAvailable,
-                builder: (context, dataAvailable, child) {
-                  // જો ડેટા નથી (No Data State)
-                  if (!dataAvailable) {
-                    return const SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(
-                        child: Text(
-                          "No data available",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              if (!apiDone)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+                
+              else
+                ValueListenableBuilder<bool>(
+                  valueListenable: isDataAvailable,
+                  builder: (context, dataAvailable, child) {
+                    if (!dataAvailable) {
+                      return const SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(
+                          child: Text(
+                            "No data available",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
+                      );
+                    }
+
+                    return SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 10),
+                          _buildPremiumImageSlider(),
+                          const SizedBox(height: 40),
+
+                          _buildSectionLabel(
+                            "CURATED COLLECTIONS",
+                                () {
+                              Get.to(() => const AllCollectionScreen());
+                            },
+                          ),
+                          _buildPremiumBentoCollections(),
+                          const SizedBox(height: 45),
+
+                          _buildSectionLabel(
+                            "LATEST RELEASES",
+                                () {
+                              Get.to(() => const LatestReleaseScreen());
+                            },
+                          ),
+                          _buildLuxuryProductGallery(),
+                          const SizedBox(height: 45),
+
+                          _buildSectionLabel(
+                            "NEWLY ADDED LISTING",
+                                () {
+                              Get.to(() => const NewlyAddedListing());
+                         },
+                          ),
+                          _buildNewlyAddedListings(),
+                          const SizedBox(height: 45),
+
+                          _buildSectionLabel(
+                            "OUR FEATURED SERVICES",
+                                () {
+                              Get.to(() => const OurFeaturedServicesScreen());
+                            },
+                          ),
+                          _buildFeaturedServices(),
+                          const SizedBox(height: 45),
+
+                          _buildSectionLabel(
+                            "EXCLUSIVE DEALS",
+                                () {
+                              Get.to(() => const DealsScreen());
+                            },
+                          ),
+                          _buildExclusiveDeals(),
+                          const SizedBox(height: 45),
+
+                          _buildHowItWorks(),
+                          const SizedBox(height: 150),
+                        ],
                       ),
                     );
-                  }
-
-                  // જો ડેટા છે (Main Content)
-                  return SliverToBoxAdapter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 10),
-                        _buildPremiumImageSlider(),
-                        const SizedBox(height: 40),
-
-                        _buildSectionLabel("CURATED COLLECTIONS", () {
-                          Get.to(() => const AllCollectionScreen());
-                        }),
-                        _buildPremiumBentoCollections(),
-                        const SizedBox(height: 45),
-
-                        _buildSectionLabel("LATEST RELEASES", () {
-                          Get.to(() => const LatestReleaseScreen());
-                        }),
-                        _buildLuxuryProductGallery(),
-                        const SizedBox(height: 45),
-
-                        _buildSectionLabel("NEWLY ADDED LISTING", () {
-                          Get.to(() => const NewlyAddedListing());
-                        }),
-                        _buildNewlyAddedListings(),
-                        const SizedBox(height: 45),
-
-                        _buildSectionLabel("OUR FEATURED SERVICES", () {
-                          Get.to(() => const OurFeaturedServicesScreen());
-                        }),
-                        _buildFeaturedServices(),
-                        const SizedBox(height: 45),
-
-                        _buildSectionLabel("EXCLUSIVE DEALS", () {
-                          Get.to(() => const DealsScreen());
-                        }),
-                        _buildExclusiveDeals(),
-                        const SizedBox(height: 45),
-
-                        _buildHowItWorks(),
-                        const SizedBox(height: 150),
-                      ],
-                    ),
-                  );
-                },
-              ),
-          ],
+                  },
+                ),
+            ],
+          ),
         );
       },
     );
   }
+
   Widget _buildProfessionalAppBar() {
     return SliverAppBar(
       expandedHeight: 120,
@@ -233,13 +257,6 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
   }
 
   Widget _buildPremiumImageSlider() {
-    List<Map<String, String>> banners = [
-      {"img": "assets/banner1.png",
-        "tag": "LIMITED", "title": "Precision Time"},
-      {"img": "assets/banner2.png",
-        "tag": "NEW", "title": "Minimalist Dial"},
-    ];
-
     return ValueListenableBuilder(
         valueListenable: isApiComplete,
         builder: (context, value, child) {
@@ -744,7 +761,9 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                           ],
                         ),
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                              SharedWidgets.showTopSnackBar(context, message: "Login First");
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,

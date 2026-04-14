@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '_TopSnackBarWidget.dart';
+
 class SharedWidgets {
   static Timer? _debounce;
 
@@ -192,16 +194,15 @@ class SharedWidgets {
     }
 
   static Widget buildProfessionalShimmer() {
-    return Center( // 👈 સેન્ટરમાં રાખવા માટે
+    return Center(
       child: Shimmer.fromColors(
         baseColor: Colors.grey[300]!,
         highlightColor: Colors.grey[100]!,
         period: const Duration(milliseconds: 1500),
         direction: ShimmerDirection.ttb,
         child: Container(
-          // અહીં તમે લોગોની અંદાજિત સાઈઝ સેટ કરી શકો છો
-          width: 80,  // સફેદ પટ્ટીની અંદર શિમરની પહોળાઈ
-          height: 20, // શિમરની ઊંચાઈ
+          width: 80,
+          height: 20,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10), // થોડું રાઉન્ડ શેપ
@@ -209,6 +210,30 @@ class SharedWidgets {
         ),
       ),
     );
+  }
+  static void showTopSnackBar(
+      BuildContext context, {
+        required String message,
+        Duration duration = const Duration(seconds: 3),
+      })
+  {
+    final overlay = Overlay.of(context);
+
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) {
+        return TopSnackBarWidget(
+          message: message,
+          duration: duration,
+          onDismissed: () {
+            overlayEntry.remove();
+          },
+        );
+      },
+    );
+
+    overlay.insert(overlayEntry);
   }
 
   static Widget customBottomNavBar({

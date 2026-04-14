@@ -50,6 +50,8 @@ dependencies:
   url_launcher: ^6.3.2
   stack_trace: ^1.12.1
   connectivity_plus: ^7.1.1
+  cached_network_image: ^3.4.1
+  sqflite: any
 
 dev_dependencies:
   flutter_test:

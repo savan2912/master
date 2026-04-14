@@ -4,6 +4,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Screens/JoinUs/view/JoinUsScreen.dart';
+import 'package:gotilo_new/Screens/User/Dashboard/UserDashboardScreen.dart';
 
 class ModernLoginScreen extends StatefulWidget {
   const ModernLoginScreen({super.key});
@@ -351,7 +352,9 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
         ],
       ),
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          Get.to(()=>const Userdashboardscreen());
+        },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,

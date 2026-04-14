@@ -4,6 +4,12 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
+import 'package:gotilo_new/Api/Request/AllCollection/RequestAllCollection.dart';
+import 'package:gotilo_new/Api/Request/AllLatestRelease/RequestAllLatestRelease.dart';
+import 'package:gotilo_new/Api/Request/AllNewlyAdded/RequestAllNewlyAdded.dart';
+import 'package:gotilo_new/Api/Response/AllCollection/ResponseAllCollection.dart';
+import 'package:gotilo_new/Api/Response/AllLatestRelease/ResponseAllLatestRelease.dart';
+import 'package:gotilo_new/Api/Response/AllNewlyAdded/ResponseAllNewlyAdded.dart';
 import 'package:gotilo_new/Api/Response/Banner/ResponseBanner.dart';
 import 'package:gotilo_new/Api/Response/Home/ResponseHomeCollection.dart';
 import 'package:gotilo_new/Api/Response/Home/ResponseHomeLatestRelease.dart';
@@ -232,7 +238,6 @@ class ApiCalls {
     return null;
   }
 
-
   static Future<ResponseHome?> callHome()
   async {
     //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
@@ -266,5 +271,105 @@ class ApiCalls {
     return null;
   }
 
+  static Future<ResponseAllCollection?> callAllCollection(RequestAllCollection model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlAllCollection}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlAllCollection, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseAllCollection.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+  static Future<ResponseAllLatestRelease?> callAllLatestRelease(RequestAllLatestRelease model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlAllLatestRelease}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlAllLatestRelease, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseAllLatestRelease.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+  static Future<ResponseAllNewlyAdded?> callAllNewlyAdded(RequestAllNewlyAdded model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlAllNewlyAdded}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlAllNewlyAdded, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseAllNewlyAdded.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
 
 }
+
+
