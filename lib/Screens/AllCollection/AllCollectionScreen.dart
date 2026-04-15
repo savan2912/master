@@ -323,7 +323,7 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
     }
 
     return GestureDetector(
-      onTap: () => Get.to(() => const CollectionDetailScreen()),
+      onTap: () => Get.to(() => CollectionDetailScreen(categoryId: cat.id,)),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,

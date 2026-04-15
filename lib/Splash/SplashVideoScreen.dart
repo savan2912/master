@@ -19,7 +19,7 @@ class _SplashVideoScreenState extends State<SplashVideoScreen> {
     super.initState();
 
     _controller = VideoPlayerController.asset(
-      "assets/videos/logo_animation.mp4",
+      "assets/videos/logo_splash1.mp4",
     )
       ..initialize().then((_) {
         setState(() {});
@@ -42,7 +42,7 @@ class _SplashVideoScreenState extends State<SplashVideoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: Center(
         child: _controller.value.isInitialized
             ? SizedBox.expand(

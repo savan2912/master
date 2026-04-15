@@ -18,7 +18,12 @@ class  ApiList {
   static String get urlHomeService => "$baseURL/featured-services";
   static String get urlHomeDeal => "$baseURL/nearby-deals";
   static String get urlHome => "$baseURL/home";
+  static String get urlCity => "$baseURL/city/list";
   static String get urlAllCollection => "$baseURL/all-categories";
   static String get urlAllLatestRelease => "$baseURL/nearby-listings";
   static String get urlAllNewlyAdded => "$baseURL/latest-listings";
+  static String get urlAllService => "$baseURL/featured-services";
+  static String get urlAllDeals => "$baseURL/all-deals";
+  static String get urlCollectionDetail => "$baseURL/categories/childes";
+  static String get urlCollectionProductList => "$baseURL/users/product-list";
 }

@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shimmer/shimmer.dart';
 import '../Api/Response/Home/ResponseHome.dart';
 import '../Api/Response/Home/ResponseHomeLatestRelease.dart';
 
@@ -101,6 +103,7 @@ class _LuxuryCardItemState extends State<LuxuryCardItem> with SingleTickerProvid
                     ),
                   ),
 
+
                   Positioned(
                     left: 0, top: 0, bottom: 20,
                     child: Transform.translate(
@@ -113,17 +116,15 @@ class _LuxuryCardItemState extends State<LuxuryCardItem> with SingleTickerProvid
                             width: 135,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(25),
-                              image: DecorationImage(
-                                image: NetworkImage(widget.product.listingImage!),
+                              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 20, offset: const Offset(5, 10))],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(25),
+                              child:  CachedNetworkImage(
+                                imageUrl: widget.product.listingImage ?? "",
                                 fit: BoxFit.cover,
+                                placeholder: (context, url) => _shimmerBox(),
                               ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.15),
-                                  blurRadius: 20,
-                                  offset: const Offset(5, 10),
-                                )
-                              ],
                             ),
                           ),
                         ),
@@ -136,6 +137,13 @@ class _LuxuryCardItemState extends State<LuxuryCardItem> with SingleTickerProvid
           },
         );
       },
+    );
+  }
+  Widget _shimmerBox() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(color: Colors.white),
     );
   }
 }

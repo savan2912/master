@@ -3,7 +3,11 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:gotilo_new/Routes/app_pages.dart';
 import 'package:gotilo_new/Routes/app_routes.dart';
 
- void main() {
+import '../Constant/AppPref.dart';
+
+ void main()async {
+   WidgetsFlutterBinding.ensureInitialized();
+   await AppPrefs.init();
   runApp( const MyApp() );
  }
 
