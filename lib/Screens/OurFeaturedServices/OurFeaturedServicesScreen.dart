@@ -2,9 +2,12 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:gotilo_new/Constant/Constants.dart';
+import 'package:gotilo_new/Screens/AllCollection/CollectionDetailScreen.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:gotilo_new/Api/Request/AllService/RequestAllService.dart';
 import 'package:gotilo_new/Api/Response/AllService/ResponseAllService.dart';
@@ -186,106 +189,111 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
   }
 
   Widget _buildModernServiceCard(AllService service) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 40),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(75, 25, 20, 25),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                bottomLeft: Radius.circular(20),
-                topRight: Radius.circular(50),
-                bottomRight: Radius.circular(50),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF0D1B1E).withOpacity(0.06),
-                  blurRadius: 30,
-                  offset: const Offset(0, 15),
-                )
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        (service.name ?? "").toUpperCase(),
-                        style: GoogleFonts.montserrat(
-                          color: const Color(0xFF1A1A1A),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        service.slug ?? "",
-                        style: GoogleFonts.montserrat(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          height: 1.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Container(
-                  height: 35,
-                  width: 35,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFF1A1A1A).withOpacity(0.05),
-                  ),
-                  child: const Icon(Icons.chevron_right_rounded, color: Color(0xFF1A1A1A), size: 22),
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-            left: -35,
-            top: 10,
-            bottom: 10,
-            child: Container(
-              width: 90,
+    return GestureDetector(
+      onTap: () {
+        Get.to(()=> CollectionDetailScreen(categoryId: service.id,));
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 40),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(75, 25, 20, 25),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25),
+                color: Colors.white,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  bottomLeft: Radius.circular(20),
+                  topRight: Radius.circular(50),
+                  bottomRight: Radius.circular(50),
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF00ACC1).withOpacity(0.25),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
+                    color: const Color(0xFF0D1B1E).withOpacity(0.06),
+                    blurRadius: 30,
+                    offset: const Offset(0, 15),
                   )
                 ],
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(25),
-                child: CachedNetworkImage(
-                  imageUrl: service.serviceImage ?? "",
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Container(color: Colors.white),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          (service.name ?? "").toUpperCase(),
+                          style: GoogleFonts.montserrat(
+                            color: const Color(0xFF1A1A1A),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          service.slug ?? "",
+                          style: GoogleFonts.montserrat(
+                            color: Colors.grey[600],
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            height: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  errorWidget: (context, url, error) => Container(
-                    color: Colors.grey[200],
-                    child: const Icon(Icons.error, size: 20),
+                  const SizedBox(width: 10),
+                  Container(
+                    height: 35,
+                    width: 35,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFF1A1A1A).withOpacity(0.05),
+                    ),
+                    child: const Icon(Icons.chevron_right_rounded, color: Color(0xFF1A1A1A), size: 22),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              left: -35,
+              top: 10,
+              bottom: 10,
+              child: Container(
+                width: 90,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF00ACC1).withOpacity(0.25),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    )
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(25),
+                  child: CachedNetworkImage(
+                    imageUrl: service.serviceImage ?? "",
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Container(color: Colors.white),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      color: Colors.grey[200],
+                      child: const Icon(Icons.error, size: 20),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -5,9 +5,7 @@ class  ApiList {
   //TODO: ----------------------------- Clint URL -----------------------------
 
   //TODO: Local URL
-  static String get baseURL => "http://192.168.1.39:8000/api/v1";
-
-
+  static String get baseURL => "http://192.168.1.9:8000/api/v1";
 
   //TODO: -------------------------------- App URL --------------------------------
 
@@ -26,4 +24,10 @@ class  ApiList {
   static String get urlAllDeals => "$baseURL/all-deals";
   static String get urlCollectionDetail => "$baseURL/categories/childes";
   static String get urlCollectionProductList => "$baseURL/users/product-list";
+  static String get urlAllListings => "$baseURL/listing/list-api";
+  static String get urlSubCategoryList => "$baseURL/categories/subcategorylist";
+  static String get urlSubCategoryListDetails => "$baseURL/listing/listing-details";
+  static String get urlSubCategoryProductList => "$baseURL/listing/listing-products";
+  static String get urlSearch => "$baseURL/listing/search";
+  static String get urlBlogs => "$baseURL/blogs";
 }

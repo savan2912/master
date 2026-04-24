@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Constant/AppPref.dart';
+import 'package:gotilo_new/Screens/AllListing/AllList/AllListingsByCategory.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:gotilo_new/Api/Request/AllCollection/RequestCollectionDetails.dart';
 import 'package:gotilo_new/Api/Request/AllCollection/RequestCollectionProductListings.dart';
@@ -24,8 +25,6 @@ class CollectionDetailScreen extends StatefulWidget {
 class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
   bool isSearching = false;
   final TextEditingController searchController = TextEditingController();
-
-  // Overall API loading state
   ValueNotifier<bool> isPageLoading = ValueNotifier(true);
 
   List<CollectionDetail> categories = [];
@@ -39,7 +38,6 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
 
   Future<void> initData() async {
     isPageLoading.value = true;
-    // Banne API ne parallelly call karse
     await Future.wait([
       _callCollectionDetail(),
       _callCollectionProductList(),
@@ -54,14 +52,11 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          // 1. AppBar hamesha visible rahese
           _buildSliverAppBar(),
-
           ValueListenableBuilder(
             valueListenable: isPageLoading,
             builder: (context, isLoading, child) {
 
-              // 2. Jyare API load thiti hoy tyare Center Loader
               if (isLoading) {
                 return const SliverFillRemaining(
                   hasScrollBody: false,
@@ -74,7 +69,6 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                 );
               }
 
-              // 3. Jo data available na hoy to
               if (categories.isEmpty && popularListings.isEmpty) {
                 return const SliverFillRemaining(
                   hasScrollBody: false,
@@ -84,10 +78,8 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                 );
               }
 
-              // 4. Main Content (Grid + List)
               return SliverMainAxisGroup(
                 slivers: [
-                  // Categories Grid
                   if (categories.isNotEmpty)
                     SliverPadding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -99,13 +91,18 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                           mainAxisExtent: 180,
                         ),
                         delegate: SliverChildBuilderDelegate(
-                              (context, index) => _buildMinimalCategoryCard(categories[index]),
-                          childCount: categories.length,
+                          (context, index) {
+                            if (index == 0) {
+                              return _buildAllListingCard();
+                            }
+                            final cat = categories[index - 1];
+                            return _buildMinimalCategoryCard(cat);
+                          },
+                          childCount: categories.length + 1,
                         ),
                       ),
                     ),
 
-                  // Popular Listings Section
                   if (popularListings.isNotEmpty) ...[
                     _buildSectionHeader(),
                     SliverPadding(
@@ -129,7 +126,48 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
     );
   }
 
-  // --- UI COMPONENTS ---
+  Widget _buildAllListingCard() {
+    return GestureDetector(
+      onTap: () => Get.to(() =>  AllListingByCategory(categoryId: widget.categoryId,)),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            )
+          ],
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                child: Image.asset(
+                  "assets/gotilo_logo.png",
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                "All Listings",
+                style: GoogleFonts.montserrat(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 11,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _buildSliverAppBar() {
     return SliverAppBar(
@@ -236,7 +274,9 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
               ],
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Get.to(()=> AllListingByCategory(categoryId: widget.categoryId,));
+              },
               child: Text("View All", style: GoogleFonts.montserrat(color: const Color(0xFF6C63FF), fontWeight: FontWeight.w700)),
             )
           ],
@@ -247,7 +287,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
 
   Widget _buildMinimalCategoryCard(CollectionDetail cat) {
     return GestureDetector(
-      onTap: () => Get.to(() => const AllListingScreen()),
+      onTap: () => Get.to(() => AllListingScreen(subCategoryId: cat.id,)),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -361,8 +401,6 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
     );
   }
 
-
-
   Future<void> _callCollectionDetail() async {
     try {
       if (!await MyApplication.checkInternet()) return;
@@ -375,7 +413,6 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
       log("Detail API Error: $e");
     }
   }
-
   Future<void> _callCollectionProductList() async {
     try {
       if (!await MyApplication.checkInternet()) return;

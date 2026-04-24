@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:gotilo_new/Screens/AllListing/AllListingDetailScreen.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:gotilo_new/Api/Request/AllNewlyAdded/RequestAllNewlyAdded.dart';
 import 'package:gotilo_new/Api/Response/AllNewlyAdded/ResponseAllNewlyAdded.dart';
@@ -173,98 +176,103 @@ class _NewlyAddedListingState extends State<NewlyAddedListing> {
   }
 
   Widget _buildOverlappingCard(AllNewlyAdded item) {
-    return Container(
-      height: 320,
-      margin: const EdgeInsets.only(bottom: 30),
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              height: 180,
-              width: double.infinity,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(40),
-                boxShadow: [BoxShadow(color: const Color(0xFF0D1B1E).withOpacity(0.06), blurRadius: 30, offset: const Offset(0, 15))],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(25, 60, 25, 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(item.listingTitle ?? "Unknown", style: GoogleFonts.montserrat(color: const Color(0xFF0D1B1E), fontSize: 18, fontWeight: FontWeight.w900)),
-                    const SizedBox(height: 5),
-                    Text(item.description ?? "", maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.montserrat(color: Colors.grey[500], fontSize: 12, fontWeight: FontWeight.w500)),
-                    const SizedBox(height: 15),
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on_rounded, color: Color(0xFF00ACC1), size: 16),
-                        const SizedBox(width: 5),
-                        Text(item.cityName ?? "", style: GoogleFonts.montserrat(color: const Color(0xFF0D1B1E).withOpacity(0.7), fontSize: 12, fontWeight: FontWeight.w700)),
-                        const Spacer(),
-                        const Icon(Icons.arrow_forward_rounded, color: Color(0xFF1A1A1A), size: 20),
-                      ],
-                    ),
-                  ],
+    return GestureDetector(
+      onTap: () {
+        Get.to(()=> AllListingDetailScreen(listId: item.id,));
+      },
+      child: Container(
+        height: 320,
+        margin: const EdgeInsets.only(bottom: 30),
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: 180,
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(40),
+                  boxShadow: [BoxShadow(color: const Color(0xFF0D1B1E).withOpacity(0.06), blurRadius: 30, offset: const Offset(0, 15))],
                 ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 0,
-            left: 40,
-            right: 40,
-            child: Container(
-              height: 200,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(35),
-                boxShadow: [BoxShadow(color: const Color(0xFF0D1B1E).withOpacity(0.2), blurRadius: 20, offset: const Offset(0, 10))],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(35),
-                child: CachedNetworkImage(
-                  imageUrl: item.listingImage ?? "",
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(35),
-                      ),
-                    ),
-                  ),
-                  errorWidget: (context, url, error) => Container(color: Colors.grey[300], child: const Icon(Icons.error)),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 150,
-            right: 55,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  color: Colors.white.withOpacity(0.2),
-                  child: Row(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(25, 60, 25, 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      const Icon(Icons.star_rounded, color: Colors.orangeAccent, size: 16),
-                      const SizedBox(width: 4),
-                      Text(item.rating ?? "0", style: GoogleFonts.montserrat(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                      Text(item.listingTitle ?? "Unknown", style: GoogleFonts.montserrat(color: const Color(0xFF0D1B1E), fontSize: 18, fontWeight: FontWeight.w900)),
+                      const SizedBox(height: 5),
+                      Text(item.description ?? "", maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.montserrat(color: Colors.grey[500], fontSize: 12, fontWeight: FontWeight.w500)),
+                      const SizedBox(height: 15),
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on_rounded, color: Color(0xFF00ACC1), size: 16),
+                          const SizedBox(width: 5),
+                          Text(item.cityName ?? "", style: GoogleFonts.montserrat(color: const Color(0xFF0D1B1E).withOpacity(0.7), fontSize: 12, fontWeight: FontWeight.w700)),
+                          const Spacer(),
+                          const Icon(Icons.arrow_forward_rounded, color: Color(0xFF1A1A1A), size: 20),
+                        ],
+                      ),
                     ],
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+            Positioned(
+              top: 0,
+              left: 40,
+              right: 40,
+              child: Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(35),
+                  boxShadow: [BoxShadow(color: const Color(0xFF0D1B1E).withOpacity(0.2), blurRadius: 20, offset: const Offset(0, 10))],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(35),
+                  child: CachedNetworkImage(
+                    imageUrl: item.listingImage ?? "",
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(35),
+                        ),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(color: Colors.grey[300], child: const Icon(Icons.error)),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 150,
+              right: 55,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    color: Colors.white.withOpacity(0.2),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.star_rounded, color: Colors.orangeAccent, size: 16),
+                        const SizedBox(width: 4),
+                        Text(item.rating ?? "0", style: GoogleFonts.montserrat(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

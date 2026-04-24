@@ -1,7 +1,7 @@
 
+
 import 'dart:developer';
 import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -10,8 +10,9 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Api/Response/City/ResponseCity.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
+import 'package:gotilo_new/Screens/AllListing/AllListingDetailScreen.dart';
+import 'package:gotilo_new/Screens/Search/SearchScreen.dart';
 import 'package:shimmer/shimmer.dart';
-
 import '../Api/ApiCalls.dart';
 import '../Api/Response/Home/ResponseHome.dart';
 import '../Constant/AppPref.dart';
@@ -25,6 +26,7 @@ import 'Login/view/LoginScreen.dart';
 import 'LuxuryCardItem.dart';
 import 'NewlyAddedListing/NewlyAddedListing.dart';
 import 'OurFeaturedServices/OurFeaturedServicesScreen.dart';
+
 class HomeMainScreen extends StatefulWidget {
   const HomeMainScreen({super.key});
   @override
@@ -35,7 +37,6 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
 
   ValueNotifier<bool> isApiComplete=ValueNotifier(false);
   ValueNotifier<bool> isDataAvailable=ValueNotifier(false);
-
   List<Sliders>? banner;
   List<Categories>?  homeCollection;
   List<NearbyListings>? homeLatestRelease;
@@ -44,7 +45,6 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
   List<NearbyDeals>? homeDeal;
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
-
   String selectedCityName = "Select City";
   int selectedCityId = 0;
   ValueNotifier<bool> isCitySelected = ValueNotifier(false);
@@ -82,7 +82,6 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
 
   void _showCitySelectionSheet() {
     List<Cities> filteredCities = List.from(allCities);
-
     Get.bottomSheet(
       StatefulBuilder(
           builder: (context, setSheetState) {
@@ -108,7 +107,6 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                       style: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.w800, color: ModernHeritageApp.textDark)),
                   const SizedBox(height: 15),
 
-                  // --- Search Bar ---
                   Container(
                     height: 45,
                     padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -134,8 +132,6 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-
-                  // --- Dynamic City List ---
                   Flexible(
                     child: filteredCities.isEmpty
                         ? Center(child: Padding(
@@ -181,10 +177,7 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
       ),
       trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
       onTap: () async {
-        // 1. Permanent Save karo constant/sharedPref ma
         await AppPrefs.setCity(id, name);
-
-        // 2. UI Variables update karo
         setState(() {
           selectedCityId = id;
           selectedCityName = name;
@@ -197,10 +190,7 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
     );
   }
 
-
-
   Widget _buildHomeScreen() {
-
     return ValueListenableBuilder<bool>(
       valueListenable: isCitySelected,
       builder: (context, cityDone, child) {
@@ -314,13 +304,11 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
 
   Widget _buildProfessionalAppBar() {
     return SliverAppBar(
-      expandedHeight: 140, // Center title mate thodi vadhare height rakhi che
+      expandedHeight: 140,
       pinned: true,
       automaticallyImplyLeading: false,
       backgroundColor: ModernHeritageApp.appBg,
       elevation: 0,
-
-      // Title: Aa hamesha pinned rahese. Align vaprvathi te left ma j rehse.
       title: _isSearching
           ? Container(
         height: 45,
@@ -344,7 +332,7 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
         ),
       )
           : Align(
-        alignment: Alignment.centerLeft, // City Selector ne left ma j rakhva mate
+        alignment: Alignment.centerLeft,
         child: GestureDetector(
           onTap: () => _showCitySelectionSheet(),
           child: Row(
@@ -366,14 +354,12 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
           ),
         ),
       ),
-
-      // GOTILO: centerTitle true karvathi te ekdam center ma avi jase
       flexibleSpace: _isSearching
           ? null
           : FlexibleSpaceBar(
         centerTitle: true,
         titlePadding: const EdgeInsets.only(bottom: 12),
-        expandedTitleScale: 1.2, // Tame kidhu em motu rakhyu che
+        expandedTitleScale: 1.2,
         title: Text(
           "GOTILO",
           style: GoogleFonts.playfairDisplay(
@@ -390,16 +376,9 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
           padding: const EdgeInsets.only(right: 5),
           child: IconButton(
             onPressed: () {
-              setState(() {
-                _isSearching = !_isSearching;
-                if (!_isSearching) _searchController.clear();
-              });
+              Get.to(()=>const SearchScreen());
             },
-            icon: Icon(
-              _isSearching ? Icons.close_rounded : Icons.search_rounded,
-              color: ModernHeritageApp.textDark,
-              size: 26,
-            ),
+            icon: const Icon(Icons.search),
           ),
         ),
         if (!_isSearching)
@@ -485,7 +464,6 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
     );
   }
 
-
   Widget _buildBannerShimmer() {
     return SizedBox(
       height: 280,
@@ -523,57 +501,61 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
           Color circleColor = colors[index % colors.length];
           final category = homeCollection![index];
 
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 500),
-            width: 150,
-            margin: EdgeInsets.only(right: 18, top: isLong ? 0 : 25, bottom: isLong ? 25 : 0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(32),
-              boxShadow: [BoxShadow(color: const Color(0xFF0D1B1E).withOpacity(0.05), blurRadius: 25, offset: const Offset(0, 12))],
-            ),
-            child: Stack(
-              children: [
-                Positioned(top: -25, right: -25, child: CircleAvatar(radius: 50, backgroundColor: circleColor.withOpacity(0.3))),
-                Padding(
-                  padding: const EdgeInsets.all(22),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 42, width: 42,
-                        child: category.icon!.contains('.svg')
-                            ? SvgPicture.network(
-                          category.icon!,
-                          placeholderBuilder: (context) => _shimmerCircle(),
-                        )
-                            : CachedNetworkImage(
-                          fadeOutDuration: const Duration(milliseconds: 500),
-                          fadeInDuration: const Duration(milliseconds: 700),
-                          imageUrl: category.icon!,
-                          placeholder: (context, url) => _shimmerCircle(),
-                          errorWidget: (context, url, error) => const Icon(Icons.category),
-                        ),
-                      ),
-                      const Spacer(),
-                      // --- Text Setting to avoid pixel rendering ---
-                      SizedBox(
-                        width: double.infinity,
-                        child: Text(
-                          category.name ?? "",
-                          maxLines: 1, // એક જ લાઈન રાખવી
-                          overflow: TextOverflow.ellipsis, // જો મોટું હોય તો પાછળ ત્રણ ટપકા (...) આવશે
-                          style: GoogleFonts.montserrat(
-                              fontSize: 13, // ફોન્ટ નાના કર્યા
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF0D1B1E)
+          return GestureDetector(
+            onTap:() {
+              Get.to(()=> CollectionDetailScreen(categoryId: homeCollection?[index].id,));
+            } ,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 500),
+              width: 150,
+              margin: EdgeInsets.only(right: 18, top: isLong ? 0 : 25, bottom: isLong ? 25 : 0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(32),
+                boxShadow: [BoxShadow(color: const Color(0xFF0D1B1E).withOpacity(0.05), blurRadius: 25, offset: const Offset(0, 12))],
+              ),
+              child: Stack(
+                children: [
+                  Positioned(top: -25, right: -25, child: CircleAvatar(radius: 50, backgroundColor: circleColor.withOpacity(0.3))),
+                  Padding(
+                    padding: const EdgeInsets.all(22),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 42, width: 42,
+                          child: category.icon!.contains('.svg')
+                              ? SvgPicture.network(
+                            category.icon!,
+                            placeholderBuilder: (context) => _shimmerCircle(),
+                          )
+                              : CachedNetworkImage(
+                            fadeOutDuration: const Duration(milliseconds: 500),
+                            fadeInDuration: const Duration(milliseconds: 700),
+                            imageUrl: category.icon!,
+                            placeholder: (context, url) => _shimmerCircle(),
+                            errorWidget: (context, url, error) => const Icon(Icons.category),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                )
-              ],
+                        const Spacer(),
+                        SizedBox(
+                          width: double.infinity,
+                          child: Text(
+                            category.name ?? "",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.montserrat(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF0D1B1E)
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           );
         },
@@ -634,47 +616,52 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
         itemCount: homeNearListing!.length,
         itemBuilder: (context, index) {
           final item = homeNearListing![index];
-          return Container(
-            width: 260,
-            margin: const EdgeInsets.only(right: 20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(35),
-              boxShadow: [BoxShadow(color: const Color(0xFF0D1B1E).withOpacity(0.05), blurRadius: 25, offset: const Offset(0, 15))],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(35)),
-                  child: CachedNetworkImage(
-                    fadeOutDuration: const Duration(milliseconds: 500),
-                    fadeInDuration: const Duration(milliseconds: 700),
-                    imageUrl: item.listingImage ?? "",
-                    height: 200, width: double.infinity, fit: BoxFit.cover,
-                    placeholder: (context, url) => _shimmerBox(),
+          return GestureDetector(
+            onTap: () {
+              Get.to(()=>AllListingDetailScreen(listId: homeNearListing?[index].id,));
+            },
+            child: Container(
+              width: 260,
+              margin: const EdgeInsets.only(right: 20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(35),
+                boxShadow: [BoxShadow(color: const Color(0xFF0D1B1E).withOpacity(0.05), blurRadius: 25, offset: const Offset(0, 15))],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(35)),
+                    child: CachedNetworkImage(
+                      fadeOutDuration: const Duration(milliseconds: 500),
+                      fadeInDuration: const Duration(milliseconds: 700),
+                      imageUrl: item.listingImage ?? "",
+                      height: 200, width: double.infinity, fit: BoxFit.cover,
+                      placeholder: (context, url) => _shimmerBox(),
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(item.listingTitle ?? "", style: GoogleFonts.montserrat(fontSize: 16, fontWeight: FontWeight.w800)),
-                      const SizedBox(height: 5),
-                      Text(item.description ?? "", maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.montserrat(fontSize: 11, color: Colors.grey)),
-                      const SizedBox(height: 15),
-                      Row(
-                        children: [
-                          const Icon(Icons.location_on_rounded, color: Colors.cyan, size: 14),
-                          const SizedBox(width: 5),
-                          Text(item.cityName ?? "", style: GoogleFonts.montserrat(fontSize: 11, fontWeight: FontWeight.w600)),
-                        ],
-                      ),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(item.listingTitle ?? "", style: GoogleFonts.montserrat(fontSize: 16, fontWeight: FontWeight.w800)),
+                        const SizedBox(height: 5),
+                        Text(item.description ?? "", maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.montserrat(fontSize: 11, color: Colors.grey)),
+                        const SizedBox(height: 15),
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on_rounded, color: Colors.cyan, size: 14),
+                            const SizedBox(width: 5),
+                            Text(item.cityName ?? "", style: GoogleFonts.montserrat(fontSize: 11, fontWeight: FontWeight.w600)),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },
@@ -694,28 +681,33 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
         return Stack(
           clipBehavior: Clip.none,
           children: [
-            Container(
-              margin: const EdgeInsets.only(bottom: 45),
-              padding: const EdgeInsets.only(left: 70, right: 20, top: 25, bottom: 25),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(35),
-                boxShadow: [BoxShadow(color: const Color(0xFF0D1B1E).withOpacity(0.06), blurRadius: 35, offset: const Offset(0, 15))],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(service.name ?? "", style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.w900)),
-                        const SizedBox(height: 8),
-                        Text(service.slug ?? "", style: GoogleFonts.montserrat(fontSize: 13, color: Colors.grey)),
-                      ],
+            GestureDetector(
+              onTap: () {
+                Get.to(()=>CollectionDetailScreen(categoryId: homeService?[index].id,));
+              },
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 45),
+                padding: const EdgeInsets.only(left: 70, right: 20, top: 25, bottom: 25),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(35),
+                  boxShadow: [BoxShadow(color: const Color(0xFF0D1B1E).withOpacity(0.06), blurRadius: 35, offset: const Offset(0, 15))],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(service.name ?? "", style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.w900)),
+                          const SizedBox(height: 8),
+                          Text(service.slug ?? "", style: GoogleFonts.montserrat(fontSize: 13, color: Colors.grey)),
+                        ],
+                      ),
                     ),
-                  ),
-                  const Icon(Icons.arrow_forward_ios_rounded, color: Colors.cyan, size: 22),
-                ],
+                    const Icon(Icons.arrow_forward_ios_rounded, color: Colors.cyan, size: 22),
+                  ],
+                ),
               ),
             ),
             Positioned(
@@ -1121,7 +1113,6 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
       }
 
       ResponseCity? response = await ApiCalls.callCity();
-
       if (response != null &&
           response.result != null &&
           response.result!.isNotEmpty &&
@@ -1138,7 +1129,6 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
       allCities.clear();
 
     } finally {
-
       if (mounted) {
         setState(() {});
       }

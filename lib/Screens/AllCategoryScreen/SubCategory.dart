@@ -257,7 +257,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
     return GestureDetector(
       onTap: () {
         if(title.toLowerCase().removeAllWhitespace == "alllisting"){
-          Get.to(()=> const AllListingScreen());
+          Get.to(()=> AllListingScreen());
         }
         if(title.toLowerCase().removeAllWhitespace == "restaurants"){
           Get.to(()=> const SubCategoryListing());
