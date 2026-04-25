@@ -4,6 +4,8 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:gotilo_new/Routes/app_routes.dart';
 import 'package:video_player/video_player.dart';
 
+import '../Notifications/PushNotificationService.dart';
+
 class SplashVideoScreen extends StatefulWidget {
   const SplashVideoScreen({super.key});
 

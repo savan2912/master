@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gotilo_new/Constant/AppPref.dart';
+import 'package:gotilo_new/Screens/Login/view/LoginScreen.dart';
 
 class CustomDrawer extends StatefulWidget {
   final String initialRoute;
@@ -116,9 +120,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 ),
               ),
 
-              // Glassy Logout
               GestureDetector(
-                onTap: () => print("Logout clicked"),
+                onTap:() {
+                  AppPrefs.setUserId("");
+                  Get.off(()=>const ModernLoginScreen());
+                },
                 child: Container(
                   height: 35,
                   width: 35,

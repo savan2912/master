@@ -1,36 +1,52 @@
+import 'dart:developer';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gotilo_new/Api/ApiCalls.dart';
+import 'package:gotilo_new/Api/Request/Login/RequestLogin.dart';
+import 'package:gotilo_new/Api/Response/Login/ResponseLogin.dart';
+import 'package:gotilo_new/Constant/AppPref.dart';
+import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
+import 'package:gotilo_new/MyApplication/MyApplication.dart';
+import 'package:gotilo_new/Notifications/PushNotificationService.dart';
 import 'package:gotilo_new/Screens/JoinUs/view/JoinUsScreen.dart';
 import 'package:gotilo_new/Screens/User/Dashboard/UserDashboardScreen.dart';
 
 class ModernLoginScreen extends StatefulWidget {
   const ModernLoginScreen({super.key});
-
-  // લક્ઝરી થીમ કલર્સ (તમારા એપ મુજબ)
   static const Color appBg = Color(0xFFF0F4F7);
   static const Color textDark = Color(0xFF0D1B1E);
-  static const Color primaryCyan = Color(0xFF00ACC1); // મેઈન Cyan
-  static const Color accentCyan = Color(0xFF26C6DA);  // હાઈલાઈટ Cyan
-  static const Color softPink = Color(0xFFFF4081);   // હળવો પિંક (optional accents માટે)
+  static const Color primaryCyan = Color(0xFF00ACC1);
+  static const Color accentCyan = Color(0xFF26C6DA);
+  static const Color softPink = Color(0xFFFF4081);
 
   @override
   State<ModernLoginScreen> createState() => _ModernLoginScreenState();
 }
 
 class _ModernLoginScreenState extends State<ModernLoginScreen> {
-  // રોલ સિલેક્શન માટે સ્ટેટ
-  String _selectedRole = 'User';
+  String _selectedRole = 'user';
   bool _rememberMe = false;
   bool _obscureText = true;
+  final TextEditingController _mobileController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+// Memory leak na thay etle dispose pan kari devu
+  @override
+  void dispose() {
+    _mobileController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ModernLoginScreen.appBg,
-      // કીબોર્ડ આવે ત્યારે વિજેટ્સ આપમેળે એડજસ્ટ થાય એના માટે
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: LayoutBuilder(
@@ -38,28 +54,18 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
             return SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Container(
-                // અહીં લઘુત્તમ ઊંચાઈ સેટ કરી જેથી સ્ક્રીન નાની હોય તો પણ ઓવરફ્લો ના થાય
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 30),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center, // બધું સેન્ટરમાં રહેશે
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 20),
-
-                    // ૧. બ્રાન્ડ લોગો સેક્શન
                     _buildLogoSection(),
-
                     const SizedBox(height: 30),
-
-                    // ૨. મેઈન લોગિન કાર્ડ
                     _buildLoginCard(),
-
                     const SizedBox(height: 40),
-
-                    // ૩. કોપીરાઈટ ફૂટર
                     _buildFooter(),
-
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -71,11 +77,9 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
     );
   }
 
-  // --- ૧. લોગો સેક્શન ---
   Widget _buildLogoSection() {
     return Column(
       children: [
-        // તમે અહીં તમારો ઈમેજ લોગો પણ મૂકી શકો
         Icon(Icons.layers_rounded, size: 40, color: ModernLoginScreen.primaryCyan),
         const SizedBox(height: 10),
         Text(
@@ -100,7 +104,6 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
     );
   }
 
-  // --- ૨. મેઈન લોગિન કાર્ડ ---
   Widget _buildLoginCard() {
     return Container(
       width: double.infinity,
@@ -110,7 +113,6 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
         borderRadius: BorderRadius.circular(30),
         border: Border.all(color: Colors.grey.withOpacity(0.05)),
         boxShadow: [
-          // હળવો પ્રોફેશનલ શેડો
           BoxShadow(
             color: ModernLoginScreen.textDark.withOpacity(0.04),
             blurRadius: 30,
@@ -165,81 +167,82 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
 
   Widget _buildRoleSelector() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Select Your Role",
-          style: GoogleFonts.montserrat(
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-            color: ModernLoginScreen.textDark,
+        Padding(
+          padding: const EdgeInsets.only(left: 4),
+          child: Text(
+            "Continue as",
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: Colors.grey[700],
+            ),
           ),
         ),
-        const SizedBox(height: 20),
-        // Row ને બદલે Expanded નો ઉપયોગ કર્યો જેથી ઓવરફ્લો ના થાય
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(child: _roleButton('User', Icons.person_rounded)),
-            const SizedBox(width: 8), // બટન્સ વચ્ચે થોડી જગ્યા
-            Expanded(child: _roleButton('Vendor', Icons.store_rounded)),
-            const SizedBox(width: 8),
-            Expanded(child: _roleButton('Cashier', Icons.point_of_sale_rounded)),
-          ],
+        const SizedBox(height: 12),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.cyan.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.cyan.withOpacity(0.3), width: 1.5),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.cyan,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: const Icon(Icons.person_rounded, color: Colors.white, size: 28),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Standard User",
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    Text(
+                      "Access all features as a customer",
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.check_circle_rounded, color: Colors.cyan, size: 24),
+            ],
+          ),
         ),
       ],
     );
   }
 
-  Widget _roleButton(String role, IconData icon) {
-    final isSelected = _selectedRole == role;
-    return GestureDetector(
-      onTap: () => setState(() => _selectedRole = role),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        // પેડિંગ થોડું ઓછું કર્યું જેથી નાની સ્ક્રીનમાં પ્રોબ્લેમ ના થાય
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
-        decoration: BoxDecoration(
-          color: isSelected ? ModernLoginScreen.primaryCyan : ModernLoginScreen.appBg.withOpacity(0.3),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? ModernLoginScreen.primaryCyan : Colors.grey.withOpacity(0.2),
-            width: 1.5,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center, // આઈકોન અને ટેક્સ્ટ સેન્ટરમાં રહે
-          children: [
-            Icon(icon, size: 14, color: isSelected ? Colors.white : Colors.grey[600]),
-            const SizedBox(width: 4),
-            Flexible( // ટેક્સ્ટ બહુ લાંબી હોય તો ઓવરફ્લો ના થાય એના માટે
-              child: Text(
-                role,
-                overflow: TextOverflow.ellipsis, // જો નામ મોટું હોય તો '...' થઈ જશે
-                style: GoogleFonts.montserrat(
-                  fontSize: 11, // ફોન્ટ સાઈઝ થોડી ઘટાડી
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                  color: isSelected ? Colors.white : Colors.grey[700],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
+// 1. Updated Input Fields Widget
   Widget _buildInputFields() {
     return Column(
       children: [
-        // ફોન નંબર ફિલ્ડ
         _customTextField(
-          hintText: "7990465270",
+          hintText: "9999999999",
+          controller: _mobileController, // Controller ahiyā add karyo
+          keyboardType: TextInputType.phone,
           prefixIcon: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(width: 15),
-              // ઈન્ડિયા ફ્લેગનો આઈકોન (તમે ઈમેજ એસેટ પણ વાપરી શકો)
-              Text("🇮🇳", style: const TextStyle(fontSize: 18)),
+              const Text("🇮🇳", style: TextStyle(fontSize: 18)),
               const SizedBox(width: 10),
               Container(height: 20, width: 1, color: Colors.grey.withOpacity(0.3)),
               const SizedBox(width: 10),
@@ -247,9 +250,9 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
           ),
         ),
         const SizedBox(height: 15),
-        // પાસવર્ડ ફિલ્ડ
         _customTextField(
           hintText: "Enter Password",
+          controller: _passwordController, // Controller ahiyā add karyo
           isPassword: true,
           obscureText: _obscureText,
           prefixIcon: Icon(Icons.lock_outline_rounded, color: Colors.grey[400], size: 20),
@@ -266,12 +269,15 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
     );
   }
 
+// 2. Updated Custom TextField Widget
   Widget _customTextField({
     required String hintText,
+    required TextEditingController controller, // Aa parameter jarūrī chhe
     bool isPassword = false,
     bool obscureText = false,
     Widget? prefixIcon,
     Widget? suffixIcon,
+    TextInputType keyboardType = TextInputType.text,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -280,7 +286,9 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
         border: Border.all(color: Colors.grey.withOpacity(0.1)),
       ),
       child: TextField(
+        controller: controller, // Ahiyā attach karvū farajiyāt chhe
         obscureText: isPassword && obscureText,
+        keyboardType: keyboardType,
         style: GoogleFonts.montserrat(color: ModernLoginScreen.textDark, fontSize: 14),
         decoration: InputDecoration(
           hintText: hintText,
@@ -324,7 +332,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
             style: GoogleFonts.montserrat(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: ModernLoginScreen.primaryCyan, // Cyan accent
+              color: ModernLoginScreen.primaryCyan,
             ),
           ),
         ),
@@ -353,7 +361,15 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
       ),
       child: ElevatedButton(
         onPressed: () {
-          Get.to(()=>const Userdashboardscreen());
+          if(_mobileController.text != "" && _passwordController.text != "" )
+            {
+              callLogin();
+            }else if(_mobileController.text == ""){
+            SharedWidgets.showTopSnackBar(context, message: "Please Enter Mobile Number");
+          }else if(_passwordController.text == ""){
+            SharedWidgets.showTopSnackBar(context, message: "Please Enter Password");
+          }
+
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
@@ -406,19 +422,60 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
             style: GoogleFonts.montserrat(
               fontWeight: FontWeight.bold,
               color: ModernLoginScreen.primaryCyan,
-              decoration: TextDecoration.underline, // ક્લિકેબલ લાગે એ માટે અંડરલાઈન (Optional)
+              decoration: TextDecoration.underline,
             ),
           ),
         ],
       ),
     );
   }
-
-  // --- ૩. ફૂટર સેક્શન ---
   Widget _buildFooter() {
     return Text(
       "Copyright © 2026 Gotilo - All rights reserved.",
       style: GoogleFonts.montserrat(fontSize: 10, color: Colors.grey[500]),
     );
   }
+
+
+  Future<void> callLogin() async {
+    _callLogin();
+  }
+  Future<void> _callLogin() async {
+    var devicetoken = PushNotificationService.getSavedToken();
+    MyApplication.checkInternet().then((internet) async {
+          if(internet)
+            {
+              try{
+                ResponseLogin? response= await ApiCalls.callLogin(RequestLogin(
+                  deviceToken: await devicetoken,
+                  password: _passwordController.text,
+                  phone: _mobileController.text,
+                  role: "user"
+                ));
+                if(response != null){
+                  if(response.result!.isNotEmpty && response.result != null &&
+                  response.result!.toLowerCase().contains("pass")){
+                    AppPrefs.setUserId(response.data!.userId!);
+                    SharedWidgets.showTopSnackBar(context, message: response.message!);
+                    if(AppPrefs.userId != "")
+                      {
+                        Get.off(()=> const Userdashboardscreen());
+                      }
+
+                  }
+                }
+              }on Exception catch(e){
+                log("$e");
+              }catch(e){
+                log("$e");
+              }finally{
+
+              }
+            }else{
+            SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+          }
+    },);
+  }
+
+
 }

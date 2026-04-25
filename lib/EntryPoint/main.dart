@@ -1,15 +1,37 @@
+import 'dart:developer';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:gotilo_new/Routes/app_pages.dart';
 import 'package:gotilo_new/Routes/app_routes.dart';
 
 import '../Constant/AppPref.dart';
+import '../Notifications/PushNotificationService.dart';
 
- void main()async {
-   WidgetsFlutterBinding.ensureInitialized();
-   await AppPrefs.init();
-  runApp( const MyApp() );
- }
+Future<void> firebaseMessagingBackgroundHandler(
+    RemoteMessage message) async {
+
+  await Firebase.initializeApp();
+
+  log("Background message: ${message.messageId}");
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await AppPrefs.init();
+
+  await Firebase.initializeApp();
+
+  FirebaseMessaging.onBackgroundMessage(
+      firebaseMessagingBackgroundHandler);
+
+  await PushNotificationService.initialize();
+
+  runApp(const MyApp());
+}
 
  class MyApp extends StatelessWidget {
   const MyApp({super.key});

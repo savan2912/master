@@ -12,6 +12,8 @@ import 'package:gotilo_new/Api/Request/AllLatestRelease/RequestAllLatestRelease.
 import 'package:gotilo_new/Api/Request/AllListings/RequestAllListings.dart';
 import 'package:gotilo_new/Api/Request/AllNewlyAdded/RequestAllNewlyAdded.dart';
 import 'package:gotilo_new/Api/Request/AllService/RequestAllService.dart';
+import 'package:gotilo_new/Api/Request/Login/RequestLogin.dart';
+import 'package:gotilo_new/Api/Request/Register/RequestRegister.dart';
 import 'package:gotilo_new/Api/Request/Search/RequestSearch.dart';
 import 'package:gotilo_new/Api/Request/SubCategoryList/RequestSubCategoryList.dart';
 import 'package:gotilo_new/Api/Request/SubCategoryList/RequestSubCategoryListDetails.dart';
@@ -30,6 +32,9 @@ import 'package:gotilo_new/Api/Response/Home/ResponseHomeCollection.dart';
 import 'package:gotilo_new/Api/Response/Home/ResponseHomeLatestRelease.dart';
 import 'package:gotilo_new/Api/Response/Home/ResponseHomeService.dart';
 import 'package:gotilo_new/Api/Response/LatestListing/ResponseHomeLatestListing.dart';
+import 'package:gotilo_new/Api/Response/Login/ResponseLogin.dart';
+import 'package:gotilo_new/Api/Response/PrisePlan/ResponsePrisePlan.dart';
+import 'package:gotilo_new/Api/Response/Register/ResponseRegister.dart';
 import 'package:gotilo_new/Api/Response/Search/ResponseSearch.dart';
 import 'package:gotilo_new/Api/Response/SubCategoryList/ResponseSubCategoryList.dart';
 import 'package:gotilo_new/Api/Response/SubCategoryList/ResponseSubCategoryProductList.dart';
@@ -81,6 +86,40 @@ class ApiCalls {
           log("Response Data = ${response.data}", name: TAG);
           //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
           return ResponseBanner.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+
+  static Future<ResponsePrisePlan?> callPrisePlan()
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio());
+    try {
+      log("Request URL = ${ApiList.urlPrisePlan}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().get(ApiList.urlPrisePlan, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponsePrisePlan.fromJson(response.data);
         } else {
           log("Response data = null", name: TAG);
           return null;
@@ -764,6 +803,83 @@ class ApiCalls {
     }
     return null;
   }
+
+
+
+
+  static Future<ResponseLogin?> callLogin (RequestLogin model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlLogin}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlLogin, data: formData,options: Options(
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+      ),);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseLogin.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+
+
+  static Future<ResponseRegister?> callRegister (RequestRegister model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlRegister}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlRegister, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseRegister.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
 
 
 

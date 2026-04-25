@@ -30,4 +30,7 @@ class  ApiList {
   static String get urlSubCategoryProductList => "$baseURL/listing/listing-products";
   static String get urlSearch => "$baseURL/listing/search";
   static String get urlBlogs => "$baseURL/blogs";
+  static String get urlPrisePlan => "$baseURL/pricing-plans";
+  static String get urlLogin => "$baseURL/auth/login";
+  static String get urlRegister => "$baseURL/auth/sign-up";
 }

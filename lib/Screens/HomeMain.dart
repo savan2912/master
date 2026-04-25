@@ -12,6 +12,7 @@ import 'package:gotilo_new/Api/Response/City/ResponseCity.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/Screens/AllListing/AllListingDetailScreen.dart';
 import 'package:gotilo_new/Screens/Search/SearchScreen.dart';
+import 'package:gotilo_new/Screens/User/Dashboard/UserDashboardScreen.dart';
 import 'package:shimmer/shimmer.dart';
 import '../Api/ApiCalls.dart';
 import '../Api/Response/Home/ResponseHome.dart';
@@ -385,7 +386,14 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 15),
             child: InkWell(
-              onTap: () => Get.to(() => const ModernLoginScreen()),
+              onTap:() {
+                if(AppPrefs.userId != ""){
+                  Get.to(() => const Userdashboardscreen());
+                }else{
+                  Get.to(() => const ModernLoginScreen());
+                }
+
+              },
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(

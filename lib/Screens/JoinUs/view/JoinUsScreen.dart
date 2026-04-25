@@ -1,6 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gotilo_new/Api/ApiCalls.dart';
+import 'package:gotilo_new/Api/Request/Register/RequestRegister.dart';
+import 'package:gotilo_new/Api/Response/Register/ResponseRegister.dart';
+import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
+import 'package:gotilo_new/MyApplication/MyApplication.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -20,6 +27,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscureText1 = true;
   bool _obscureText2 = true;
   bool _agreedToTerms = false;
+
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _mobileController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _mobileController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,8 +126,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         children: [
           _buildWelcomeHeader(),
           const SizedBox(height: 35),
-          _buildRoleSelector(),
-          const SizedBox(height: 35),
           _buildInputFields(),
           const SizedBox(height: 25),
           _buildTermsAndCondition(),
@@ -143,121 +165,85 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildRoleSelector() {
-    return Column(
-      children: [
-        Text(
-          "Pick Your Sign Up Type",
-          style: GoogleFonts.montserrat(
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-            color: RegisterScreen.textDark,
-          ),
-        ),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(child: _roleButton('User', Icons.person_rounded)),
-            const SizedBox(width: 10),
-            Expanded(child: _roleButton('Vendor', Icons.store_rounded)),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _roleButton(String role, IconData icon) {
-    final isSelected = _selectedRole == role;
-    return GestureDetector(
-      onTap: () => setState(() => _selectedRole = role),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
-        decoration: BoxDecoration(
-          color: isSelected ? RegisterScreen.primaryCyan : RegisterScreen.appBg.withOpacity(0.3),
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(
-            color: isSelected ? RegisterScreen.primaryCyan : Colors.grey.withOpacity(0.2),
-            width: 1.5,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 16, color: isSelected ? Colors.white : Colors.grey[600]),
-            const SizedBox(width: 6),
-            Flexible(
-              child: Text(
-                role,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.montserrat(
-                  fontSize: 11,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                  color: isSelected ? Colors.white : Colors.grey[700],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildInputFields() {
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(child: _customTextField(hintText: "Enter First Name", icon: Icons.person_outline_rounded)),
-            const SizedBox(width: 15),
-            Expanded(child: _customTextField(hintText: "Enter Last Name", icon: Icons.person_outline_rounded)),
-          ],
-        ),
-        const SizedBox(height: 15),
-        _customTextField(
-          hintText: "Enter Your Mobile Number",
-          prefixIcon: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(width: 15),
-              Text("🇮🇳", style: const TextStyle(fontSize: 18)),
-              const SizedBox(width: 10),
-              Container(height: 20, width: 1, color: Colors.grey.withOpacity(0.3)),
-              const SizedBox(width: 10),
-            ],
+        Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: _customTextField(
+              hintText: "Enter First Name",
+              controller: _firstNameController,
+              icon: Icons.person_outline_rounded
           ),
         ),
-        const SizedBox(height: 15),
-        _customTextField(
-          hintText: "Enter Password",
-          isPassword: true,
-          obscureText: _obscureText1,
-          icon: Icons.lock_outline_rounded,
-          suffixIcon: IconButton(
-            icon: Icon(
-              _obscureText1 ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-              color: Colors.grey[500],
-              size: 20,
-            ),
-            onPressed: () => setState(() => _obscureText1 = !_obscureText1),
+        Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: _customTextField(
+              hintText: "Enter Last Name",
+              controller: _lastNameController,
+              icon: Icons.person_outline_rounded
           ),
         ),
-        const SizedBox(height: 10),
-        _buildPasswordStrengthBar(),
-        const SizedBox(height: 15),
-        _customTextField(
-          hintText: "Confirm Password",
-          isPassword: true,
-          obscureText: _obscureText2,
-          icon: Icons.lock_outline_rounded,
-          suffixIcon: IconButton(
-            icon: Icon(
-              _obscureText2 ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-              color: Colors.grey[500],
-              size: 20,
+        Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: _customTextField(
+              hintText: "Email",
+              controller:_emailController,
+              icon: Icons.email
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: _customTextField(
+            hintText: "Enter Your Mobile Number",
+            controller: _mobileController,
+            keyboardType: TextInputType.phone,
+            prefixIcon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(width: 15),
+                const Text("🇮🇳", style: TextStyle(fontSize: 18)),
+                const SizedBox(width: 10),
+                Container(height: 20, width: 1, color: Colors.grey.withOpacity(0.3)),
+                const SizedBox(width: 10),
+              ],
             ),
-            onPressed: () => setState(() => _obscureText2 = !_obscureText2),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: _customTextField(
+            hintText: "Enter Password",
+            controller: _passwordController, // Controller mūkī dīdho
+            isPassword: true,
+            obscureText: _obscureText1,
+            icon: Icons.lock_outline_rounded,
+            suffixIcon: IconButton(
+              icon: Icon(
+                _obscureText1 ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                color: Colors.grey[500],
+                size: 20,
+              ),
+              onPressed: () => setState(() => _obscureText1 = !_obscureText1),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: _customTextField(
+            hintText: "Confirm Password",
+            controller: _confirmPasswordController, // Controller mūkī dīdho
+            isPassword: true,
+            obscureText: _obscureText2,
+            icon: Icons.lock_outline_rounded,
+            suffixIcon: IconButton(
+              icon: Icon(
+                _obscureText2 ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                color: Colors.grey[500],
+                size: 20,
+              ),
+              onPressed: () => setState(() => _obscureText2 = !_obscureText2),
+            ),
           ),
         ),
       ],
@@ -266,11 +252,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _customTextField({
     required String hintText,
+    required TextEditingController controller,
     bool isPassword = false,
     bool obscureText = false,
     IconData? icon,
     Widget? prefixIcon,
     Widget? suffixIcon,
+    TextInputType keyboardType = TextInputType.text,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -279,7 +267,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         border: Border.all(color: Colors.grey.withOpacity(0.1)),
       ),
       child: TextField(
+        controller: controller,
         obscureText: isPassword && obscureText,
+        keyboardType: keyboardType,
         style: GoogleFonts.montserrat(color: RegisterScreen.textDark, fontSize: 13),
         decoration: InputDecoration(
           hintText: hintText,
@@ -293,33 +283,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildPasswordStrengthBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(child: _strengthIndicatorBar(Colors.green)),
-          const SizedBox(width: 4),
-          Expanded(child: _strengthIndicatorBar(Colors.grey[300]!)),
-          const SizedBox(width: 4),
-          Expanded(child: _strengthIndicatorBar(Colors.grey[300]!)),
-          const SizedBox(width: 4),
-          Expanded(child: _strengthIndicatorBar(Colors.grey[300]!)),
-        ],
-      ),
-    );
-  }
-
-  Widget _strengthIndicatorBar(Color color) {
-    return Container(
-      height: 3,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(5),
-      ),
-    );
-  }
 
   Widget _buildTermsAndCondition() {
     return Row(
@@ -386,7 +349,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ],
       ),
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          if(_firstNameController.text != "" && _lastNameController.text != "" && _emailController.text != ""
+          && _mobileController.text != "" && _passwordController.text != "" && _confirmPasswordController.text != ""){
+            callRegister();
+          }else if(_firstNameController.text == ""){
+            SharedWidgets.showTopSnackBar(context, message: "Enter First Name");
+          }else if(_lastNameController.text == ""){
+            SharedWidgets.showTopSnackBar(context, message: "Enter Last Name");
+          }else if(_emailController.text == ""){
+            SharedWidgets.showTopSnackBar(context, message: "Enter Email");
+          }else if(_mobileController.text == ""){
+            SharedWidgets.showTopSnackBar(context, message: "Enter Mobile Number");
+          }else if(_passwordController.text == ""){
+            SharedWidgets.showTopSnackBar(context, message: "Enter Password");
+          }else if(_confirmPasswordController.text == ""){
+            SharedWidgets.showTopSnackBar(context, message: "Enter Confirm Password");
+          }
+        },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
@@ -450,4 +430,48 @@ class _RegisterScreenState extends State<RegisterScreen> {
       style: GoogleFonts.montserrat(fontSize: 10, color: Colors.grey[500]),
     );
   }
+
+  Future<void> callRegister() async {
+    _callRegisters();
+  }
+
+  Future<void> _callRegisters() async {
+    MyApplication.checkInternet().then((internet) async {
+      if(internet){
+        try{
+            ResponseRegister? response= await ApiCalls.callRegister(RequestRegister(
+              role: "user",
+              phone: _mobileController.text,
+              password: _passwordController.text,
+              email: _emailController.text,
+              firstName: _firstNameController.text,
+              lastName: _lastNameController.text,
+              confirmPassword: _confirmPasswordController.text,
+              terms: _agreedToTerms ? 1 : 0
+            ));
+            if(response != null){
+              if(response.result!.isNotEmpty && response.result != null &&
+              response.result!.toLowerCase().contains("pass")) {
+                _passwordController.clear();
+                _mobileController.clear();
+                _confirmPasswordController.clear();
+                _emailController.clear();
+                _firstNameController.clear();
+                _lastNameController.clear();
+                SharedWidgets.showTopSnackBar(context, message: response.message!);
+              }
+            }
+        }on Exception catch(e){
+          log("$e");
+        }catch(e){
+          log("$e");
+        }finally{
+
+        }
+      }else{
+        SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      }
+    },);
+  }
+
 }
