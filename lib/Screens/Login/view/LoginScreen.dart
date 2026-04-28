@@ -1,10 +1,7 @@
 import 'dart:developer';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Api/ApiCalls.dart';
 import 'package:gotilo_new/Api/Request/Login/RequestLogin.dart';
@@ -32,10 +29,10 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
   String _selectedRole = 'user';
   bool _rememberMe = false;
   bool _obscureText = true;
+  bool _isLoading = false; // <--- Loader mate variable
   final TextEditingController _mobileController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-// Memory leak na thay etle dispose pan kari devu
   @override
   void dispose() {
     _mobileController.dispose();
@@ -80,7 +77,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
   Widget _buildLogoSection() {
     return Column(
       children: [
-        Icon(Icons.layers_rounded, size: 40, color: ModernLoginScreen.primaryCyan),
+        const Icon(Icons.layers_rounded, size: 40, color: ModernLoginScreen.primaryCyan),
         const SizedBox(height: 10),
         Text(
           "Gotilo",
@@ -130,7 +127,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
           const SizedBox(height: 25),
           _buildRememberForgotPassword(),
           const SizedBox(height: 35),
-          _buildSignInButton(),
+          _buildSignInButton(), // <--- Loader aya batavse
           const SizedBox(height: 25),
           _buildOrDivider(),
           const SizedBox(height: 25),
@@ -182,61 +179,38 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
         ),
         const SizedBox(height: 12),
         Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: Colors.cyan.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.cyan.withOpacity(0.3), width: 1.5),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.cyan.withOpacity(0.3), width: 1.2),
           ),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.cyan,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: const Icon(Icons.person_rounded, color: Colors.white, size: 28),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Standard User",
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    Text(
-                      "Access all features as a customer",
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
+              const Icon(Icons.person_rounded, color: Colors.cyan, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                "User",
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black87,
                 ),
               ),
-              const Icon(Icons.check_circle_rounded, color: Colors.cyan, size: 24),
             ],
           ),
-        ),
+        )
       ],
     );
   }
 
-// 1. Updated Input Fields Widget
   Widget _buildInputFields() {
     return Column(
       children: [
         _customTextField(
           hintText: "9999999999",
-          controller: _mobileController, // Controller ahiyā add karyo
+          controller: _mobileController,
           keyboardType: TextInputType.phone,
           prefixIcon: Row(
             mainAxisSize: MainAxisSize.min,
@@ -252,7 +226,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
         const SizedBox(height: 15),
         _customTextField(
           hintText: "Enter Password",
-          controller: _passwordController, // Controller ahiyā add karyo
+          controller: _passwordController,
           isPassword: true,
           obscureText: _obscureText,
           prefixIcon: Icon(Icons.lock_outline_rounded, color: Colors.grey[400], size: 20),
@@ -269,10 +243,9 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
     );
   }
 
-// 2. Updated Custom TextField Widget
   Widget _customTextField({
     required String hintText,
-    required TextEditingController controller, // Aa parameter jarūrī chhe
+    required TextEditingController controller,
     bool isPassword = false,
     bool obscureText = false,
     Widget? prefixIcon,
@@ -286,7 +259,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
         border: Border.all(color: Colors.grey.withOpacity(0.1)),
       ),
       child: TextField(
-        controller: controller, // Ahiyā attach karvū farajiyāt chhe
+        controller: controller,
         obscureText: isPassword && obscureText,
         keyboardType: keyboardType,
         style: GoogleFonts.montserrat(color: ModernLoginScreen.textDark, fontSize: 14),
@@ -360,23 +333,27 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
         ],
       ),
       child: ElevatedButton(
-        onPressed: () {
-          if(_mobileController.text != "" && _passwordController.text != "" )
-            {
-              callLogin();
-            }else if(_mobileController.text == ""){
+        onPressed: _isLoading ? null : () { // Loading hoy tyare button disable
+          if(_mobileController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
+            _callLogin();
+          } else if(_mobileController.text.isEmpty){
             SharedWidgets.showTopSnackBar(context, message: "Please Enter Mobile Number");
-          }else if(_passwordController.text == ""){
+          } else if(_passwordController.text.isEmpty){
             SharedWidgets.showTopSnackBar(context, message: "Please Enter Password");
           }
-
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         ),
-        child: Text(
+        child: _isLoading
+            ? const SizedBox(
+          height: 22,
+          width: 22,
+          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+        )
+            : Text(
           "Sign In",
           style: GoogleFonts.montserrat(
             fontSize: 16,
@@ -416,8 +393,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
             text: "Join us Today",
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-               Get.to(()=> const RegisterScreen());
-                print("Join Us Clicked!");
+                Get.to(() => const RegisterScreen());
               },
             style: GoogleFonts.montserrat(
               fontWeight: FontWeight.bold,
@@ -429,6 +405,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
       ),
     );
   }
+
   Widget _buildFooter() {
     return Text(
       "Copyright © 2026 Gotilo - All rights reserved.",
@@ -436,46 +413,56 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
     );
   }
 
-
-  Future<void> callLogin() async {
-    _callLogin();
-  }
+  // --- API Call Logic ---
   Future<void> _callLogin() async {
-    var devicetoken = PushNotificationService.getSavedToken();
-    MyApplication.checkInternet().then((internet) async {
-          if(internet)
-            {
-              try{
-                ResponseLogin? response= await ApiCalls.callLogin(RequestLogin(
-                  deviceToken: await devicetoken,
-                  password: _passwordController.text,
-                  phone: _mobileController.text,
-                  role: "user"
-                ));
-                if(response != null){
-                  if(response.result!.isNotEmpty && response.result != null &&
-                  response.result!.toLowerCase().contains("pass")){
-                    AppPrefs.setUserId(response.data!.userId!);
-                    SharedWidgets.showTopSnackBar(context, message: response.message!);
-                    if(AppPrefs.userId != "")
-                      {
-                        Get.off(()=> const Userdashboardscreen());
-                      }
+    var deviceTokenFuture = PushNotificationService.getSavedToken();
 
-                  }
-                }
-              }on Exception catch(e){
-                log("$e");
-              }catch(e){
-                log("$e");
-              }finally{
+    // Check Internet
+    bool internet = await MyApplication.checkInternet();
 
-              }
-            }else{
-            SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+    if (internet) {
+      setState(() {
+        _isLoading = true; // Loader chalu karo
+      });
+
+      try {
+        String? token = await deviceTokenFuture;
+        ResponseLogin? response = await ApiCalls.callLogin(RequestLogin(
+            deviceToken: token,
+            password: _passwordController.text,
+            phone: _mobileController.text,
+            role: "user"
+        ));
+
+        if (response != null) {
+          if (response.result != null && response.result!.toLowerCase().contains("pass")) {
+
+            AppPrefs.setUserId(response.data!.userId!);
+
+            if (context.mounted) {
+              SharedWidgets.showTopSnackBar(context, message: response.message!);
+            }
+
+            if (response.data!.userId != null && response.data!.userId!.isNotEmpty) {
+              Get.offAll(() => const Userdashboardscreen()); // offAll use karo jethi back na avai
+            }
+          } else {
+            if (context.mounted) {
+              SharedWidgets.showTopSnackBar(context, message: response.message ?? "Login Failed");
+            }
           }
-    },);
+        }
+      } catch (e) {
+        log("Login Error: $e");
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false; // Loader bandh karo (Success hoy ke Error)
+          });
+        }
+      }
+    } else {
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+    }
   }
-
-
 }

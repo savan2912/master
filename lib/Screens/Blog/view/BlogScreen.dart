@@ -1,37 +1,38 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Api/ApiCalls.dart';
 import 'package:gotilo_new/Api/Request/Blog/RequestBlogsData.dart';
 import 'package:gotilo_new/Api/Response/Blog/ResponseBlogData.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/MyApplication/MyApplication.dart';
+import 'package:shimmer/shimmer.dart'; // <--- Shimmer Import
+import 'package:intl/intl.dart';
+
+import 'BlogDetailScreen.dart';
 
 class BlogScreen extends StatefulWidget {
   const BlogScreen({super.key});
-
   @override
   State<BlogScreen> createState() => _BlogScreenState();
 }
 
 class _BlogScreenState extends State<BlogScreen> {
-  // --- VARIABLES ---
   List<BlogsData> blogData = [];
   final ScrollController _scrollController = ScrollController();
 
-  int _counter = 0;         // Starts at 0, then 10, 20, etc.
-  final int _limit = 10;    // Darek vaar ketlo gap rakhvo chhe e
-  bool _isFetching = false;  // API call chaludi hoy tyare true thase
-  bool _hasMore = true;      // Jo data khatam thai jay to true thase
-
+  int _counter = 0;
+  final int _limit = 10;
+  bool _isFetching = false;
+  bool _hasMore = true;
+  bool _isInitialLoading = true;
   @override
   void initState() {
     super.initState();
-    _callBlogsData(); // Pehlo load
-
-    // Scroll Listener: Pagination trigger karva mate
+    _callBlogsData();
     _scrollController.addListener(() {
-      // Jyaare user scroll karine end pase pahonche (200px baki hoy) tyare
       if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
         if (!_isFetching && _hasMore) {
           _callBlogsData();
@@ -46,7 +47,6 @@ class _BlogScreenState extends State<BlogScreen> {
     super.dispose();
   }
 
-  /// --- API CALL LOGIC (COUNTER: 0, 10, 20...) ---
   Future<void> _callBlogsData() async {
     if (_isFetching) return;
 
@@ -69,29 +69,35 @@ class _BlogScreenState extends State<BlogScreen> {
           if (response.data != null && response.data!.isNotEmpty) {
             setState(() {
               blogData.addAll(response.data!);
-
-              // --- COUNTER LOGIC ---
-              // Agli vaar mate counter ma 10 add thase (0 -> 10 -> 20)
               _counter = _counter + _limit;
-
               _isFetching = false;
+              _isInitialLoading = false;
             });
           } else {
-            // Jo API blank data ape to have baki nathi e set karvu
             setState(() {
               _hasMore = false;
               _isFetching = false;
+              _isInitialLoading = false;
             });
           }
         } else {
-          setState(() => _isFetching = false);
+          setState(() {
+            _isFetching = false;
+            _isInitialLoading = false;
+          });
         }
       } catch (e) {
         log("API Error: $e");
-        setState(() => _isFetching = false);
+        setState(() {
+          _isFetching = false;
+          _isInitialLoading = false;
+        });
       }
     } else {
-      setState(() => _isFetching = false);
+      setState(() {
+        _isFetching = false;
+        _isInitialLoading = false;
+      });
       SharedWidgets.showTopSnackBar(context, message: "No Internet! Please check your connection.");
     }
   }
@@ -104,64 +110,47 @@ class _BlogScreenState extends State<BlogScreen> {
         children: [
           _buildStickyHeader(),
           Expanded(
-            child: ListView(
-              controller: _scrollController, // Controller attach karvo jaruri chhe
-              padding: EdgeInsets.zero,
-              physics: const BouncingScrollPhysics(),
-              children: [
-                const SizedBox(height: 30),
-
-                // Section Header
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 4, height: 20,
-                        decoration: BoxDecoration(
-                          color: Colors.cyan,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        "Latest Updates",
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
+            child: _isInitialLoading
+                ? _buildSkeletonList()
+                : RefreshIndicator(
+              onRefresh: () async {
+                setState(() {
+                  _counter = 0;
+                  blogData.clear();
+                  _hasMore = true;
+                });
+                await _callBlogsData();
+              },
+              color: Colors.cyan,
+              child: ListView(
+                controller: _scrollController,
+                padding: EdgeInsets.zero,
+                physics: const BouncingScrollPhysics(),
+                children: [
+                  const SizedBox(height: 30),
+                  _buildSectionTitle(),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.only(top: 10),
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: blogData.length,
+                    itemBuilder: (context, index) {
+                      return _buildPremiumBlogCard(blogData[index]);
+                    },
                   ),
-                ),
-
-                // Blog List Builder
-                ListView.builder(
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.only(top: 10),
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: blogData.length,
-                  itemBuilder: (context, index) {
-                    return _buildPremiumBlogCard(blogData[index]);
-                  },
-                ),
-
-                // --- BOTTOM PAGINATION LOADER ---
-                if (_isFetching)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.cyan,
-                        strokeWidth: 3,
+                  if (_isFetching && _hasMore)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.cyan,
+                          strokeWidth: 3,
+                        ),
                       ),
                     ),
-                  ),
-
-                // Bottom padding jethi last card loader ma na dabay
-                const SizedBox(height: 50),
-              ],
+                  const SizedBox(height: 50),
+                ],
+              ),
             ),
           ),
         ],
@@ -169,7 +158,32 @@ class _BlogScreenState extends State<BlogScreen> {
     );
   }
 
-  /// --- HEADER UI ---
+  Widget _buildSectionTitle() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          Container(
+            width: 4, height: 20,
+            decoration: BoxDecoration(
+              color: Colors.cyan,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            "Latest Updates",
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: Colors.black,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildStickyHeader() {
     return Container(
       width: double.infinity,
@@ -215,90 +229,130 @@ class _BlogScreenState extends State<BlogScreen> {
     );
   }
 
-  /// --- BLOG CARD UI ---
   Widget _buildPremiumBlogCard(BlogsData item) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            child: Stack(
-              children: [
-                Image.network(
-                  item.blogImage ?? "https://via.placeholder.com/800x500",
-                  height: 180,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
+    String displayDate = item.updatedAt ?? "No Date";
+    try {
+      if(item.updatedAt != null) {
+        DateTime dt = DateTime.parse(item.updatedAt!);
+        displayDate = DateFormat('dd MMM, yyyy').format(dt);
+      }
+    } catch (e) {
+      displayDate = item.updatedAt ?? "";
+    }
+
+    return GestureDetector(
+      onTap: () {
+        Get.to(() => BlogDetailScreen(blogid: item.id));
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              child: Stack(
+                children: [
+                  Image.network(
+                    item.blogImage ?? "",
                     height: 180,
-                    color: Colors.grey[100],
-                    child: const Icon(Icons.broken_image_outlined, color: Colors.grey),
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: const BoxDecoration(
-                      color: Colors.cyan,
-                      borderRadius: BorderRadius.only(topRight: Radius.circular(12)),
-                    ),
-                    child: Text(
-                      "GENERAL",
-                      style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w800),
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Shimmer.fromColors(
+                        baseColor: Colors.grey[200]!,
+                        highlightColor: Colors.white,
+                        child: Container(height: 180, color: Colors.white),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      height: 180,
+                      color: Colors.grey[100],
+                      child: const Icon(Icons.broken_image_outlined, color: Colors.grey, size: 40),
                     ),
                   ),
-                ),
-              ],
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: const BoxDecoration(
+                        color: Colors.cyan,
+                        borderRadius: BorderRadius.only(topRight: Radius.circular(12)),
+                      ),
+                      child: Text(
+                        "GENERAL",
+                        style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.calendar_month_outlined, size: 14, color: Colors.cyan),
-                    const SizedBox(width: 6),
-                    Text(item.updatedAt ?? "No Date", style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.grey[500])),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Text(item.blogTitle ?? "No Title", style: GoogleFonts.plusJakartaSans(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.black)),
-                const SizedBox(height: 8),
-                Text(
-                  item.blogDesc ?? "No description available.",
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[600], height: 1.5),
-                ),
-                const SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("CONTINUE READING", style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.cyan)),
-                    const Icon(Icons.arrow_forward_rounded, size: 16, color: Colors.cyan),
-                  ],
-                ),
-              ],
+            Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.calendar_month_outlined, size: 14, color: Colors.cyan),
+                      const SizedBox(width: 6),
+                      Text(displayDate, style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.grey[500])),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(item.blogTitle ?? "No Title", style: GoogleFonts.plusJakartaSans(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.black)),
+                  const SizedBox(height: 8),
+                  Text(
+                    item.blogDesc ?? "No description available.",
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[600], height: 1.5),
+                  ),
+                  const SizedBox(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("CONTINUE READING", style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.cyan)),
+                      const Icon(Icons.arrow_forward_rounded, size: 16, color: Colors.cyan),
+                    ],
+                  ),
+                ],
+              ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget _buildSkeletonList() {
+    return ListView.builder(
+      padding: const EdgeInsets.only(top: 30),
+      itemCount: 3,
+      itemBuilder: (context, index) => Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          height: 300,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
           ),
-        ],
+        ),
       ),
     );
   }

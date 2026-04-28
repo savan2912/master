@@ -6,6 +6,7 @@ import 'package:gotilo_new/Api/Response/Home/ResponseHomeDeal.dart';
 import 'package:gotilo_new/Api/Response/Home/ResponseHomeLatestRelease.dart';
 import 'package:gotilo_new/Api/Response/Home/ResponseHomeService.dart';
 import 'package:gotilo_new/Api/Response/LatestListing/ResponseHomeLatestListing.dart';
+import 'package:gotilo_new/Screens/AboutUs/view/AboutUsScreen.dart';
 import 'package:gotilo_new/Screens/Blog/view/BlogScreen.dart';
 import 'package:gotilo_new/Screens/HomeMain.dart';
 import 'package:gotilo_new/Screens/PrisePlan/view/PrisePlanScreen.dart';
@@ -36,7 +37,8 @@ class _ModernHeritageAppState extends State<ModernHeritageApp> {
    void initState() {
      _screens = [
        const HomeMainScreen(),
-       aboutUs(),
+       const AboutUsScreen(),
+       // aboutUs(),
        const BlogScreen(),
        const PrisePlanScreen()
      ];

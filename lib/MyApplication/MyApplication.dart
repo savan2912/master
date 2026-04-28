@@ -2,7 +2,16 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:gotilo_new/Api/ApiCalls.dart';
+import 'package:gotilo_new/Api/Request/Logout/RequestLogout.dart';
+import 'package:gotilo_new/Api/Response/Logout/ResponseLogout.dart';
+import 'package:gotilo_new/Constant/AppPref.dart';
+import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
+import 'package:gotilo_new/Screens/Login/view/LoginScreen.dart';
 
 import '../Constant/Constants.dart';
 
@@ -71,5 +80,35 @@ class MyApplication {
     }
   }
 
+  static Future<void> callLogout({required BuildContext c}) async {
+    bool internet = await checkInternet();
+
+    if (internet) {
+      try {
+        ResponseLogout? response = await ApiCalls.callLogout(RequestLogout(
+            userId: int.parse(AppPrefs.userId)
+        ));
+
+        if (response != null) {
+          if (response.result != null && response.result!.toLowerCase().contains("pass")) {
+
+            AppPrefs.setUserId("");
+            if (c.mounted) {
+              SharedWidgets.showTopSnackBar(c, message: response.message!);
+            }
+            Get.off(() => const ModernLoginScreen());
+          }
+        }
+      } on Exception catch (e) {
+        log("$e");
+      } catch (e) {
+        log("$e");
+      }
+    } else {
+      if (c.mounted) {
+        SharedWidgets.showTopSnackBar(c, message: "No Internet Available");
+      }
+    }
+  }
 
 }

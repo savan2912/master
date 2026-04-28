@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,6 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscureText1 = true;
   bool _obscureText2 = true;
   bool _agreedToTerms = false;
+  bool _isLoading = false; // <--- Loader state added
 
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -39,6 +39,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
+    _emailController.dispose();
     _mobileController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -82,7 +83,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _buildLogoSection() {
     return Column(
       children: [
-        Icon(Icons.layers_rounded, size: 40, color: RegisterScreen.primaryCyan),
+        const Icon(Icons.layers_rounded, size: 40, color: RegisterScreen.primaryCyan),
         const SizedBox(height: 10),
         Text(
           "Gotilo",
@@ -214,7 +215,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           padding: const EdgeInsets.all(4.0),
           child: _customTextField(
             hintText: "Enter Password",
-            controller: _passwordController, // Controller mūkī dīdho
+            controller: _passwordController,
             isPassword: true,
             obscureText: _obscureText1,
             icon: Icons.lock_outline_rounded,
@@ -232,7 +233,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           padding: const EdgeInsets.all(4.0),
           child: _customTextField(
             hintText: "Confirm Password",
-            controller: _confirmPasswordController, // Controller mūkī dīdho
+            controller: _confirmPasswordController,
             isPassword: true,
             obscureText: _obscureText2,
             icon: Icons.lock_outline_rounded,
@@ -282,7 +283,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-
 
   Widget _buildTermsAndCondition() {
     return Row(
@@ -349,22 +349,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ],
       ),
       child: ElevatedButton(
-        onPressed: () {
-          if(_firstNameController.text != "" && _lastNameController.text != "" && _emailController.text != ""
-          && _mobileController.text != "" && _passwordController.text != "" && _confirmPasswordController.text != ""){
-            callRegister();
-          }else if(_firstNameController.text == ""){
-            SharedWidgets.showTopSnackBar(context, message: "Enter First Name");
-          }else if(_lastNameController.text == ""){
-            SharedWidgets.showTopSnackBar(context, message: "Enter Last Name");
-          }else if(_emailController.text == ""){
-            SharedWidgets.showTopSnackBar(context, message: "Enter Email");
-          }else if(_mobileController.text == ""){
-            SharedWidgets.showTopSnackBar(context, message: "Enter Mobile Number");
-          }else if(_passwordController.text == ""){
-            SharedWidgets.showTopSnackBar(context, message: "Enter Password");
-          }else if(_confirmPasswordController.text == ""){
-            SharedWidgets.showTopSnackBar(context, message: "Enter Confirm Password");
+        onPressed: _isLoading ? null : () {
+          if(_firstNameController.text.isNotEmpty && _lastNameController.text.isNotEmpty && _emailController.text.isNotEmpty
+              && _mobileController.text.isNotEmpty && _passwordController.text.isNotEmpty && _confirmPasswordController.text.isNotEmpty){
+            if(!_agreedToTerms) {
+              SharedWidgets.showTopSnackBar(context, message: "Please agree to Terms & Conditions");
+              return;
+            }
+            _callRegisters();
+          } else {
+            // Validation checks
+            if(_firstNameController.text.isEmpty) SharedWidgets.showTopSnackBar(context, message: "Enter First Name");
+            else if(_lastNameController.text.isEmpty) SharedWidgets.showTopSnackBar(context, message: "Enter Last Name");
+            else if(_emailController.text.isEmpty) SharedWidgets.showTopSnackBar(context, message: "Enter Email");
+            else if(_mobileController.text.isEmpty) SharedWidgets.showTopSnackBar(context, message: "Enter Mobile Number");
+            else if(_passwordController.text.isEmpty) SharedWidgets.showTopSnackBar(context, message: "Enter Password");
+            else if(_confirmPasswordController.text.isEmpty) SharedWidgets.showTopSnackBar(context, message: "Enter Confirm Password");
           }
         },
         style: ElevatedButton.styleFrom(
@@ -372,7 +372,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
           shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         ),
-        child: Text(
+        child: _isLoading
+            ? const SizedBox(
+          height: 22,
+          width: 22,
+          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+        )
+            : Text(
           "Sign Up",
           style: GoogleFonts.montserrat(
             fontSize: 16,
@@ -431,47 +437,53 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Future<void> callRegister() async {
-    _callRegisters();
-  }
-
+  // --- Registration Logic ---
   Future<void> _callRegisters() async {
-    MyApplication.checkInternet().then((internet) async {
-      if(internet){
-        try{
-            ResponseRegister? response= await ApiCalls.callRegister(RequestRegister(
-              role: "user",
-              phone: _mobileController.text,
-              password: _passwordController.text,
-              email: _emailController.text,
-              firstName: _firstNameController.text,
-              lastName: _lastNameController.text,
-              confirmPassword: _confirmPasswordController.text,
-              terms: _agreedToTerms ? 1 : 0
-            ));
-            if(response != null){
-              if(response.result!.isNotEmpty && response.result != null &&
-              response.result!.toLowerCase().contains("pass")) {
-                _passwordController.clear();
-                _mobileController.clear();
-                _confirmPasswordController.clear();
-                _emailController.clear();
-                _firstNameController.clear();
-                _lastNameController.clear();
-                SharedWidgets.showTopSnackBar(context, message: response.message!);
-              }
+    bool internet = await MyApplication.checkInternet();
+
+    if(internet){
+      setState(() => _isLoading = true);
+
+      try {
+        ResponseRegister? response = await ApiCalls.callRegister(RequestRegister(
+            role: "user",
+            phone: _mobileController.text,
+            password: _passwordController.text,
+            email: _emailController.text,
+            firstName: _firstNameController.text,
+            lastName: _lastNameController.text,
+            confirmPassword: _confirmPasswordController.text,
+            terms: _agreedToTerms ? 1 : 0
+        ));
+
+        if(response != null) {
+          if(response.result != null && response.result!.toLowerCase().contains("pass")) {
+            // Success: Clear fields
+            _passwordController.clear();
+            _mobileController.clear();
+            _confirmPasswordController.clear();
+            _emailController.clear();
+            _firstNameController.clear();
+            _lastNameController.clear();
+
+            if (context.mounted) {
+              SharedWidgets.showTopSnackBar(context, message: response.message!);
             }
-        }on Exception catch(e){
-          log("$e");
-        }catch(e){
-          log("$e");
-        }finally{
-
+          } else {
+            if (context.mounted) {
+              SharedWidgets.showTopSnackBar(context, message: response.message ?? "Registration failed");
+            }
+          }
         }
-      }else{
-        SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      } catch(e) {
+        log("Register Error: $e");
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
       }
-    },);
+    } else {
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+    }
   }
-
 }

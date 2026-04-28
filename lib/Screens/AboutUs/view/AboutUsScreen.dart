@@ -1,35 +1,93 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AboutUsScreen extends StatelessWidget {
+import '../../../Api/ApiCalls.dart';
+import '../../../Api/Response/AboutUs/ResponseAboutUs.dart';
+import '../../../MyApplication/MyApplication.dart';
+
+
+class AboutUsScreen extends StatefulWidget {
   const AboutUsScreen({super.key});
 
-  // કલર થીમ
-  static const Color appBg = Color(0xFFF0F4F7);
-  static const Color textDark = Color(0xFF0D1B1E);
+  @override
+  State<AboutUsScreen> createState() => _AboutUsScreenState();
+}
+
+class _AboutUsScreenState extends State<AboutUsScreen> {
+  // Color Theme
+  static const Color appBg = Color(0xFFF8FAFC);
+  static const Color textDark = Color(0xFF0F172A);
   static const Color primaryCyan = Color(0xFF00ACC1);
-  static const Color accentCyan = Color(0xFF26C6DA);
-  static const Color subtleGrey = Color(0xFF90A4AE);
+  static const Color subtleGrey = Color(0xFF64748B);
+
+  AboutUs? aboutData;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    callAboutUs();
+  }
+
+  // --- API Call Implementation ---
+  Future<void> callAboutUs() async {
+    // Tmara logic mujab internet check
+    MyApplication.checkInternet().then((value) async {
+      if (value) {
+        try {
+          ResponseAboutUs? response = await ApiCalls.callAboutUs();
+          if (response != null && response.result == "pass") {
+            setState(() {
+              aboutData = response.data;
+              isLoading = false;
+            });
+          } else {
+            setState(() => isLoading = false);
+            // Handle error message if needed
+          }
+        } catch (e) {
+          setState(() => isLoading = false);
+          debugPrint("API Error: $e");
+        }
+      } else {
+        setState(() => isLoading = false);
+        // Show no internet toast/snackbar here
+      }
+    });
+  }
+
+  // HTML Tags remove karva mate (Since API has <br> and <ul>)
+  String cleanHtml(String? html) {
+    if (html == null) return "";
+    return html.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' ').trim();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: appBg,
-      body: CustomScrollView(
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator(color: primaryCyan))
+          : aboutData == null
+          ? const Center(child: Text("Data not found!"))
+          : CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          // ૧. મસ્ત નાની એપબાર
+          // 1. App Bar
           SliverAppBar(
             pinned: true,
-            backgroundColor: appBg.withOpacity(0.9),
+            expandedHeight: 80,
+            backgroundColor: appBg,
             elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: textDark, size: 20),
-              onPressed: () => Navigator.pop(context),
+            automaticallyImplyLeading: false,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              title: Text(
+                aboutData?.aboutTitle ?? "About Us",
+                style: GoogleFonts.plusJakartaSans(
+                    color: textDark, fontWeight: FontWeight.w800, fontSize: 18),
+              ),
             ),
-            title: Text("About Us",
-                style: GoogleFonts.montserrat(color: textDark, fontWeight: FontWeight.bold, fontSize: 18)),
-            centerTitle: true,
           ),
 
           SliverToBoxAdapter(
@@ -38,27 +96,33 @@ class AboutUsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
 
-                  // ૨. મેઈન બેનર સેક્શન (Image + Title)
-                  _buildMainIntro(),
+                  // 2. Hero Image Section
+                  _buildPremiumHero(),
 
                   const SizedBox(height: 40),
 
-                  // ૩. Stats સેક્શન (5000+ Customers etc.)
-                  _buildStatsGrid(),
+                  // 3. Stats Grid
+                  if (aboutData?.stats != null) _buildStatsSection(aboutData!.stats!),
 
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 40),
 
-                  // ૪. How It Works (Dark Theme Box)
-                  _buildDarkHowItWorks(),
+                  // 4. Feature Card (Why Choose Us)
+                  _buildWhyChooseCard(),
 
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 40),
 
-                  // ૫. Why Choose Us / FAQ Section
-                  _buildFaqSection(),
+                  // 5. Timeline Section (How It Works)
+                  if (aboutData?.howItWorks != null)
+                    _buildTimelineSection(aboutData!.howItWorksTitle, aboutData!.howItWorks!),
 
-                  const SizedBox(height: 120), // બોટમ બાર માટે જગ્યા
+                  const SizedBox(height: 40),
+
+                  // 6. FAQ Section
+                  if (aboutData?.faq != null) _buildFaqSection(aboutData!.faq!),
+
+                  const SizedBox(height: 100),
                 ],
               ),
             ),
@@ -68,127 +132,210 @@ class AboutUsScreen extends StatelessWidget {
     );
   }
 
-  // --- Intro Section ---
-  Widget _buildMainIntro() {
+  // --- UI Components (Dynamic) ---
+
+  Widget _buildPremiumHero() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(25),
-          child: Image.network(
-            'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80', // તમારી ઈમેજ અહીં મુકવી
-            height: 200, width: double.infinity, fit: BoxFit.cover,
+        Container(
+          height: 240,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            image: DecorationImage(
+              image: NetworkImage(aboutData?.aboutImage ?? ""),
+              fit: BoxFit.cover,
+            ),
           ),
         ),
-        const SizedBox(height: 25),
-        Text("Discover Local Services\nwith Gotilo",
-            style: GoogleFonts.playfairDisplay(fontSize: 28, fontWeight: FontWeight.w900, color: textDark, height: 1.2)),
+        const SizedBox(height: 30),
+        Row(
+          children: [
+            Container(width: 15, height: 2, color: primaryCyan),
+            const SizedBox(width: 8),
+            Text(
+              "ABOUT OUR COMPANY",
+              style: GoogleFonts.plusJakartaSans(
+                  fontSize: 11, fontWeight: FontWeight.w900, color: primaryCyan, letterSpacing: 1.5),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Text(
+          aboutData?.aboutSubtitle ?? "",
+          style: GoogleFonts.plusJakartaSans(
+              fontSize: 26, fontWeight: FontWeight.w900, color: textDark, height: 1.2),
+        ),
         const SizedBox(height: 15),
         Text(
-          "Welcome to Gotilo – your all-in-one platform for finding the best local businesses and service providers across a wide range of categories.",
-          style: GoogleFonts.montserrat(color: subtleGrey, fontSize: 14, height: 1.6),
+          cleanHtml(aboutData?.aboutContent),
+          style: GoogleFonts.plusJakartaSans(color: subtleGrey, fontSize: 14, height: 1.6),
         ),
       ],
     );
   }
 
-  // --- Stats Grid (4 items) ---
-  Widget _buildStatsGrid() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _statItem("5000+", "Happy Customers", Icons.people_alt_outlined),
-        _statItem("3000+", "Verified Biz", Icons.verified_user_outlined),
-        _statItem("50+", "Cities Covered", Icons.location_city_outlined),
-      ],
+// --- Stats Section (Fixed Overflow) ---
+  Widget _buildStatsSection(List<Stats> stats) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(25),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 20,
+              offset: const Offset(0, 10)
+          )
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: stats.map((s) {
+          return Expanded( // Aa Expanded add karyu jethi content width ma samai jay
+            child: _statTile(s.count ?? "0", s.label ?? ""),
+          );
+        }).toList(),
+      ),
     );
   }
 
-  Widget _statItem(String count, String label, IconData icon) {
+  Widget _statTile(String count, String label) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: primaryCyan, size: 28),
-        const SizedBox(height: 10),
-        Text(count, style: GoogleFonts.montserrat(fontWeight: FontWeight.w800, fontSize: 18, color: textDark)),
-        Text(label, style: GoogleFonts.montserrat(fontSize: 10, color: subtleGrey, fontWeight: FontWeight.w600)),
+        const Icon(Icons.stars_rounded, color: primaryCyan, size: 24),
+        const SizedBox(height: 8),
+        Text(
+            count,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w800,
+                fontSize: 14, // Thodi size nani kari jethi nanu screen ma overflow na thay
+                color: textDark
+            )
+        ),
+        Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 1, // Label ek j line ma rahe
+            overflow: TextOverflow.ellipsis, // Jo motu hoy to ... thai jay
+            style: GoogleFonts.plusJakartaSans(
+                fontSize: 10,
+                color: subtleGrey,
+                fontWeight: FontWeight.w600
+            )
+        ),
       ],
     );
   }
 
-  // --- Dark How It Works Section (Based on Image 1) ---
-  Widget _buildDarkHowItWorks() {
+  Widget _buildWhyChooseCard() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
-        color: textDark,
+        gradient: const LinearGradient(colors: [primaryCyan, Color(0xFF00838F)]),
         borderRadius: BorderRadius.circular(30),
-        boxShadow: [BoxShadow(color: primaryCyan.withOpacity(0.2), blurRadius: 20, offset: const Offset(0, 10))],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          RichText(
-            text: TextSpan(
-                style: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-                children: [
-                  const TextSpan(text: "How Gotilo "),
-                  TextSpan(text: "Works", style: TextStyle(color: accentCyan)),
-                ]
-            ),
+          const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 30),
+          const SizedBox(height: 15),
+          Text(aboutData?.whyChooseTitle ?? "Why Choose Us",
+              style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 20)),
+          const SizedBox(height: 10),
+          Text(
+            aboutData?.whyChooseContent ?? "",
+            style: GoogleFonts.plusJakartaSans(color: Colors.white.withOpacity(0.8), fontSize: 13, height: 1.5),
           ),
-          const SizedBox(height: 30),
-          _stepRow("01", "Choose Location", "Enter mobile to start."),
-          _stepRow("02", "Pick Category", "Select relevant category."),
-          _stepRow("03", "Explore Place", "Find your best match."),
         ],
       ),
     );
   }
 
-  Widget _stepRow(String num, String title, String sub) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+  Widget _buildTimelineSection(String? title, List<HowItWorks> steps) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title?.toUpperCase() ?? "HOW IT WORKS",
+            style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w900, color: primaryCyan, letterSpacing: 2)),
+        const SizedBox(height: 25),
+        ...steps.asMap().entries.map((entry) {
+          int idx = entry.key;
+          var step = entry.value;
+          return _timelineStep(
+              step.stepNo ?? "0${idx + 1}",
+              step.title ?? "",
+              step.description ?? "",
+              idx != steps.length - 1);
+        }).toList(),
+      ],
+    );
+  }
+
+  Widget _timelineStep(String num, String title, String desc, bool showLine) {
+    return IntrinsicHeight(
       child: Row(
         children: [
-          Text(num, style: GoogleFonts.montserrat(color: accentCyan.withOpacity(0.3), fontSize: 24, fontWeight: FontWeight.w900)),
-          const SizedBox(width: 20),
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: GoogleFonts.montserrat(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
-              Text(sub, style: GoogleFonts.montserrat(color: Colors.white54, fontSize: 12)),
+              Container(
+                width: 32, height: 32,
+                decoration: const BoxDecoration(color: textDark, shape: BoxShape.circle),
+                alignment: Alignment.center,
+                child: Text(num, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+              ),
+              if (showLine) Expanded(child: Container(width: 2, color: Colors.grey[200])),
             ],
+          ),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 16, color: textDark)),
+                const SizedBox(height: 4),
+                Text(desc, style: GoogleFonts.plusJakartaSans(fontSize: 13, color: subtleGrey)),
+                const SizedBox(height: 25),
+              ],
+            ),
           )
         ],
       ),
     );
   }
 
-  // --- FAQ Section ---
-  Widget _buildFaqSection() {
+  Widget _buildFaqSection(List<Faq> faqs) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Why Choose Gotilo?", style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.bold, color: textDark)),
+        Text("FAQs", style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w800, color: textDark)),
         const SizedBox(height: 20),
-        _faqTile("What is Gotilo and how it helps?", "Gotilo is a local search engine designed to connect you with trusted businesses."),
-        _faqTile("How does loyalty program work?", "You earn points for every service you book through our platform."),
-        _faqTile("Is it free for users?", "Yes, Gotilo is completely free for customers to search and discover."),
+        ...faqs.map((f) => _faqItem(f.question ?? "", f.answer ?? "")).toList(),
       ],
     );
   }
 
-  Widget _faqTile(String question, String answer) {
+  Widget _faqItem(String q, String a) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 15),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.grey.withOpacity(0.1)),
+      ),
       child: ExpansionTile(
         shape: const Border(),
-        title: Text(question, style: GoogleFonts.montserrat(fontSize: 14, fontWeight: FontWeight.w600, color: textDark)),
+        tilePadding: const EdgeInsets.symmetric(horizontal: 15),
+        title: Text(q, style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w700, color: textDark)),
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            child: Text(answer, style: GoogleFonts.montserrat(fontSize: 13, color: subtleGrey)),
+            padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+            child: Text(a, style: GoogleFonts.plusJakartaSans(fontSize: 13, color: subtleGrey, height: 1.5)),
           )
         ],
       ),

@@ -12,12 +12,15 @@ import 'package:gotilo_new/Api/Request/AllLatestRelease/RequestAllLatestRelease.
 import 'package:gotilo_new/Api/Request/AllListings/RequestAllListings.dart';
 import 'package:gotilo_new/Api/Request/AllNewlyAdded/RequestAllNewlyAdded.dart';
 import 'package:gotilo_new/Api/Request/AllService/RequestAllService.dart';
+import 'package:gotilo_new/Api/Request/Blog/RequestBlogDetail.dart';
 import 'package:gotilo_new/Api/Request/Login/RequestLogin.dart';
+import 'package:gotilo_new/Api/Request/Logout/RequestLogout.dart';
 import 'package:gotilo_new/Api/Request/Register/RequestRegister.dart';
 import 'package:gotilo_new/Api/Request/Search/RequestSearch.dart';
 import 'package:gotilo_new/Api/Request/SubCategoryList/RequestSubCategoryList.dart';
 import 'package:gotilo_new/Api/Request/SubCategoryList/RequestSubCategoryListDetails.dart';
 import 'package:gotilo_new/Api/Request/SubCategoryList/RequestSubCategoryProductList.dart';
+import 'package:gotilo_new/Api/Request/User/Dashboard/RequestUserDashboard.dart';
 import 'package:gotilo_new/Api/Response/AllCollection/ResponseAllCollection.dart';
 import 'package:gotilo_new/Api/Response/AllCollection/ResponseCollectionDetails.dart';
 import 'package:gotilo_new/Api/Response/AllCollection/ResponseCollectionProductList.dart';
@@ -28,26 +31,32 @@ import 'package:gotilo_new/Api/Response/AllNewlyAdded/ResponseAllNewlyAdded.dart
 import 'package:gotilo_new/Api/Response/AllService/ResponseAllService.dart';
 import 'package:gotilo_new/Api/Response/Banner/ResponseBanner.dart';
 import 'package:gotilo_new/Api/Response/Blog/ResponseBlogData.dart';
+import 'package:gotilo_new/Api/Response/Blog/ResponseBlogDetail.dart';
 import 'package:gotilo_new/Api/Response/Home/ResponseHomeCollection.dart';
 import 'package:gotilo_new/Api/Response/Home/ResponseHomeLatestRelease.dart';
 import 'package:gotilo_new/Api/Response/Home/ResponseHomeService.dart';
 import 'package:gotilo_new/Api/Response/LatestListing/ResponseHomeLatestListing.dart';
 import 'package:gotilo_new/Api/Response/Login/ResponseLogin.dart';
+import 'package:gotilo_new/Api/Response/Logout/ResponseLogout.dart';
 import 'package:gotilo_new/Api/Response/PrisePlan/ResponsePrisePlan.dart';
 import 'package:gotilo_new/Api/Response/Register/ResponseRegister.dart';
 import 'package:gotilo_new/Api/Response/Search/ResponseSearch.dart';
 import 'package:gotilo_new/Api/Response/SubCategoryList/ResponseSubCategoryList.dart';
 import 'package:gotilo_new/Api/Response/SubCategoryList/ResponseSubCategoryProductList.dart';
 import 'package:gotilo_new/Api/Response/SubCategoryList/ResponseSubcategoryListDetails.dart';
+import 'package:gotilo_new/Api/Response/User/Dashboard/ResponseUserDashboard.dart';
 
 import 'ApiList.dart';
 import 'ApiUtils.dart';
 import 'package:stack_trace/stack_trace.dart';
 
 import 'Request/Blog/RequestBlogsData.dart';
+import 'Request/User/Menu/RequestMenu.dart';
+import 'Response/AboutUs/ResponseAboutUs.dart';
 import 'Response/City/ResponseCity.dart';
 import 'Response/Home/ResponseHome.dart';
 import 'Response/Home/ResponseHomeDeal.dart';
+import 'Response/User/Menu/ResponseMenu.dart';
 
 class ApiCalls {
   static const bool _showLocationLogs = true;
@@ -120,6 +129,41 @@ class ApiCalls {
           log("Response Data = ${response.data}", name: TAG);
           //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
           return ResponsePrisePlan.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+
+
+  static Future<ResponseAboutUs?> callAboutUs()
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio());
+    try {
+      log("Request URL = ${ApiList.urlAboutUs}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().get(ApiList.urlAboutUs, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseAboutUs.fromJson(response.data);
         } else {
           log("Response data = null", name: TAG);
           return null;
@@ -820,12 +864,12 @@ class ApiCalls {
       log("Request Data= ${formData.fields}", name: TAG);
       //TODO: STEP 2 : HERE CHANGES REQUEST URL
       Response response =
-      await _getDio().post(ApiList.urlLogin, data: formData,options: Options(
+      await _getDio().post(ApiList.urlLogin, data: formData,/*options: Options(
         headers: {
           "Accept": "application/json",
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
-      ),);
+      ),*/);
       log("Response status or statusCode  = ${response.statusCode}", name: TAG);
       if (response.statusCode == HttpStatus.ok) {
         if (response.data != null) {
@@ -880,6 +924,140 @@ class ApiCalls {
     return null;
   }
 
+
+  static Future<ResponseLogout?> callLogout (RequestLogout model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlLogout}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlLogout, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseLogout.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+  static Future<ResponseBlogDetail?> callBlogDetail (RequestBlogDetail model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlBlogDetail}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlBlogDetail, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseBlogDetail.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+ // Todo User API
+
+  static Future<ResponseUserDashboard?> callUserDashboard (RequestUserDashboard model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlUserDashboard}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlUserDashboard, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseUserDashboard.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+  static Future<ResponseMenu?> callMenu (RequestMenu model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlMenu}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlMenu, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseMenu.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
 
 
 

@@ -33,4 +33,11 @@ class  ApiList {
   static String get urlPrisePlan => "$baseURL/pricing-plans";
   static String get urlLogin => "$baseURL/auth/login";
   static String get urlRegister => "$baseURL/auth/sign-up";
+  static String get urlLogout => "$baseURL/auth/logout";
+  static String get urlBlogDetail => "$baseURL/blog-details";
+  static String get urlAboutUs => "$baseURL/about-us";
+
+  //TODO USER API LIST
+  static String get urlUserDashboard => "$baseURL/auth/dashboard-overview";
+  static String get urlMenu => "$baseURL/auth/get-menus";
 }
