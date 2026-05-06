@@ -11,15 +11,15 @@ class ResponseAllService {
     if (json['data'] != null) {
       data = <AllService>[];
       json['data'].forEach((v) {
-        data!.add(new AllService.fromJson(v));
+        data!.add(AllService.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['result'] = result;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -35,13 +35,14 @@ class AllService {
   String? serviceImage;
   String? image;
 
-  AllService(
-      {this.id,
-        this.name,
-        this.slug,
-        this.icon,
-        this.serviceImage,
-        this.image});
+  AllService({
+    this.id,
+    this.name,
+    this.slug,
+    this.icon,
+    this.serviceImage,
+    this.image,
+  });
 
   AllService.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -53,13 +54,13 @@ class AllService {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['slug'] = this.slug;
-    data['icon'] = this.icon;
-    data['service_image'] = this.serviceImage;
-    data['image'] = this.image;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['slug'] = slug;
+    data['icon'] = icon;
+    data['service_image'] = serviceImage;
+    data['image'] = image;
     return data;
   }
 }

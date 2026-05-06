@@ -1,10 +1,11 @@
-
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Api/Request/User/Menu/RequestMenu.dart';
+import 'package:gotilo_new/Api/Request/User/Profile/RequestProfile.dart';
 import 'package:gotilo_new/Api/Response/User/Menu/ResponseMenu.dart';
+import 'package:gotilo_new/Api/Response/User/Profile/ResponseProfile.dart';
 import 'package:gotilo_new/Constant/AppPref.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/MyApplication/MyApplication.dart';
@@ -17,6 +18,7 @@ import '../Screens/User/Billing/BillingScreen.dart';
 import '../Screens/User/BookingHistory/BookingHistoryScreen.dart';
 import '../Screens/User/Deals/DealsScreen.dart';
 import '../Screens/User/Favourite/FavouriteScreen.dart';
+import '../Screens/User/HotelBookingHistory/HotelBookingCancellationHistory.dart';
 import '../Screens/User/HotelBookingHistory/HotelBookingHistoryScreen.dart';
 import '../Screens/User/Notification/NotificationScreen.dart';
 import '../Screens/User/Points/PointsScreen.dart';
@@ -32,7 +34,10 @@ class CustomDrawer extends StatefulWidget {
 
 class _CustomDrawerState extends State<CustomDrawer> {
 
+  // --- Static variables to cache data ---
   static List<Menu> menuList = [];
+  static ProfileData? profileData; // Have aa static che
+  static bool isDataLoaded = false; // Check karva mate ke data load thai gaya che ke nahi
 
   late String activeRoute;
 
@@ -44,8 +49,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
   @override
   void initState() {
     super.initState();
-
     activeRoute = widget.initialRoute;
+
+    // Jo data pehle thi hoy to biji var call nahi kare
+    if (!isDataLoaded) {
+      callProfile();
+    }
 
     if (menuList.isEmpty) {
       callMenu();
@@ -113,51 +122,76 @@ class _CustomDrawerState extends State<CustomDrawer> {
     setState(() => activeRoute = route);
     Navigator.pop(context);
     Future.delayed(const Duration(milliseconds: 150), () {
-
       switch (route) {
-        case "user.overview":
-          Get.to(() => const Userdashboardscreen());
-          break;
-
-        case "all.notifications":
-          Get.off(() => const NotificationScreen());
-          break;
-
-        case "user.setting":
-          Get.off(() => const AccountScreen());
-          break;
-
-        case "user.orders":
-          Get.off(() => const MyOrderScreen());
-          break;
-
-        case "user.deals":
-          Get.off(() => const UserDealsScreen());
-          break;
-
-        case "user.billing":
-          Get.off(() => const BillingScreen());
-          break;
-
-        case "booking-history":
-          Get.off(() => const BookingHistoryScreen());
-          break;
-
-        case "hotel.booking-history":
-          Get.off(() => const HotelBookingHistory());
-          break;
-
-        case "user.point":
-          Get.off(() => const PointsScreen());
-          break;
-
-        case "user.favourite":
-          Get.off(() => const FavouriteScreen());
-          break;
-
+        case "user.overview": Get.to(() => const Userdashboardscreen()); break;
+        case "all.notifications": Get.off(() => const NotificationScreen()); break;
+        case "user.setting": Get.off(() => const AccountScreen()); break;
+        case "user.orders": Get.off(() => const MyOrderScreen()); break;
+        case "user.deals": Get.off(() => const UserDealsScreen()); break;
+        case "user.billing": Get.off(() => const BillingScreen()); break;
+        case "booking-history": Get.off(() => const BookingHistoryScreen()); break;
+        case "hotel.booking-history": Get.off(() => const HotelBookingHistory()); break;
+        case "user.point": Get.off(() => const PointsScreen()); break;
+        case "user.favourite": Get.off(() => const FavouriteScreen()); break;
+        case "hotel.booking-cancel-hstory": Get.off(()=>const HotelBookingCancellationHistory()); break;
       }
-
     });
+  }
+
+  void _showLogoutDialog() {
+    Get.dialog(
+      Dialog(
+        backgroundColor: surfaceColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.power_settings_new_rounded, color: accentCyan, size: 50),
+              const SizedBox(height: 20),
+              Text("Logout Confirmation", style: GoogleFonts.montserrat(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              Text("Are you sure you want to logout from the app?", textAlign: TextAlign.center, style: GoogleFonts.montserrat(color: textMuted, fontSize: 14)),
+              const SizedBox(height: 25),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back(),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: textMuted.withOpacity(0.3)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: Text("No", style: GoogleFonts.montserrat(color: Colors.white)),
+                    ),
+                  ),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Get.back();
+                        // Logout vakhte badhu clear karvu jaruri che
+                        menuList.clear();
+                        profileData = null;
+                        isDataLoaded = false;
+                        MyApplication.callLogout(c: context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: accentCyan,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: Text("Yes, Logout", style: GoogleFonts.montserrat(color: drawerBG, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
   }
 
   Widget _buildHeader() {
@@ -166,8 +200,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
       padding: const EdgeInsets.fromLTRB(20, 60, 20, 30),
       decoration: BoxDecoration(
         color: surfaceColor,
-        borderRadius:
-        const BorderRadius.only(bottomRight: Radius.circular(30)),
+        borderRadius: const BorderRadius.only(bottomRight: Radius.circular(30)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,135 +214,93 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   shape: BoxShape.circle,
                   border: Border.all(color: accentCyan, width: 1.5),
                 ),
-                child: const CircleAvatar(
+                child: CircleAvatar(
                   radius: 30,
-                  backgroundColor: Color(0xFF36393F),
-                  child: Icon(Icons.person_rounded,
-                      size: 35, color: Colors.white),
+                  backgroundColor: const Color(0xFF36393F),
+                  backgroundImage: (profileData?.image != null)
+                      ? NetworkImage(profileData!.image!)
+                      : null,
+                  child: (profileData?.image == null)
+                      ? const Icon(Icons.person_rounded, size: 35, color: Colors.white)
+                      : null,
                 ),
               ),
-
               GestureDetector(
-                onTap: () {
-                  MyApplication.callLogout(c: context);
-                  menuList.clear();
-                },
+                onTap: () => _showLogoutDialog(),
                 child: Container(
-                  height: 38,
-                  width: 38,
+                  height: 38, width: 38,
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.08),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
-                    Icons.power_settings_new_rounded,
-                    color: accentCyan,
-                    size: 20,
-                  ),
+                  child: Icon(Icons.power_settings_new_rounded, color: accentCyan, size: 20),
                 ),
               )
             ],
           ),
           const SizedBox(height: 15),
-          Text(
-            "Savan Sagpariya",
-            style: GoogleFonts.montserrat(
-              color: Colors.white,
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
+          if(isDataLoaded && profileData != null) ...[
+            Text(
+              "${profileData!.fName ?? ""} ${profileData!.lName ?? ""}",
+              style: GoogleFonts.montserrat(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800),
             ),
-          ),
-          Text(
-            "savan.s@bbdpl.in",
-            style: GoogleFonts.montserrat(
-              color: textMuted,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+            Text(
+              profileData!.email ?? "",
+              style: GoogleFonts.montserrat(color: textMuted, fontSize: 12, fontWeight: FontWeight.w500),
             ),
-          ),
+          ]
         ],
       ),
     );
   }
 
-  Widget _buildDrawerItem({
-    required IconData icon,
-    required String title,
-    required String routeName,
-  }) {
+  Widget _buildDrawerItem({required IconData icon, required String title, required String routeName}) {
     bool isSelected = activeRoute == routeName;
-
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       margin: const EdgeInsets.only(bottom: 5),
       decoration: BoxDecoration(
-        color: isSelected
-            ? accentCyan.withOpacity(0.1)
-            : Colors.transparent,
+        color: isSelected ? accentCyan.withOpacity(0.1) : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
         onTap: () => _handleItemClick(routeName),
         dense: true,
-        leading: Icon(
-          icon,
-          color: isSelected ? accentCyan : textMuted,
-          size: 20,
-        ),
-        title: Text(
-          title,
-          style: GoogleFonts.montserrat(
-            fontSize: 13,
-            fontWeight:
-            isSelected ? FontWeight.w700 : FontWeight.w500,
-            color: isSelected ? Colors.white : textMuted,
-          ),
-        ),
-        trailing: isSelected
-            ? Icon(Icons.circle, color: accentCyan, size: 8)
-            : null,
+        leading: Icon(icon, color: isSelected ? accentCyan : textMuted, size: 20),
+        title: Text(title, style: GoogleFonts.montserrat(fontSize: 13, fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500, color: isSelected ? Colors.white : textMuted)),
+        trailing: isSelected ? Icon(Icons.circle, color: accentCyan, size: 8) : null,
       ),
     );
   }
 
   Future<void> callMenu() async {
-    await _callMenu();
-  }
-
-  Future<void> _callMenu() async {
     if (menuList.isNotEmpty) return;
-
     bool internet = await MyApplication.checkInternet();
-
-    if (!internet) {
-      SharedWidgets.showTopSnackBar(
-        context,
-        message: "No Internet Available",
-      );
-      return;
-    }
+    if (!internet) return;
 
     try {
-      ResponseMenu? response =
-      await ApiCalls.callMenu(
-        RequestMenu(
-          userId: AppPrefs.userId,
-        ),
-      );
-
-      if (response != null &&
-          response.result?.toLowerCase().contains("pass") == true) {
-
+      ResponseMenu? response = await ApiCalls.callMenu(RequestMenu(userId: AppPrefs.userId));
+      if (response != null && response.result?.toLowerCase().contains("pass") == true) {
         menuList = response.data ?? [];
-        menuList.sort(
-              (a, b) =>
-              (a.position ?? 0).compareTo(b.position ?? 0),
-        );
-
+        menuList.sort((a, b) => (a.position ?? 0).compareTo(b.position ?? 0));
         setState(() {});
       }
-    } catch (e) {
-      log("$e");
+    } catch (e) { log("$e"); }
+  }
+
+  Future<void> callProfile() async {
+    bool internet = await MyApplication.checkInternet();
+    if (internet) {
+      try {
+        ResponseProfile? response = await ApiCalls.callProfile(RequestProfile(userId: AppPrefs.userId));
+        if (response != null && response.result != null && response.result!.toLowerCase().contains("pass")) {
+          profileData = response.data;
+          isDataLoaded = true; // Mark as loaded
+          setState(() {});
+        }
+      } catch (e) {
+        log("$e");
+      }
     }
   }
 
@@ -329,6 +320,3 @@ class _CustomDrawerState extends State<CustomDrawer> {
     return Icons.circle;
   }
 }
-
-
-

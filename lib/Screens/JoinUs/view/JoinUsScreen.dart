@@ -22,7 +22,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  String _selectedRole = 'User';
+  final String _selectedRole = 'User';
   bool _obscureText1 = true;
   bool _obscureText2 = true;
   bool _agreedToTerms = false;
@@ -33,7 +33,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _mobileController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -59,7 +60,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Container(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 30),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 25,
+                  vertical: 30,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -83,7 +87,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _buildLogoSection() {
     return Column(
       children: [
-        const Icon(Icons.layers_rounded, size: 40, color: RegisterScreen.primaryCyan),
+        const Icon(
+          Icons.layers_rounded,
+          size: 40,
+          color: RegisterScreen.primaryCyan,
+        ),
         const SizedBox(height: 10),
         Text(
           "Gotilo",
@@ -172,25 +180,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Padding(
           padding: const EdgeInsets.all(4.0),
           child: _customTextField(
-              hintText: "Enter First Name",
-              controller: _firstNameController,
-              icon: Icons.person_outline_rounded
+            hintText: "Enter First Name",
+            controller: _firstNameController,
+            icon: Icons.person_outline_rounded,
           ),
         ),
         Padding(
           padding: const EdgeInsets.all(4.0),
           child: _customTextField(
-              hintText: "Enter Last Name",
-              controller: _lastNameController,
-              icon: Icons.person_outline_rounded
+            hintText: "Enter Last Name",
+            controller: _lastNameController,
+            icon: Icons.person_outline_rounded,
           ),
         ),
         Padding(
           padding: const EdgeInsets.all(4.0),
           child: _customTextField(
-              hintText: "Email",
-              controller:_emailController,
-              icon: Icons.email
+            hintText: "Email",
+            controller: _emailController,
+            icon: Icons.email,
           ),
         ),
         Padding(
@@ -205,7 +213,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(width: 15),
                 const Text("🇮🇳", style: TextStyle(fontSize: 18)),
                 const SizedBox(width: 10),
-                Container(height: 20, width: 1, color: Colors.grey.withOpacity(0.3)),
+                Container(
+                  height: 20,
+                  width: 1,
+                  color: Colors.grey.withOpacity(0.3),
+                ),
                 const SizedBox(width: 10),
               ],
             ),
@@ -221,7 +233,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             icon: Icons.lock_outline_rounded,
             suffixIcon: IconButton(
               icon: Icon(
-                _obscureText1 ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                _obscureText1
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
                 color: Colors.grey[500],
                 size: 20,
               ),
@@ -239,7 +253,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             icon: Icons.lock_outline_rounded,
             suffixIcon: IconButton(
               icon: Icon(
-                _obscureText2 ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                _obscureText2
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
                 color: Colors.grey[500],
                 size: 20,
               ),
@@ -271,14 +287,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
         controller: controller,
         obscureText: isPassword && obscureText,
         keyboardType: keyboardType,
-        style: GoogleFonts.montserrat(color: RegisterScreen.textDark, fontSize: 13),
+        style: GoogleFonts.montserrat(
+          color: RegisterScreen.textDark,
+          fontSize: 13,
+        ),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: GoogleFonts.montserrat(color: Colors.grey[400], fontSize: 12),
-          prefixIcon: prefixIcon ?? (icon != null ? Icon(icon, color: Colors.grey[400], size: 20) : null),
+          hintStyle: GoogleFonts.montserrat(
+            color: Colors.grey[400],
+            fontSize: 12,
+          ),
+          prefixIcon:
+              prefixIcon ??
+              (icon != null
+                  ? Icon(icon, color: Colors.grey[400], size: 20)
+                  : null),
           suffixIcon: suffixIcon,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 15),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 18,
+            horizontal: 15,
+          ),
         ),
       ),
     );
@@ -288,11 +317,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Row(
       children: [
         SizedBox(
-          height: 24, width: 24,
+          height: 24,
+          width: 24,
           child: Checkbox(
             value: _agreedToTerms,
             activeColor: RegisterScreen.primaryCyan,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
             side: BorderSide(color: Colors.grey.withOpacity(0.5)),
             onChanged: (val) => setState(() => _agreedToTerms = val!),
           ),
@@ -301,7 +333,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Expanded(
           child: RichText(
             text: TextSpan(
-              style: GoogleFonts.montserrat(fontSize: 11, color: Colors.grey[600]),
+              style: GoogleFonts.montserrat(
+                fontSize: 11,
+                color: Colors.grey[600],
+              ),
               children: [
                 const TextSpan(text: "I agree to "),
                 TextSpan(
@@ -349,44 +384,82 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ],
       ),
       child: ElevatedButton(
-        onPressed: _isLoading ? null : () {
-          if(_firstNameController.text.isNotEmpty && _lastNameController.text.isNotEmpty && _emailController.text.isNotEmpty
-              && _mobileController.text.isNotEmpty && _passwordController.text.isNotEmpty && _confirmPasswordController.text.isNotEmpty){
-            if(!_agreedToTerms) {
-              SharedWidgets.showTopSnackBar(context, message: "Please agree to Terms & Conditions");
-              return;
-            }
-            _callRegisters();
-          } else {
-            // Validation checks
-            if(_firstNameController.text.isEmpty) SharedWidgets.showTopSnackBar(context, message: "Enter First Name");
-            else if(_lastNameController.text.isEmpty) SharedWidgets.showTopSnackBar(context, message: "Enter Last Name");
-            else if(_emailController.text.isEmpty) SharedWidgets.showTopSnackBar(context, message: "Enter Email");
-            else if(_mobileController.text.isEmpty) SharedWidgets.showTopSnackBar(context, message: "Enter Mobile Number");
-            else if(_passwordController.text.isEmpty) SharedWidgets.showTopSnackBar(context, message: "Enter Password");
-            else if(_confirmPasswordController.text.isEmpty) SharedWidgets.showTopSnackBar(context, message: "Enter Confirm Password");
-          }
-        },
+        onPressed: _isLoading
+            ? null
+            : () {
+                if (_firstNameController.text.isNotEmpty &&
+                    _lastNameController.text.isNotEmpty &&
+                    _emailController.text.isNotEmpty &&
+                    _mobileController.text.isNotEmpty &&
+                    _passwordController.text.isNotEmpty &&
+                    _confirmPasswordController.text.isNotEmpty) {
+                  if (!_agreedToTerms) {
+                    SharedWidgets.showTopSnackBar(
+                      context,
+                      message: "Please agree to Terms & Conditions",
+                    );
+                    return;
+                  }
+                  _callRegisters();
+                } else {
+                  // Validation checks
+                  if (_firstNameController.text.isEmpty) {
+                    SharedWidgets.showTopSnackBar(
+                      context,
+                      message: "Enter First Name",
+                    );
+                  } else if (_lastNameController.text.isEmpty)
+                    SharedWidgets.showTopSnackBar(
+                      context,
+                      message: "Enter Last Name",
+                    );
+                  else if (_emailController.text.isEmpty)
+                    SharedWidgets.showTopSnackBar(
+                      context,
+                      message: "Enter Email",
+                    );
+                  else if (_mobileController.text.isEmpty)
+                    SharedWidgets.showTopSnackBar(
+                      context,
+                      message: "Enter Mobile Number",
+                    );
+                  else if (_passwordController.text.isEmpty)
+                    SharedWidgets.showTopSnackBar(
+                      context,
+                      message: "Enter Password",
+                    );
+                  else if (_confirmPasswordController.text.isEmpty)
+                    SharedWidgets.showTopSnackBar(
+                      context,
+                      message: "Enter Confirm Password",
+                    );
+                }
+              },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
         ),
         child: _isLoading
             ? const SizedBox(
-          height: 22,
-          width: 22,
-          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
-        )
+                height: 22,
+                width: 22,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2.5,
+                ),
+              )
             : Text(
-          "Sign Up",
-          style: GoogleFonts.montserrat(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            letterSpacing: 1,
-          ),
-        ),
+                "Sign Up",
+                style: GoogleFonts.montserrat(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 1,
+                ),
+              ),
       ),
     );
   }
@@ -399,7 +472,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Text(
             "Or sign up with",
-            style: GoogleFonts.montserrat(fontSize: 10, color: Colors.grey[500], fontWeight: FontWeight.w600),
+            style: GoogleFonts.montserrat(
+              fontSize: 10,
+              color: Colors.grey[500],
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
         Expanded(child: Divider(color: Colors.grey.withOpacity(0.2))),
@@ -441,11 +518,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _callRegisters() async {
     bool internet = await MyApplication.checkInternet();
 
-    if(internet){
+    if (internet) {
       setState(() => _isLoading = true);
 
       try {
-        ResponseRegister? response = await ApiCalls.callRegister(RequestRegister(
+        ResponseRegister? response = await ApiCalls.callRegister(
+          RequestRegister(
             role: "user",
             phone: _mobileController.text,
             password: _passwordController.text,
@@ -453,11 +531,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
             firstName: _firstNameController.text,
             lastName: _lastNameController.text,
             confirmPassword: _confirmPasswordController.text,
-            terms: _agreedToTerms ? 1 : 0
-        ));
+            terms: _agreedToTerms ? 1 : 0,
+          ),
+        );
 
-        if(response != null) {
-          if(response.result != null && response.result!.toLowerCase().contains("pass")) {
+        if (response != null) {
+          if (response.result != null &&
+              response.result!.toLowerCase().contains("pass")) {
             // Success: Clear fields
             _passwordController.clear();
             _mobileController.clear();
@@ -467,15 +547,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
             _lastNameController.clear();
 
             if (context.mounted) {
-              SharedWidgets.showTopSnackBar(context, message: response.message!);
+              SharedWidgets.showTopSnackBar(
+                context,
+                message: response.message!,
+              );
             }
           } else {
             if (context.mounted) {
-              SharedWidgets.showTopSnackBar(context, message: response.message ?? "Registration failed");
+              SharedWidgets.showTopSnackBar(
+                context,
+                message: response.message ?? "Registration failed",
+              );
             }
           }
         }
-      } catch(e) {
+      } catch (e) {
         log("Register Error: $e");
       } finally {
         if (mounted) {

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gotilo_new/CustomeWidgets/AppColors.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 
-
-
 class FilterBottomSheetContent extends StatefulWidget {
   const FilterBottomSheetContent({super.key});
 
@@ -67,9 +65,10 @@ class _FilterBottomSheetContentState extends State<FilterBottomSheetContent> {
                     const Text(
                       "Filter",
                       style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87),
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
                     const SizedBox(height: 15),
 
@@ -79,7 +78,8 @@ class _FilterBottomSheetContentState extends State<FilterBottomSheetContent> {
                       icon: Icons.location_on,
                       value: selectedLocation,
                       items: locations,
-                      onChanged: (val) => setState(() => selectedLocation = val),
+                      onChanged: (val) =>
+                          setState(() => selectedLocation = val),
                     ),
                     if (selectedLocation != null)
                       Padding(
@@ -87,8 +87,9 @@ class _FilterBottomSheetContentState extends State<FilterBottomSheetContent> {
                         child: Text(
                           "Selected Location: $selectedLocation",
                           style: const TextStyle(
-                              color: Colors.deepPurpleAccent,
-                              fontWeight: FontWeight.bold),
+                            color: Colors.deepPurpleAccent,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     const SizedBox(height: 10),
@@ -99,7 +100,8 @@ class _FilterBottomSheetContentState extends State<FilterBottomSheetContent> {
                       icon: Icons.category,
                       value: selectedCategory,
                       items: categories,
-                      onChanged: (val) => setState(() => selectedCategory = val),
+                      onChanged: (val) =>
+                          setState(() => selectedCategory = val),
                     ),
                     if (selectedCategory != null)
                       Padding(
@@ -107,8 +109,9 @@ class _FilterBottomSheetContentState extends State<FilterBottomSheetContent> {
                         child: Text(
                           "Selected Category: $selectedCategory",
                           style: const TextStyle(
-                              color: Colors.deepPurpleAccent,
-                              fontWeight: FontWeight.bold),
+                            color: Colors.deepPurpleAccent,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     const SizedBox(height: 10),
@@ -128,8 +131,9 @@ class _FilterBottomSheetContentState extends State<FilterBottomSheetContent> {
                         child: Text(
                           "Selected Subcategory: $selectedSubcategory",
                           style: const TextStyle(
-                              color: Colors.deepPurpleAccent,
-                              fontWeight: FontWeight.bold),
+                            color: Colors.deepPurpleAccent,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     const SizedBox(height: 20),
@@ -173,11 +177,7 @@ Widget buildModernDropdown({
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-            offset: Offset(0, 3),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
         ],
       ),
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -187,7 +187,7 @@ Widget buildModernDropdown({
           border: InputBorder.none,
           prefixIcon: Icon(icon, color: AppColors.gradientEnd),
         ),
-        value: value,
+        initialValue: value,
         items: items
             .map((e) => DropdownMenuItem<String>(value: e, child: Text(e)))
             .toList(),

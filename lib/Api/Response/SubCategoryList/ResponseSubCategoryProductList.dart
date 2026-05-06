@@ -11,15 +11,15 @@ class ResponseSubcategoryProductList {
     if (json['data'] != null) {
       data = <SubCategoryProductList>[];
       json['data'].forEach((v) {
-        data!.add(new SubCategoryProductList.fromJson(v));
+        data!.add(SubCategoryProductList.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['result'] = result;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -40,18 +40,19 @@ class SubCategoryProductList {
   String? redirectionUrl;
   dynamic seller;
 
-  SubCategoryProductList(
-      {this.id,
-        this.name,
-        this.slug,
-        this.thumbnail,
-        this.discount,
-        this.discountType,
-        this.unitPrice,
-        this.categoryId,
-        this.discountedPrice,
-        this.redirectionUrl,
-        this.seller});
+  SubCategoryProductList({
+    this.id,
+    this.name,
+    this.slug,
+    this.thumbnail,
+    this.discount,
+    this.discountType,
+    this.unitPrice,
+    this.categoryId,
+    this.discountedPrice,
+    this.redirectionUrl,
+    this.seller,
+  });
 
   SubCategoryProductList.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -68,18 +69,18 @@ class SubCategoryProductList {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['slug'] = this.slug;
-    data['thumbnail'] = this.thumbnail;
-    data['discount'] = this.discount;
-    data['discount_type'] = this.discountType;
-    data['unit_price'] = this.unitPrice;
-    data['category_id'] = this.categoryId;
-    data['discounted_price'] = this.discountedPrice;
-    data['redirection_url'] = this.redirectionUrl;
-    data['seller'] = this.seller;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['slug'] = slug;
+    data['thumbnail'] = thumbnail;
+    data['discount'] = discount;
+    data['discount_type'] = discountType;
+    data['unit_price'] = unitPrice;
+    data['category_id'] = categoryId;
+    data['discounted_price'] = discountedPrice;
+    data['redirection_url'] = redirectionUrl;
+    data['seller'] = seller;
     return data;
   }
 }

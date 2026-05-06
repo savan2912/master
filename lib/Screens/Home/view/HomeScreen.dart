@@ -1,4 +1,3 @@
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,12 +21,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   CompanyLogo? logo;
   List<BannerData>? banner;
-  ValueNotifier<bool> isApiComplete=ValueNotifier(false);
-  ValueNotifier<bool> isDataAvailable=ValueNotifier(false);
+  ValueNotifier<bool> isApiComplete = ValueNotifier(false);
+  ValueNotifier<bool> isDataAvailable = ValueNotifier(false);
 
-  bool? isSearch=false;
+  bool? isSearch = false;
   String selectedTab = "All Deals";
-  var searchText= TextEditingController();
+  var searchText = TextEditingController();
 
   final List<String> banners = [
     "assets/banner1.png",
@@ -37,86 +36,35 @@ class _HomeScreenState extends State<HomeScreen> {
     "assets/banner5.png",
   ];
 
-  int bannerIndex  = 0;
+  int bannerIndex = 0;
 
-  final List<Map<String, String>> categories =
-  [
-    {
-      "title": "Food & Dining",
-      "image": "assets/food.png"
-    },
-    {
-      "title": "Travel Tourism",
-      "image": "assets/travel.png"
-    },
-    {
-      "title": "Healthcare",
-      "image": "assets/helth.png"
-    },
-    {
-      "title": "Education",
-      "image": "assets/education.png"
-    },
-    {
-      "title": "Beauty",
-      "image": "assets/beauty.png"
-    },
-    {
-      "title": "Construction",
-      "image": "assets/construction.png"
-    },
-    {
-      "title": "Education",
-      "image": "assets/travel.png"
-    },
-    {
-      "title": "Beauty",
-      "image": "assets/food.png"
-    },
-    {
-      "title": "Construction",
-      "image": "assets/education.png"
-    },
+  final List<Map<String, String>> categories = [
+    {"title": "Food & Dining", "image": "assets/food.png"},
+    {"title": "Travel Tourism", "image": "assets/travel.png"},
+    {"title": "Healthcare", "image": "assets/helth.png"},
+    {"title": "Education", "image": "assets/education.png"},
+    {"title": "Beauty", "image": "assets/beauty.png"},
+    {"title": "Construction", "image": "assets/construction.png"},
+    {"title": "Education", "image": "assets/travel.png"},
+    {"title": "Beauty", "image": "assets/food.png"},
+    {"title": "Construction", "image": "assets/education.png"},
   ];
 
-  final List<Map<String, String>> listings =
-  [
+  final List<Map<String, String>> listings = [
     {
       "title": "Umang Solar fsdfsadfdfds dsafsdfds fdsf sdf ds f sdf sd fds f ",
-      "image": "assets/solar.png"
+      "image": "assets/solar.png",
     },
-    {
-      "title": "Patel Dry Fruits df",
-      "image": "assets/dry.png"
-    },
-    {
-      "title": "Nature Velly",
-      "image": "assets/nature.png"
-    },
-    {
-      "title": "Om Beauty Salon",
-      "image": "assets/beauty_salon.png"
-    },
+    {"title": "Patel Dry Fruits df", "image": "assets/dry.png"},
+    {"title": "Nature Velly", "image": "assets/nature.png"},
+    {"title": "Om Beauty Salon", "image": "assets/beauty_salon.png"},
   ];
 
-  final List<Map<String, String>> featuredService=
-  [
-    {
-      "title": "Umang Solar",
-      "image": "assets/solar.png"
-    },
-    {
-      "title": "Patel Dry Fruits",
-      "image": "assets/dry.png"
-    },
-    {
-      "title": "Nature Velly",
-      "image": "assets/nature.png"
-    },
-    {
-      "title": "Om Beauty Salon",
-      "image": "assets/beauty_salon.png"
-    },
+  final List<Map<String, String>> featuredService = [
+    {"title": "Umang Solar", "image": "assets/solar.png"},
+    {"title": "Patel Dry Fruits", "image": "assets/dry.png"},
+    {"title": "Nature Velly", "image": "assets/nature.png"},
+    {"title": "Om Beauty Salon", "image": "assets/beauty_salon.png"},
   ];
 
   @override
@@ -128,46 +76,45 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: SharedWidgets.customAppBar(
-          searchVisible: true,
-          showSearch: isSearch!,
-          onSearchTap: () {
-            isSearch = true;
-            setState(() {});
-          },
-          onSearchChanged: (value) {
-            print("search value is :- $value");
-          },
-          onCloseSearch: () {
-            isSearch = false;
-            setState(() {});
-          },
-          centerImagePath: logo?.siteLogo,
-          iconColor: AppColors.white,
-          showSignInIcon: true,
-          showJoinUsIcon: false,
-          onSignInTap: () {
-            Get.toNamed(AppRoutes.login);
-          },
-          onJoinUsTap: () {
-            Get.toNamed(AppRoutes.joinUs);
-          },
-          gradient:const LinearGradient(colors: [
-            AppColors.gradientStart,AppColors.gradientEnd
-          ])
+        searchVisible: true,
+        showSearch: isSearch!,
+        onSearchTap: () {
+          isSearch = true;
+          setState(() {});
+        },
+        onSearchChanged: (value) {
+          print("search value is :- $value");
+        },
+        onCloseSearch: () {
+          isSearch = false;
+          setState(() {});
+        },
+        centerImagePath: logo?.siteLogo,
+        iconColor: AppColors.white,
+        showSignInIcon: true,
+        showJoinUsIcon: false,
+        onSignInTap: () {
+          Get.toNamed(AppRoutes.login);
+        },
+        onJoinUsTap: () {
+          Get.toNamed(AppRoutes.joinUs);
+        },
+        gradient: const LinearGradient(
+          colors: [AppColors.gradientStart, AppColors.gradientEnd],
+        ),
       ),
-      body:
-      ValueListenableBuilder(
+      body: ValueListenableBuilder(
         valueListenable: isApiComplete,
         builder: (context, value, child) {
           return Visibility(
             visible: value,
-            replacement: const Center(child: CircularProgressIndicator(),),
+            replacement: const Center(child: CircularProgressIndicator()),
             child: ValueListenableBuilder(
               valueListenable: isDataAvailable,
               builder: (context, value, child) {
                 return Visibility(
                   visible: value,
-                  replacement: const Center(child: Text("No Data Available"),),
+                  replacement: const Center(child: Text("No Data Available")),
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
@@ -175,16 +122,19 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: const EdgeInsets.only(top: 12),
                           child: Column(
                             children: [
-
                               CarouselSlider.builder(
                                 itemCount: banner?.length,
                                 itemBuilder: (context, index, realIndex) {
                                   return Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 6),
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                    ),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(16),
                                       image: DecorationImage(
-                                        image: NetworkImage(banner![index].image!),
+                                        image: NetworkImage(
+                                          banner![index].image!,
+                                        ),
                                         fit: BoxFit.cover,
                                       ),
                                       boxShadow: const [
@@ -215,13 +165,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: List.generate(
                                   banner?.length ?? 0,
-                                      (index) => AnimatedContainer(
+                                  (index) => AnimatedContainer(
                                     duration: const Duration(milliseconds: 300),
-                                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                    ),
                                     height: 8,
-                                    width: (banner != null && bannerIndex == index) ? 20 : 8,
+                                    width:
+                                        (banner != null && bannerIndex == index)
+                                        ? 20
+                                        : 8,
                                     decoration: BoxDecoration(
-                                      color: (banner != null && bannerIndex == index)
+                                      color:
+                                          (banner != null &&
+                                              bannerIndex == index)
                                           ? Colors.blue
                                           : Colors.grey.shade400,
                                       borderRadius: BorderRadius.circular(10),
@@ -237,17 +194,24 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Column(
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
                                       const Text(
                                         "Explore ",
-                                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                       SharedWidgets.gradientText(
                                         text: "Categories",
-                                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                                        style: const TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -268,16 +232,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: categories.length,
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  crossAxisSpacing: 12,
-                                  mainAxisSpacing: 12,
-                                  childAspectRatio: 0.95,
-                                ),
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3,
+                                      crossAxisSpacing: 12,
+                                      mainAxisSpacing: 12,
+                                      childAspectRatio: 0.95,
+                                    ),
                                 itemBuilder: (context, index) {
                                   return TweenAnimationBuilder<double>(
                                     tween: Tween(begin: 0.8, end: 1),
-                                    duration: Duration(milliseconds: 350 + (index * 50)),
+                                    duration: Duration(
+                                      milliseconds: 350 + (index * 50),
+                                    ),
                                     curve: Curves.easeOutCubic,
                                     builder: (context, scale, child) {
                                       return Transform.scale(
@@ -290,9 +257,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                         Container(
                                           height: 90,
                                           decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(15),
+                                            borderRadius: BorderRadius.circular(
+                                              15,
+                                            ),
                                             image: DecorationImage(
-                                              image: AssetImage(categories[index]['image']!),
+                                              image: AssetImage(
+                                                categories[index]['image']!,
+                                              ),
                                               fit: BoxFit.cover,
                                             ),
                                             boxShadow: const [
@@ -300,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 color: Colors.black12,
                                                 blurRadius: 6,
                                                 offset: Offset(0, 3),
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -308,7 +279,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         Text(
                                           categories[index]['title']!,
                                           textAlign: TextAlign.center,
-                                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                                          style: const TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -317,23 +291,30 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               const SizedBox(height: 20),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
                                       const Text(
                                         "Latest Listing ",
-                                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                       SharedWidgets.gradientText(
                                         text: "Near You",
-                                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                                        style: const TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ],
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      Get.to(()=> const ModernHeritageApp());
+                                      Get.to(() => const ModernHeritageApp());
                                     },
                                     child: const Text(
                                       "View All",
@@ -344,7 +325,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               const SizedBox(height: 15),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 10,
+                                ),
                                 child: ListView.builder(
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
@@ -352,7 +336,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   itemBuilder: (context, index) {
                                     return TweenAnimationBuilder<double>(
                                       tween: Tween(begin: 0.9, end: 1),
-                                      duration: Duration(milliseconds: 400 + (index * 50)),
+                                      duration: Duration(
+                                        milliseconds: 400 + (index * 50),
+                                      ),
                                       curve: Curves.easeOutCubic,
                                       builder: (context, scale, child) {
                                         return Transform.scale(
@@ -362,27 +348,39 @@ class _HomeScreenState extends State<HomeScreen> {
                                       },
                                       child: Container(
                                         width: double.infinity,
-                                        margin: const EdgeInsets.only(bottom: 16),
+                                        margin: const EdgeInsets.only(
+                                          bottom: 16,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: Colors.white,
-                                          borderRadius: BorderRadius.circular(15),
+                                          borderRadius: BorderRadius.circular(
+                                            15,
+                                          ),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.black.withOpacity(0.05),
+                                              color: Colors.black.withOpacity(
+                                                0.05,
+                                              ),
                                               blurRadius: 10,
                                               offset: const Offset(0, 5),
-                                            )
+                                            ),
                                           ],
                                         ),
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Container(
                                               height: 180,
                                               decoration: BoxDecoration(
-                                                borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+                                                borderRadius:
+                                                    const BorderRadius.vertical(
+                                                      top: Radius.circular(15),
+                                                    ),
                                                 image: DecorationImage(
-                                                  image: AssetImage(listings[index]['image']!),
+                                                  image: AssetImage(
+                                                    listings[index]['image']!,
+                                                  ),
                                                   fit: BoxFit.cover,
                                                 ),
                                               ),
@@ -391,34 +389,60 @@ class _HomeScreenState extends State<HomeScreen> {
                                             Padding(
                                               padding: const EdgeInsets.all(15),
                                               child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   SizedBox(
                                                     height: 24,
                                                     child: LayoutBuilder(
                                                       builder: (context, constraints) {
-                                                        final title = listings[index]['title'] ?? "";
-                                                        const titleStyle = TextStyle(
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 18,
-                                                        );
+                                                        final title =
+                                                            listings[index]['title'] ??
+                                                            "";
+                                                        const titleStyle =
+                                                            TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 18,
+                                                            );
 
-                                                        final textPainter = TextPainter(
-                                                          text: TextSpan(text: title, style: titleStyle),
-                                                          maxLines: 1,
-                                                          textDirection: TextDirection.ltr,
-                                                        )..layout(maxWidth: double.infinity);
+                                                        final textPainter =
+                                                            TextPainter(
+                                                              text: TextSpan(
+                                                                text: title,
+                                                                style:
+                                                                    titleStyle,
+                                                              ),
+                                                              maxLines: 1,
+                                                              textDirection:
+                                                                  TextDirection
+                                                                      .ltr,
+                                                            )..layout(
+                                                              maxWidth: double
+                                                                  .infinity,
+                                                            );
 
-                                                        if (textPainter.width > constraints.maxWidth) {
+                                                        if (textPainter.width >
+                                                            constraints
+                                                                .maxWidth) {
                                                           return Marquee(
                                                             text: title,
                                                             style: titleStyle,
-                                                            scrollAxis: Axis.horizontal,
+                                                            scrollAxis:
+                                                                Axis.horizontal,
                                                             blankSpace: 30,
                                                             velocity: 30,
-                                                            pauseAfterRound: const Duration(seconds: 1),
-                                                            accelerationDuration: const Duration(seconds: 1),
-                                                            accelerationCurve: Curves.linear,
+                                                            pauseAfterRound:
+                                                                const Duration(
+                                                                  seconds: 1,
+                                                                ),
+                                                            accelerationDuration:
+                                                                const Duration(
+                                                                  seconds: 1,
+                                                                ),
+                                                            accelerationCurve:
+                                                                Curves.linear,
                                                           );
                                                         }
                                                         return Text(
@@ -435,17 +459,38 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   Row(
                                                     children: [
                                                       Container(
-                                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              horizontal: 10,
+                                                              vertical: 5,
+                                                            ),
                                                         decoration: BoxDecoration(
-                                                          color: Colors.amber.withOpacity(0.1),
-                                                          borderRadius: BorderRadius.circular(8),
+                                                          color: Colors.amber
+                                                              .withOpacity(0.1),
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                8,
+                                                              ),
                                                         ),
                                                         child: const Row(
-                                                          mainAxisSize: MainAxisSize.min,
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
                                                           children: [
-                                                            Icon(Icons.star, size: 16, color: Colors.amber),
+                                                            Icon(
+                                                              Icons.star,
+                                                              size: 16,
+                                                              color:
+                                                                  Colors.amber,
+                                                            ),
                                                             SizedBox(width: 4),
-                                                            Text("4.5", style: TextStyle(fontWeight: FontWeight.bold)),
+                                                            Text(
+                                                              "4.5",
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                              ),
+                                                            ),
                                                           ],
                                                         ),
                                                       ),
@@ -454,48 +499,88 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                                       Flexible(
                                                         child: Container(
-                                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                                          padding:
+                                                              const EdgeInsets.symmetric(
+                                                                horizontal: 10,
+                                                                vertical: 5,
+                                                              ),
                                                           decoration: BoxDecoration(
-                                                            color: AppColors.gradientEnd.withOpacity(0.1),
-                                                            borderRadius: BorderRadius.circular(8),
+                                                            color: AppColors
+                                                                .gradientEnd
+                                                                .withOpacity(
+                                                                  0.1,
+                                                                ),
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  8,
+                                                                ),
                                                           ),
                                                           child: Row(
-                                                            mainAxisSize: MainAxisSize.min,
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
                                                             children: [
-                                                              const Icon(CupertinoIcons.location, size: 16, color: AppColors.gradientEnd),
-                                                              const SizedBox(width: 4),
+                                                              const Icon(
+                                                                CupertinoIcons
+                                                                    .location,
+                                                                size: 16,
+                                                                color: AppColors
+                                                                    .gradientEnd,
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 4,
+                                                              ),
                                                               Flexible(
                                                                 child: SizedBox(
                                                                   height: 18,
                                                                   child: LayoutBuilder(
-                                                                    builder: (context, constraints) {
-                                                                      final loc = listings[index]['location'] ?? "Rajkot, Gujarat";
-                                                                      const locStyle = TextStyle(
-                                                                        color: AppColors.gradientEnd,
-                                                                        fontWeight: FontWeight.bold,
-                                                                      );
+                                                                    builder:
+                                                                        (
+                                                                          context,
+                                                                          constraints,
+                                                                        ) {
+                                                                          final loc =
+                                                                              listings[index]['location'] ??
+                                                                              "Rajkot, Gujarat";
+                                                                          const locStyle = TextStyle(
+                                                                            color:
+                                                                                AppColors.gradientEnd,
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                          );
 
-                                                                      final locPainter = TextPainter(
-                                                                        text: TextSpan(text: loc, style: locStyle),
-                                                                        maxLines: 1,
-                                                                        textDirection: TextDirection.ltr,
-                                                                      )..layout(maxWidth: double.infinity);
-                                                                      if (locPainter.width > constraints.maxWidth) {
-                                                                        return Marquee(
-                                                                          text: loc,
-                                                                          style: locStyle,
-                                                                          scrollAxis: Axis.horizontal,
-                                                                          blankSpace: 20,
-                                                                          velocity: 25,
-                                                                          pauseAfterRound: const Duration(seconds: 1),
-                                                                        );
-                                                                      }
-                                                                      return Text(
-                                                                        loc,
-                                                                        style: locStyle,
-                                                                        maxLines: 1,
-                                                                      );
-                                                                    },
+                                                                          final locPainter =
+                                                                              TextPainter(
+                                                                                text: TextSpan(
+                                                                                  text: loc,
+                                                                                  style: locStyle,
+                                                                                ),
+                                                                                maxLines: 1,
+                                                                                textDirection: TextDirection.ltr,
+                                                                              )..layout(
+                                                                                maxWidth: double.infinity,
+                                                                              );
+                                                                          if (locPainter.width >
+                                                                              constraints.maxWidth) {
+                                                                            return Marquee(
+                                                                              text: loc,
+                                                                              style: locStyle,
+                                                                              scrollAxis: Axis.horizontal,
+                                                                              blankSpace: 20,
+                                                                              velocity: 25,
+                                                                              pauseAfterRound: const Duration(
+                                                                                seconds: 1,
+                                                                              ),
+                                                                            );
+                                                                          }
+                                                                          return Text(
+                                                                            loc,
+                                                                            style:
+                                                                                locStyle,
+                                                                            maxLines:
+                                                                                1,
+                                                                          );
+                                                                        },
                                                                   ),
                                                                 ),
                                                               ),
@@ -507,7 +592,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   ),
                                                 ],
                                               ),
-                                            )
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -519,24 +604,29 @@ class _HomeScreenState extends State<HomeScreen> {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Row(
                                       children: [
                                         const Text(
                                           "Newly ",
-                                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                                          style: TextStyle(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                         SharedWidgets.gradientText(
                                           text: "Added Listing",
-                                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                                          style: const TextStyle(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ],
                                     ),
                                     TextButton(
-                                      onPressed: () {
-
-                                      },
+                                      onPressed: () {},
                                       child: const Text(
                                         "View All",
                                         style: TextStyle(fontSize: 14),
@@ -550,68 +640,115 @@ class _HomeScreenState extends State<HomeScreen> {
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: 4,
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 10,
-                                  childAspectRatio: 0.98,
-                                ),
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: 10,
+                                      mainAxisSpacing: 10,
+                                      childAspectRatio: 0.98,
+                                    ),
                                 itemBuilder: (context, index) {
                                   return TweenAnimationBuilder<double>(
                                     tween: Tween(begin: 0.9, end: 1),
-                                    duration: Duration(milliseconds: 400 + (index * 50)),
+                                    duration: Duration(
+                                      milliseconds: 400 + (index * 50),
+                                    ),
                                     curve: Curves.easeOutCubic,
-                                    builder: (context, scale, child) => Transform.scale(scale: scale, child: child),
+                                    builder: (context, scale, child) =>
+                                        Transform.scale(
+                                          scale: scale,
+                                          child: child,
+                                        ),
                                     child: Container(
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(12),
                                         color: Colors.white,
                                         boxShadow: [
-                                          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2)),
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(
+                                              0.05,
+                                            ),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 2),
+                                          ),
                                         ],
                                       ),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-
                                           Container(
                                             height: 105,
                                             width: double.infinity,
                                             decoration: BoxDecoration(
-                                              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                                              borderRadius:
+                                                  const BorderRadius.vertical(
+                                                    top: Radius.circular(12),
+                                                  ),
                                               image: DecorationImage(
-                                                image: AssetImage(listings[index]['image'] ?? ""),
+                                                image: AssetImage(
+                                                  listings[index]['image'] ??
+                                                      "",
+                                                ),
                                                 fit: BoxFit.cover,
                                               ),
                                             ),
                                           ),
 
                                           Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 8.0),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 6.0,
+                                              vertical: 8.0,
+                                            ),
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
-
                                                 SizedBox(
                                                   height: 18,
                                                   child: LayoutBuilder(
                                                     builder: (context, constraints) {
-                                                      final title = listings[index]['title'] ?? "";
-                                                      const textStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 13);
-                                                      final textPainter = TextPainter(
-                                                        text: TextSpan(text: title, style: textStyle),
-                                                        maxLines: 1,
-                                                        textDirection: TextDirection.ltr,
-                                                      )..layout(maxWidth: constraints.maxWidth);
+                                                      final title =
+                                                          listings[index]['title'] ??
+                                                          "";
+                                                      const textStyle =
+                                                          TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 13,
+                                                          );
+                                                      final textPainter =
+                                                          TextPainter(
+                                                            text: TextSpan(
+                                                              text: title,
+                                                              style: textStyle,
+                                                            ),
+                                                            maxLines: 1,
+                                                            textDirection:
+                                                                TextDirection
+                                                                    .ltr,
+                                                          )..layout(
+                                                            maxWidth:
+                                                                constraints
+                                                                    .maxWidth,
+                                                          );
 
-                                                      if (!textPainter.didExceedMaxLines) {
-                                                        return Text(title, style: textStyle, maxLines: 1, overflow: TextOverflow.ellipsis);
+                                                      if (!textPainter
+                                                          .didExceedMaxLines) {
+                                                        return Text(
+                                                          title,
+                                                          style: textStyle,
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        );
                                                       }
                                                       return Marquee(
                                                         text: title,
                                                         style: textStyle,
-                                                        scrollAxis: Axis.horizontal,
+                                                        scrollAxis:
+                                                            Axis.horizontal,
                                                         blankSpace: 20,
                                                         velocity: 25,
                                                       );
@@ -621,69 +758,118 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                                 const SizedBox(height: 8),
                                                 Container(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 6,
+                                                        vertical: 5,
+                                                      ),
                                                   decoration: BoxDecoration(
-                                                    color: AppColors.gradientEnd.withOpacity(0.08),
-                                                    borderRadius: BorderRadius.circular(6),
+                                                    color: AppColors.gradientEnd
+                                                        .withOpacity(0.08),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          6,
+                                                        ),
                                                   ),
                                                   child: Row(
                                                     children: [
-                                                      const Icon(Icons.star, size: 14, color: Colors.amber),
+                                                      const Icon(
+                                                        Icons.star,
+                                                        size: 14,
+                                                        color: Colors.amber,
+                                                      ),
                                                       const SizedBox(width: 2),
                                                       const Text(
                                                         "4.5",
-                                                        style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold),
+                                                        style: TextStyle(
+                                                          fontSize: 11.5,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
                                                       ),
 
                                                       const SizedBox(width: 12),
                                                       Expanded(
                                                         child: Row(
-                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
                                                           children: [
                                                             const Icon(
-                                                              CupertinoIcons.location,
+                                                              CupertinoIcons
+                                                                  .location,
                                                               size: 13,
-                                                              color: AppColors.gradientEnd,
+                                                              color: AppColors
+                                                                  .gradientEnd,
                                                             ),
-                                                            const SizedBox(width: 3),
+                                                            const SizedBox(
+                                                              width: 3,
+                                                            ),
                                                             Expanded(
                                                               child: SizedBox(
                                                                 height: 16,
                                                                 child: LayoutBuilder(
-                                                                  builder: (context, constraints) {
-                                                                    final location = listings[index]['location'] ?? "Jam Khambhadiya";
-                                                                    const textStyle = TextStyle(
-                                                                      color: AppColors.gradientEnd,
-                                                                      fontSize: 11.5,
-                                                                      fontWeight: FontWeight.w700,
-                                                                    );
+                                                                  builder:
+                                                                      (
+                                                                        context,
+                                                                        constraints,
+                                                                      ) {
+                                                                        final location =
+                                                                            listings[index]['location'] ??
+                                                                            "Jam Khambhadiya";
+                                                                        const textStyle = TextStyle(
+                                                                          color:
+                                                                              AppColors.gradientEnd,
+                                                                          fontSize:
+                                                                              11.5,
+                                                                          fontWeight:
+                                                                              FontWeight.w700,
+                                                                        );
 
-                                                                    final textPainter = TextPainter(
-                                                                      text: TextSpan(text: location, style: textStyle),
-                                                                      maxLines: 1,
-                                                                      textDirection: TextDirection.ltr,
-                                                                    )..layout(maxWidth: double.infinity);
+                                                                        final textPainter =
+                                                                            TextPainter(
+                                                                              text: TextSpan(
+                                                                                text: location,
+                                                                                style: textStyle,
+                                                                              ),
+                                                                              maxLines: 1,
+                                                                              textDirection: TextDirection.ltr,
+                                                                            )..layout(
+                                                                              maxWidth: double.infinity,
+                                                                            );
 
+                                                                        if (textPainter.width >
+                                                                            constraints.maxWidth) {
+                                                                          return Marquee(
+                                                                            text:
+                                                                                location,
+                                                                            style:
+                                                                                textStyle,
+                                                                            scrollAxis:
+                                                                                Axis.horizontal,
+                                                                            blankSpace:
+                                                                                20,
+                                                                            velocity:
+                                                                                22,
+                                                                            pauseAfterRound: const Duration(
+                                                                              seconds: 1,
+                                                                            ),
+                                                                            accelerationDuration: const Duration(
+                                                                              seconds: 1,
+                                                                            ),
+                                                                            accelerationCurve:
+                                                                                Curves.linear,
+                                                                          );
+                                                                        }
 
-                                                                    if (textPainter.width > constraints.maxWidth) {
-                                                                      return Marquee(
-                                                                        text: location,
-                                                                        style: textStyle,
-                                                                        scrollAxis: Axis.horizontal,
-                                                                        blankSpace: 20,
-                                                                        velocity: 22,
-                                                                        pauseAfterRound: const Duration(seconds: 1),
-                                                                        accelerationDuration: const Duration(seconds: 1),
-                                                                        accelerationCurve: Curves.linear,
-                                                                      );
-                                                                    }
-
-                                                                    return Text(
-                                                                      location,
-                                                                      style: textStyle,
-                                                                      maxLines: 1,
-                                                                    );
-                                                                  },
+                                                                        return Text(
+                                                                          location,
+                                                                          style:
+                                                                              textStyle,
+                                                                          maxLines:
+                                                                              1,
+                                                                        );
+                                                                      },
                                                                 ),
                                                               ),
                                                             ),
@@ -706,23 +892,29 @@ class _HomeScreenState extends State<HomeScreen> {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Row(
                                       children: [
                                         const Text(
                                           "Our Featured ",
-                                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                                          style: TextStyle(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                         SharedWidgets.gradientText(
                                           text: "Service",
-                                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                                          style: const TextStyle(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ],
                                     ),
                                     TextButton(
-                                      onPressed: () {
-                                      },
+                                      onPressed: () {},
                                       child: const Text(
                                         "View All",
                                         style: TextStyle(fontSize: 14),
@@ -738,19 +930,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
                                   itemCount: featuredService.length,
-                                  itemBuilder: (BuildContext context, int index) {
-                                    return  _subCategoryCard(
-                                        title:featuredService[index]['title']!,
-                                        image: featuredService[index]["image"]!
-                                    );
-                                  },
-
-
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                        return _subCategoryCard(
+                                          title:
+                                              featuredService[index]['title']!,
+                                          image:
+                                              featuredService[index]["image"]!,
+                                        );
+                                      },
                                 ),
                               ),
 
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 10,
+                                ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -767,39 +963,53 @@ class _HomeScreenState extends State<HomeScreen> {
                                     if (selectedTab == "All Deals")
                                       Column(
                                         children: [
-                                          _buildDealCard(title: "Gotilo Cafe One", tag: "Couple Combo", image: "assets/beauty.png", location: "Rajkot", validTill: "07 Apr, 2026"),
+                                          _buildDealCard(
+                                            title: "Gotilo Cafe One",
+                                            tag: "Couple Combo",
+                                            image: "assets/beauty.png",
+                                            location: "Rajkot",
+                                            validTill: "07 Apr, 2026",
+                                          ),
                                           const SizedBox(height: 12),
-                                          _buildDealCard(title: "Grand Thakar", tag: "Family Pack", image: "assets/food.png", location: "Rajkot", validTill: "10 Apr, 2026"),
+                                          _buildDealCard(
+                                            title: "Grand Thakar",
+                                            tag: "Family Pack",
+                                            image: "assets/food.png",
+                                            location: "Rajkot",
+                                            validTill: "10 Apr, 2026",
+                                          ),
                                         ],
                                       )
                                     else
                                       _buildDealCard(
-                                          title: "Nearby Restro",
-                                          tag: "Flash Sale",
-                                          image: "assets/dry.png",
-                                          location: "1.2 km away",
-                                          validTill: "Today Only"
+                                        title: "Nearby Restro",
+                                        tag: "Flash Sale",
+                                        image: "assets/dry.png",
+                                        location: "1.2 km away",
+                                        validTill: "Today Only",
                                       ),
                                   ],
                                 ),
                               ),
 
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
                                 child: _howItWorksSection(),
                               ),
                               const SizedBox(height: 20),
                             ],
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
                 );
-              }
+              },
             ),
           );
-        }
+        },
       ),
     );
   }
@@ -819,14 +1029,22 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
           gradient: isSelected
-              ? const LinearGradient(colors: [AppColors.gradientStart, AppColors.gradientEnd])
+              ? const LinearGradient(
+                  colors: [AppColors.gradientStart, AppColors.gradientEnd],
+                )
               : null,
           color: isSelected ? null : Colors.white,
           borderRadius: BorderRadius.circular(8),
           border: isSelected ? null : Border.all(color: Colors.grey.shade300),
-          boxShadow: isSelected ? [
-            BoxShadow(color: AppColors.gradientStart.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4))
-          ] : null,
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.gradientStart.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
         ),
         child: Text(
           text,
@@ -856,7 +1074,7 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.black.withOpacity(0.08),
             blurRadius: 15,
             offset: const Offset(0, 5),
-          )
+          ),
         ],
       ),
       child: Column(
@@ -877,7 +1095,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 child: ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(16),
+                  ),
                   child: Opacity(
                     opacity: 0.15,
                     child: Image.asset(image, fit: BoxFit.cover),
@@ -905,11 +1125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    child: Image.asset(
-                      image,
-                      width: 140,
-                      fit: BoxFit.contain,
-                    ),
+                    child: Image.asset(image, width: 140, fit: BoxFit.contain),
                   ),
                 ),
               ),
@@ -918,17 +1134,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 top: 15,
                 left: 15,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.8),
                     borderRadius: BorderRadius.circular(8),
                     boxShadow: const [
-                      BoxShadow(color: Colors.black26, blurRadius: 4, offset: const Offset(0, 2))
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
                     ],
                   ),
                   child: Text(
                     tag,
-                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -942,16 +1169,27 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    Icon(Icons.calendar_today, size: 14, color: Colors.grey.shade500),
+                    Icon(
+                      Icons.calendar_today,
+                      size: 14,
+                      color: Colors.grey.shade500,
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       "Valid till • $validTill",
-                      style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
                   ],
                 ),
@@ -960,18 +1198,29 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.pink.shade50,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.location_on, size: 14, color: Colors.pink.shade400),
+                          Icon(
+                            Icons.location_on,
+                            size: 14,
+                            color: Colors.pink.shade400,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             location,
-                            style: TextStyle(color: Colors.pink.shade400, fontWeight: FontWeight.bold, fontSize: 12),
+                            style: TextStyle(
+                              color: Colors.pink.shade400,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
                           ),
                         ],
                       ),
@@ -985,10 +1234,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         onTap: () {},
                         borderRadius: BorderRadius.circular(10),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 10,
+                          ),
                           child: const Text(
                             "Crack the Deal",
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
                           ),
                         ),
                       ),
@@ -1003,17 +1259,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _subCategoryCard({
-    required String title,
-    required String image,
-  }) {
+  Widget _subCategoryCard({required String title, required String image}) {
     return Card(
       color: Colors.white,
       elevation: 4,
       shadowColor: Colors.black.withOpacity(0.15),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -1057,19 +1308,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 6),
                   Text(
                     "Category Name",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
                 ],
               ),
             ),
-            const Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: Colors.grey,
-            ),
+            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
           ],
         ),
       ),
@@ -1089,7 +1333,7 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.purple.withOpacity(0.1),
             blurRadius: 20,
             spreadRadius: 5,
-          )
+          ),
         ],
       ),
       child: Column(
@@ -1099,7 +1343,11 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               const Text(
                 "How Gotilo ",
-                style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               ShaderMask(
                 shaderCallback: (bounds) => const LinearGradient(
@@ -1107,7 +1355,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ).createShader(bounds),
                 child: const Text(
                   "Works",
-                  style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -1129,7 +1381,8 @@ class _HomeScreenState extends State<HomeScreen> {
           _buildStepItem(
             stepNum: "2",
             title: "Pick Category",
-            desc: "Explore and select the most relevant category for your business.",
+            desc:
+                "Explore and select the most relevant category for your business.",
             icon: Icons.category_outlined,
           ),
           _buildVerticalLine(),
@@ -1144,7 +1397,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildStepItem({required String stepNum, required String title, required String desc, required IconData icon}) {
+  Widget _buildStepItem({
+    required String stepNum,
+    required String title,
+    required String desc,
+    required IconData icon,
+  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1164,12 +1422,20 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 "$stepNum. $title",
-                style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 5),
               Text(
                 desc,
-                style: TextStyle(color: Colors.grey.shade500, fontSize: 14, height: 1.4),
+                style: TextStyle(
+                  color: Colors.grey.shade500,
+                  fontSize: 14,
+                  height: 1.4,
+                ),
               ),
             ],
           ),
@@ -1192,6 +1458,4 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-
 }

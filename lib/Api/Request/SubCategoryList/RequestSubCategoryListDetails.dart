@@ -2,10 +2,7 @@ class RequestSubCategoryListDetails {
   int? listId;
   int? userID;
 
-  RequestSubCategoryListDetails({
-    this.listId,
-    this.userID
-  });
+  RequestSubCategoryListDetails({this.listId, this.userID});
 
   RequestSubCategoryListDetails.fromJson(Map<String, dynamic> json) {
     listId = json['list_id'];
@@ -13,9 +10,9 @@ class RequestSubCategoryListDetails {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['list_id'] = this.listId;
-    data['user_id'] = this.userID;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['list_id'] = listId;
+    data['user_id'] = userID;
     return data;
   }
 }

@@ -16,7 +16,7 @@ class RequestRegister {
     this.password,
     this.terms,
     this.confirmPassword,
-    this.role
+    this.role,
   });
 
   RequestRegister.fromJson(Map<String, dynamic> json) {
@@ -31,15 +31,15 @@ class RequestRegister {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['f_name'] = this.firstName;
-    data['l_name'] = this.lastName;
-    data['email'] = this.email;
-    data['phone'] = this.phone;
-    data['password'] = this.password;
-    data['role'] = this.role;
-    data['terms'] = this.terms;
-    data['confirm_password'] = this.confirmPassword;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['f_name'] = firstName;
+    data['l_name'] = lastName;
+    data['email'] = email;
+    data['phone'] = phone;
+    data['password'] = password;
+    data['role'] = role;
+    data['terms'] = terms;
+    data['confirm_password'] = confirmPassword;
     return data;
   }
 }

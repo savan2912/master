@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -30,6 +31,15 @@ void main() async {
 
   await PushNotificationService.initialize();
 
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.dumpErrorToConsole(details);
+  };
+
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint("GLOBAL ERROR: $error");
+    debugPrintStack(stackTrace: stack);
+    return true;
+  };
   runApp(const MyApp());
 }
 

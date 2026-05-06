@@ -7,8 +7,7 @@ import '../../../Api/Response/CompanyLogo/ResponseCompanyLogo.dart';
 import '../../../Routes/app_routes.dart';
 
 class ContactUsScreen extends StatefulWidget {
-
-   ContactUsScreen({super.key});
+  const ContactUsScreen({super.key});
 
   @override
   State<ContactUsScreen> createState() => _ContactUsScreenState();
@@ -16,7 +15,7 @@ class ContactUsScreen extends StatefulWidget {
 
 class _ContactUsScreenState extends State<ContactUsScreen> {
   CompanyLogo? logo;
-  bool? isSearch=false;
+  bool? isSearch = false;
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
@@ -26,42 +25,41 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
 
       appBar: SharedWidgets.customAppBar(
-          centerImagePath: logo?.siteLogo,
-          searchVisible: true,
-          showSearch: isSearch!,
-          onSearchTap: () {
-            isSearch = true;
-            setState(() {
-
-            });
-          },
-          onSearchChanged: (value) {
-            print("search value is :- $value");
-          },
-          onCloseSearch: () {
-            isSearch = false;
-            setState(() {
-
-            });
-          },
-          showSignInIcon: true,
-          showJoinUsIcon: false,
-          onSignInTap: () {
-            Get.toNamed(AppRoutes.login);
-          },
-          onJoinUsTap: () {
-            Get.toNamed(AppRoutes.joinUs);
-          },
-          gradient: const LinearGradient(colors: [
-            AppColors.gradientStart,AppColors.gradientEnd
+        centerImagePath: logo?.siteLogo,
+        searchVisible: true,
+        showSearch: isSearch!,
+        onSearchTap: () {
+          isSearch = true;
+          setState(() {});
+        },
+        onSearchChanged: (value) {
+          print("search value is :- $value");
+        },
+        onCloseSearch: () {
+          isSearch = false;
+          setState(() {});
+        },
+        showSignInIcon: true,
+        showJoinUsIcon: false,
+        onSignInTap: () {
+          Get.toNamed(AppRoutes.login);
+        },
+        onJoinUsTap: () {
+          Get.toNamed(AppRoutes.joinUs);
+        },
+        gradient: const LinearGradient(
+          colors: [
+            AppColors.gradientStart, AppColors.gradientEnd,
             // AppColors.gradientStart,AppColors.gradientMid,AppColors.gradientEnd
-          ])
+          ],
+        ),
       ),
 
       body: SingleChildScrollView(
@@ -87,7 +85,6 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
-
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: contactCard(
@@ -96,7 +93,6 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       subtitle: "83 82 86 82 88\n1800 2022 101",
                     ),
                   ),
-
 
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -107,15 +103,13 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                     ),
                   ),
 
-
-
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: contactCard(
                       icon: Icons.location_on,
                       title: "Address",
                       subtitle:
-                      "401, Shree Hari Empire,\nRaiya Road, opp. Tulsi Super Market,\nRajkot - 360007",
+                          "401, Shree Hari Empire,\nRaiya Road, opp. Tulsi Super Market,\nRajkot - 360007",
                     ),
                   ),
 
@@ -137,7 +131,6 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-
                           Row(
                             children: [
                               Container(
@@ -289,11 +282,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
               color: Colors.pink.shade50,
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              color: Colors.pink,
-              size: 24,
-            ),
+            child: Icon(icon, color: Colors.pink, size: 24),
           ),
 
           const SizedBox(width: 14),
@@ -301,7 +290,6 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Text(
                   title,
                   style: const TextStyle(
@@ -314,10 +302,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
 
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    color: Colors.black54,
-                    fontSize: 13,
-                  ),
+                  style: const TextStyle(color: Colors.black54, fontSize: 13),
                 ),
               ],
             ),
@@ -326,5 +311,4 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
       ),
     );
   }
-
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 
 // --- Address Model ---
 class AddressModel {
@@ -7,8 +6,12 @@ class AddressModel {
   bool isDefault;
 
   AddressModel({
-    required this.name, required this.mobile, required this.address,
-    required this.city, required this.state, required this.pincode,
+    required this.name,
+    required this.mobile,
+    required this.address,
+    required this.city,
+    required this.state,
+    required this.pincode,
     this.isDefault = false,
   });
   String get fullAddress => "$address, $city, $state - $pincode";
@@ -53,7 +56,10 @@ class _CartScreenState extends State<CartScreen> {
   void initState() {
     super.initState();
     if (addressList.isNotEmpty) {
-      selectedAddress = addressList.firstWhere((a) => a.isDefault, orElse: () => addressList.first);
+      selectedAddress = addressList.firstWhere(
+        (a) => a.isDefault,
+        orElse: () => addressList.first,
+      );
     }
   }
 
@@ -69,7 +75,14 @@ class _CartScreenState extends State<CartScreen> {
           icon: Icon(Icons.arrow_back_ios_new, color: darkBlue, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text("Checkout", style: TextStyle(color: darkBlue, fontWeight: FontWeight.w900, fontSize: 18)),
+        title: Text(
+          "Checkout",
+          style: TextStyle(
+            color: darkBlue,
+            fontWeight: FontWeight.w900,
+            fontSize: 18,
+          ),
+        ),
       ),
       bottomNavigationBar: _buildCheckoutSection(),
       body: SingleChildScrollView(
@@ -89,7 +102,13 @@ class _CartScreenState extends State<CartScreen> {
                 _sectionHeader("Delivery Address"),
                 TextButton(
                   onPressed: () => _showAddressForm(),
-                  child: Text("+ Add New", style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
+                  child: Text(
+                    "+ Add New",
+                    style: TextStyle(
+                      color: primaryColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -123,16 +142,40 @@ class _CartScreenState extends State<CartScreen> {
       children: [
         AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          height: 28, width: 28,
+          height: 28,
+          width: 28,
           decoration: BoxDecoration(
             color: isActive ? primaryColor : Colors.grey[300],
             shape: BoxShape.circle,
-            boxShadow: isActive ? [BoxShadow(color: primaryColor.withOpacity(0.3), blurRadius: 8)] : [],
+            boxShadow: isActive
+                ? [
+                    BoxShadow(
+                      color: primaryColor.withOpacity(0.3),
+                      blurRadius: 8,
+                    ),
+                  ]
+                : [],
           ),
-          child: Center(child: Text(step, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold))),
+          child: Center(
+            child: Text(
+              step,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: 6),
-        Text(label, style: TextStyle(fontSize: 11, color: isActive ? darkBlue : Colors.grey, fontWeight: FontWeight.bold)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: isActive ? darkBlue : Colors.grey,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ],
     );
   }
@@ -154,32 +197,60 @@ class _CartScreenState extends State<CartScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: [BoxShadow(color: darkBlue.withOpacity(0.04), blurRadius: 20, offset: const Offset(0, 10))],
+        boxShadow: [
+          BoxShadow(
+            color: darkBlue.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Row(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(18),
-            child: Image.asset("assets/dry.png", height: 80, width: 80, fit: BoxFit.cover),
+            child: Image.asset(
+              "assets/dry.png",
+              height: 80,
+              width: 80,
+              fit: BoxFit.cover,
+            ),
           ),
           const SizedBox(width: 15),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Cold Brew Coffee", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: darkBlue)),
-                Text("Gotilo Special Edition", style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                Text(
+                  "Cold Brew Coffee",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: darkBlue,
+                  ),
+                ),
+                Text(
+                  "Gotilo Special Edition",
+                  style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                ),
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("₹${price.toInt()}", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: darkBlue)),
+                    Text(
+                      "₹${price.toInt()}",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: darkBlue,
+                      ),
+                    ),
                     _buildQtyController(),
                   ],
-                )
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -187,13 +258,19 @@ class _CartScreenState extends State<CartScreen> {
 
   Widget _buildQtyController() {
     return Container(
-      decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF1F5F9),
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Row(
         children: [
           _qtyBtn(Icons.remove, () => setState(() => qty > 1 ? qty-- : null)),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Text("$qty", style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
+            child: Text(
+              "$qty",
+              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
+            ),
           ),
           _qtyBtn(Icons.add, () => setState(() => qty++)),
         ],
@@ -204,7 +281,10 @@ class _CartScreenState extends State<CartScreen> {
   Widget _qtyBtn(IconData icon, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
-      child: Padding(padding: const EdgeInsets.all(8), child: Icon(icon, size: 16, color: darkBlue)),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Icon(icon, size: 16, color: darkBlue),
+      ),
     );
   }
 
@@ -224,24 +304,58 @@ class _CartScreenState extends State<CartScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: isSelected ? primaryColor : Colors.white, width: 2),
-              boxShadow: [BoxShadow(color: isSelected ? primaryColor.withOpacity(0.1) : Colors.black.withOpacity(0.03), blurRadius: 15)],
+              border: Border.all(
+                color: isSelected ? primaryColor : Colors.white,
+                width: 2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: isSelected
+                      ? primaryColor.withOpacity(0.1)
+                      : Colors.black.withOpacity(0.03),
+                  blurRadius: 15,
+                ),
+              ],
             ),
             child: Row(
               children: [
-                Icon(isSelected ? Icons.check_circle_rounded : Icons.radio_button_off_rounded, color: isSelected ? primaryColor : Colors.grey),
+                Icon(
+                  isSelected
+                      ? Icons.check_circle_rounded
+                      : Icons.radio_button_off_rounded,
+                  color: isSelected ? primaryColor : Colors.grey,
+                ),
                 const SizedBox(width: 15),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(address.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: darkBlue)),
+                      Text(
+                        address.name,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          color: darkBlue,
+                        ),
+                      ),
                       const SizedBox(height: 2),
-                      Text(address.fullAddress, style: TextStyle(color: Colors.grey[600], fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      Text(
+                        address.fullAddress,
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
                 ),
-                IconButton(onPressed: () => _deleteAddress(index), icon: const Icon(Icons.delete_outline_rounded, color: Colors.red, size: 18)),
+                IconButton(
+                  onPressed: () => _deleteAddress(index),
+                  icon: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: Colors.red,
+                    size: 18,
+                  ),
+                ),
               ],
             ),
           ),
@@ -257,19 +371,42 @@ class _CartScreenState extends State<CartScreen> {
       decoration: BoxDecoration(
         color: darkBlue,
         borderRadius: BorderRadius.circular(28),
-        boxShadow: [BoxShadow(color: darkBlue.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 10))],
+        boxShadow: [
+          BoxShadow(
+            color: darkBlue.withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         children: [
           _priceRow("Subtotal", "₹${subtotal.toInt()}", Colors.white70),
           _priceRow("Discount", "-₹${discount.toInt()}", Colors.redAccent),
           _priceRow("Delivery Fee", "FREE", Colors.greenAccent),
-          const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Divider(color: Colors.white12)),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Divider(color: Colors.white12),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Total Amount", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-              Text("₹${total.toInt()}", style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900)),
+              const Text(
+                "Total Amount",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                "₹${total.toInt()}",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
             ],
           ),
         ],
@@ -283,8 +420,18 @@ class _CartScreenState extends State<CartScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: Colors.white60, fontSize: 14)),
-          Text(val, style: TextStyle(color: valColor, fontWeight: FontWeight.bold, fontSize: 14)),
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white60, fontSize: 14),
+          ),
+          Text(
+            val,
+            style: TextStyle(
+              color: valColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
         ],
       ),
     );
@@ -294,55 +441,85 @@ class _CartScreenState extends State<CartScreen> {
   Widget _buildCheckoutSection() {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 35),
-      decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
-      child: LayoutBuilder(builder: (context, constraints) {
-        double maxWidth = constraints.maxWidth;
-        double buttonSize = 54;
-        double maxDrag = maxWidth - buttonSize - 8;
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          double maxWidth = constraints.maxWidth;
+          double buttonSize = 54;
+          double maxDrag = maxWidth - buttonSize - 8;
 
-        return Container(
-          height: 66,
-          width: maxWidth,
-          decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(33)),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Text(_isFinished ? "SUCCESSFUL" : "Slide to Pay • ₹${total.toInt()}",
-                  style: TextStyle(color: darkBlue, fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 0.5)),
-              Positioned(
-                left: 6 + _dragPosition,
-                child: GestureDetector(
-                  onHorizontalDragUpdate: (details) {
-                    setState(() {
-                      _dragPosition += details.delta.dx;
-                      if (_dragPosition < 0) _dragPosition = 0;
-                      if (_dragPosition > maxDrag) _dragPosition = maxDrag;
-                    });
-                  },
-                  onHorizontalDragEnd: (details) {
-                    if (_dragPosition > maxDrag * 0.75) {
-                      setState(() { _dragPosition = maxDrag; _isFinished = true; });
-                      // Navigation logic here
-                      print("Payment Started!");
-                    } else {
-                      setState(() => _dragPosition = 0);
-                    }
-                  },
-                  child: Container(
-                    height: buttonSize, width: buttonSize,
-                    decoration: BoxDecoration(
-                      color: darkBlue,
-                      shape: BoxShape.circle,
-                      boxShadow: [BoxShadow(color: darkBlue.withOpacity(0.3), blurRadius: 10)],
-                    ),
-                    child: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 20),
+          return Container(
+            height: 66,
+            width: maxWidth,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF1F5F9),
+              borderRadius: BorderRadius.circular(33),
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Text(
+                  _isFinished
+                      ? "SUCCESSFUL"
+                      : "Slide to Pay • ₹${total.toInt()}",
+                  style: TextStyle(
+                    color: darkBlue,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 13,
+                    letterSpacing: 0.5,
                   ),
                 ),
-              ),
-            ],
-          ),
-        );
-      }),
+                Positioned(
+                  left: 6 + _dragPosition,
+                  child: GestureDetector(
+                    onHorizontalDragUpdate: (details) {
+                      setState(() {
+                        _dragPosition += details.delta.dx;
+                        if (_dragPosition < 0) _dragPosition = 0;
+                        if (_dragPosition > maxDrag) _dragPosition = maxDrag;
+                      });
+                    },
+                    onHorizontalDragEnd: (details) {
+                      if (_dragPosition > maxDrag * 0.75) {
+                        setState(() {
+                          _dragPosition = maxDrag;
+                          _isFinished = true;
+                        });
+                        // Navigation logic here
+                        print("Payment Started!");
+                      } else {
+                        setState(() => _dragPosition = 0);
+                      }
+                    },
+                    child: Container(
+                      height: buttonSize,
+                      width: buttonSize,
+                      decoration: BoxDecoration(
+                        color: darkBlue,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: darkBlue.withOpacity(0.3),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -352,22 +529,55 @@ class _CartScreenState extends State<CartScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
       builder: (context) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 20, right: 20, top: 20),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 20,
+          right: 20,
+          top: 20,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Add New Address", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              "Add New Address",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 20),
-            TextField(decoration: InputDecoration(labelText: "Full Name", border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+            TextField(
+              decoration: InputDecoration(
+                labelText: "Full Name",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
             const SizedBox(height: 12),
-            TextField(decoration: InputDecoration(labelText: "Address Detail", border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
+            TextField(
+              decoration: InputDecoration(
+                labelText: "Address Detail",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(backgroundColor: darkBlue, minimumSize: const Size(double.infinity, 50), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-              child: const Text("Save Address", style: TextStyle(color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: darkBlue,
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                "Save Address",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
             const SizedBox(height: 30),
           ],
@@ -383,7 +593,14 @@ class _CartScreenState extends State<CartScreen> {
   Widget _sectionHeader(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: darkBlue)),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w900,
+          color: darkBlue,
+        ),
+      ),
     );
   }
 }

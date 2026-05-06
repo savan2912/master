@@ -11,49 +11,48 @@ class SubCategoryDetailScreen extends StatefulWidget {
   const SubCategoryDetailScreen({super.key});
 
   @override
-  State<SubCategoryDetailScreen> createState() => _SubCategoryDetailScreenState();
+  State<SubCategoryDetailScreen> createState() =>
+      _SubCategoryDetailScreenState();
 }
 
 class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
   int selectedIndex = 0;
-  bool? isSearch=false;
+  bool? isSearch = false;
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  final List<Map<String, dynamic>> products =
-  [
+  final List<Map<String, dynamic>> products = [
     {
       "name": "Maskabun Jam Butter",
       "price": 43.00,
       "oldPrice": 50.00,
       "discount": "14% Off",
-      "image": "assets/maska.png"
+      "image": "assets/maska.png",
     },
     {
       "name": "Bread Butter",
       "price": 30.00,
       "oldPrice": null,
       "discount": null,
-      "image": "assets/bread_butter.png"
+      "image": "assets/bread_butter.png",
     },
     {
       "name": "Masala Sandwich",
       "price": 50.00,
       "oldPrice": null,
       "discount": null,
-      "image": "assets/masala.png"
+      "image": "assets/masala.png",
     },
     {
       "name": "Cheese Masala Sandwich",
       "price": 90.00,
       "oldPrice": null,
       "discount": null,
-      "image": "assets/chesse_masala.png"
+      "image": "assets/chesse_masala.png",
     },
   ];
   final PageController _dealPageController = PageController();
   int _currentDealIndex = 0;
-  final List<Map<String, String>> dealsList =
-  [
+  final List<Map<String, String>> dealsList = [
     {
       "title": "FLAT 20% OFF",
       "desc": "Get 20% discount on all main course items. Use code: NATURE20",
@@ -89,24 +88,24 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: SharedWidgets.customAppBar(
-          showSearch: selectedIndex==1 ? isSearch! : false,
-          searchVisible: selectedIndex==1 ? true : false,
-          isCartShow: selectedIndex==1 ? true : false,
-          onCartTap: () {
-            Get.to(()=> const CartScreen());
-          },
-          onSearchTap: () {
-            isSearch=true;
-            setState(() {});
-          },
-          onCloseSearch: () {
-            isSearch=false;
-            setState(() {});
-          },
-          title: "KT's Cafe",
-          gradient: const LinearGradient(colors: [
-            AppColors.gradientStart,AppColors.gradientEnd
-          ])
+        showSearch: selectedIndex == 1 ? isSearch! : false,
+        searchVisible: selectedIndex == 1 ? true : false,
+        isCartShow: selectedIndex == 1 ? true : false,
+        onCartTap: () {
+          Get.to(() => const CartScreen());
+        },
+        onSearchTap: () {
+          isSearch = true;
+          setState(() {});
+        },
+        onCloseSearch: () {
+          isSearch = false;
+          setState(() {});
+        },
+        title: "KT's Cafe",
+        gradient: const LinearGradient(
+          colors: [AppColors.gradientStart, AppColors.gradientEnd],
+        ),
       ),
       body: SafeArea(
         child: Column(
@@ -115,8 +114,18 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: Row(
                 children: [
-                  _buildSwiggyTab(0, "Overview", "assets/overview.svg", selectedIndex == 0),
-                  _buildSwiggyTab(1, "Products", "assets/product.svg", selectedIndex == 1),
+                  _buildSwiggyTab(
+                    0,
+                    "Overview",
+                    "assets/overview.svg",
+                    selectedIndex == 0,
+                  ),
+                  _buildSwiggyTab(
+                    1,
+                    "Products",
+                    "assets/product.svg",
+                    selectedIndex == 1,
+                  ),
                 ],
               ),
             ),
@@ -139,14 +148,12 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
     );
   }
 
-
   Widget _buildSelectedContent() {
     if (selectedIndex == 0) {
       return SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             Stack(
               children: [
                 // Main Image Slider with Curves
@@ -155,7 +162,9 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                   width: double.infinity,
                   margin: const EdgeInsets.all(10), // Thodi gap mate
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20), // More curvy design
+                    borderRadius: BorderRadius.circular(
+                      20,
+                    ), // More curvy design
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
@@ -165,7 +174,9 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20), // Image ne curve karva mate
+                    borderRadius: BorderRadius.circular(
+                      20,
+                    ), // Image ne curve karva mate
                     child: PageView.builder(
                       controller: _pageController,
                       itemCount: bannerImages.length,
@@ -179,7 +190,8 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                           color: Colors.grey.shade100, // Background color
                           child: Image.asset(
                             bannerImages[index],
-                            fit: BoxFit.contain, // Logo chhe etle contain saru lagse
+                            fit: BoxFit
+                                .contain, // Logo chhe etle contain saru lagse
                           ),
                         );
                       },
@@ -233,21 +245,37 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                   right: 25,
                   child: InkWell(
                     onTap: () {
-                      Get.to(()=> FullScreenGallery(images: bannerImages, initialIndex:_currentPage));
+                      Get.to(
+                        () => FullScreenGallery(
+                          images: bannerImages,
+                          initialIndex: _currentPage,
+                        ),
+                      );
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.black.withOpacity(0.6),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.image_outlined, color: Colors.white, size: 14),
+                          const Icon(
+                            Icons.image_outlined,
+                            color: Colors.white,
+                            size: 14,
+                          ),
                           const SizedBox(width: 5),
                           Text(
                             "${_currentPage + 1}/${bannerImages.length} View all",
-                            style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
@@ -264,7 +292,8 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                   scrollDirection: Axis.horizontal,
                   itemCount: galleryImages.length,
                   clipBehavior: Clip.none, // Shadows mate help karshe
-                  separatorBuilder: (context, index) => const SizedBox(width: 12),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 12),
                   itemBuilder: (context, index) {
                     return Container(
                       width: 110,
@@ -275,7 +304,7 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                             color: Colors.black.withOpacity(0.05),
                             blurRadius: 5,
                             spreadRadius: 1,
-                          )
+                          ),
                         ],
                       ),
                       child: ClipRRect(
@@ -302,13 +331,22 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                     children: [
                       const Text(
                         "Nature Velly",
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       Row(
                         children: [
                           Icon(Icons.star, color: Colors.amber[700], size: 20),
                           const SizedBox(width: 4),
-                          const Text("0.0", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          const Text(
+                            "0.0",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -319,12 +357,20 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.location_on_outlined, size: 20, color: Colors.grey),
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 20,
+                        color: Colors.grey,
+                      ),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           "Naturevelly, shop no 185, Beside big bazar, opp. Reliance mall, 150ft ring road. Rajkot",
-                          style: TextStyle(color: Colors.grey[600], fontSize: 14, height: 1.4),
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 14,
+                            height: 1.4,
+                          ),
                         ),
                       ),
                     ],
@@ -334,7 +380,10 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                   // Actions
                   Row(
                     children: [
-                      _buildActionItem(Icons.favorite_border, "Add to favourite"),
+                      _buildActionItem(
+                        Icons.favorite_border,
+                        "Add to favourite",
+                      ),
                       const SizedBox(width: 25),
                       _buildActionItem(Icons.share_outlined, "Share Now"),
                     ],
@@ -380,7 +429,9 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                                     backgroundColor: Colors.white,
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: Image.asset('assets/banner1.png'), // Logo path
+                                      child: Image.asset(
+                                        'assets/banner1.png',
+                                      ), // Logo path
                                     ),
                                   ),
                                   const Positioned(
@@ -389,7 +440,11 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                                     child: CircleAvatar(
                                       radius: 10,
                                       backgroundColor: Colors.green,
-                                      child: Icon(Icons.check, color: Colors.white, size: 12),
+                                      child: Icon(
+                                        Icons.check,
+                                        color: Colors.white,
+                                        size: 12,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -397,15 +452,29 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                               const SizedBox(height: 10),
                               const Text(
                                 "Meet bhai kaneriya",
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1A237E)),
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF1A237E),
+                                ),
                               ),
                               const SizedBox(height: 5),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.star, color: Colors.amber[700], size: 16),
+                                  Icon(
+                                    Icons.star,
+                                    color: Colors.amber[700],
+                                    size: 16,
+                                  ),
                                   const SizedBox(width: 4),
-                                  const Text("0.0", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                                  const Text(
+                                    "0.0",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ],
@@ -414,11 +483,19 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                         const SizedBox(height: 20),
 
                         // Email Row
-                        _buildVendorInfoRow(Icons.email_outlined, "Email", "meetpatel69779@gmail.com"),
+                        _buildVendorInfoRow(
+                          Icons.email_outlined,
+                          "Email",
+                          "meetpatel69779@gmail.com",
+                        ),
                         const Divider(height: 30),
 
                         // Phone Row
-                        _buildVendorInfoRow(Icons.phone_outlined, "Phone", "*********"),
+                        _buildVendorInfoRow(
+                          Icons.phone_outlined,
+                          "Phone",
+                          "*********",
+                        ),
                         const SizedBox(height: 25),
 
                         // Action Buttons
@@ -427,12 +504,23 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                             Expanded(
                               child: ElevatedButton.icon(
                                 onPressed: () {},
-                                icon: const Icon(Icons.person_outline, size: 18, color: Colors.white),
-                                label: const Text("Contact Provider", style: TextStyle(color: Colors.white)),
+                                icon: const Icon(
+                                  Icons.person_outline,
+                                  size: 18,
+                                  color: Colors.white,
+                                ),
+                                label: const Text(
+                                  "Contact Provider",
+                                  style: TextStyle(color: Colors.white),
+                                ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF0D1724),
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
                                 ),
                               ),
                             ),
@@ -442,13 +530,24 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                                 onPressed: () {
                                   _showEnquiryDialog(context);
                                 },
-                                icon: const Icon(Icons.email_outlined, size: 18, color: Colors.black87),
-                                label: const Text("Send Enquiry", style: TextStyle(color: Colors.black87)),
+                                icon: const Icon(
+                                  Icons.email_outlined,
+                                  size: 18,
+                                  color: Colors.black87,
+                                ),
+                                label: const Text(
+                                  "Send Enquiry",
+                                  style: TextStyle(color: Colors.black87),
+                                ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.grey.shade200,
                                   elevation: 0,
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
                                 ),
                               ),
                             ),
@@ -461,13 +560,20 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
 
                   const SizedBox(height: 20),
 
-
-                  _buildExpansionTile("Overview", "Nature Velly is known for its fresh organic products and great dining experience in Rajkot."),
-                  _buildExpansionTile("Keywords", "Organic, Food, Dining, Rajkot, Nature Velly, Healthy Food"),
-                  _buildExpansionTile("Amenities", "• Free Parking\n• Free Wi-Fi\n• Air Conditioned\n• Online Payment"),
+                  _buildExpansionTile(
+                    "Overview",
+                    "Nature Velly is known for its fresh organic products and great dining experience in Rajkot.",
+                  ),
+                  _buildExpansionTile(
+                    "Keywords",
+                    "Organic, Food, Dining, Rajkot, Nature Velly, Healthy Food",
+                  ),
+                  _buildExpansionTile(
+                    "Amenities",
+                    "• Free Parking\n• Free Wi-Fi\n• Air Conditioned\n• Online Payment",
+                  ),
 
                   const SizedBox(height: 20),
-
 
                   Container(
                     padding: const EdgeInsets.all(16),
@@ -484,16 +590,30 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                           children: [
                             const Text(
                               "Reviews (0)",
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             ElevatedButton(
                               onPressed: () {},
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF0D1724),
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 0,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
                               ),
-                              child: const Text("Write a Review", style: TextStyle(color: Colors.white, fontSize: 12)),
+                              child: const Text(
+                                "Write a Review",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -510,12 +630,23 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                             children: [
                               const Text(
                                 "Customer Reviews & Ratings",
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF1A237E)),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF1A237E),
+                                ),
                               ),
                               const SizedBox(height: 10),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: List.generate(5, (index) => const Icon(Icons.star_border, color: Colors.amber, size: 22)),
+                                children: List.generate(
+                                  5,
+                                  (index) => const Icon(
+                                    Icons.star_border,
+                                    color: Colors.amber,
+                                    size: 22,
+                                  ),
+                                ),
                               ),
                               const SizedBox(height: 5),
                               const Text(
@@ -550,10 +681,13 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
         },
       );
     } else {
-      return const Center(child: Text("Dineout Offers", style: TextStyle(fontSize: 18)));
+      return const Center(
+        child: Text("Dineout Offers", style: TextStyle(fontSize: 18)),
+      );
     }
   }
-    void _showAddToCartSheet(Map<String, dynamic> product) {
+
+  void _showAddToCartSheet(Map<String, dynamic> product) {
     int quantity = 1; // Default quantity
 
     showModalBottomSheet(
@@ -563,7 +697,8 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return StatefulBuilder( // Jethi quantity update thai shake
+        return StatefulBuilder(
+          // Jethi quantity update thai shake
           builder: (context, setSheetState) {
             return Padding(
               padding: const EdgeInsets.all(20),
@@ -577,16 +712,33 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: Image.asset(product['image'], height: 80, width: 80, fit: BoxFit.cover),
+                        child: Image.asset(
+                          product['image'],
+                          height: 80,
+                          width: 80,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                       const SizedBox(width: 15),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(product['name'], style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            Text(
+                              product['name'],
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             const SizedBox(height: 5),
-                            Text("₹${product['price']}", style: const TextStyle(fontSize: 16, color: Colors.grey)),
+                            Text(
+                              "₹${product['price']}",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -598,7 +750,13 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text("Select Quantity", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      const Text(
+                        "Select Quantity",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       Container(
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey.shade300),
@@ -608,11 +766,18 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                           children: [
                             IconButton(
                               onPressed: () {
-                                if (quantity > 1) setSheetState(() => quantity--);
+                                if (quantity > 1)
+                                  setSheetState(() => quantity--);
                               },
                               icon: const Icon(Icons.remove, color: Colors.red),
                             ),
-                            Text("$quantity", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                            Text(
+                              "$quantity",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             IconButton(
                               onPressed: () => setSheetState(() => quantity++),
                               icon: const Icon(Icons.add, color: Colors.green),
@@ -631,18 +796,27 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0D1431),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                       onPressed: () {
                         // Ahiya tamari cart logic avse
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("${product['name']} (x$quantity) added to cart!")),
+                          SnackBar(
+                            content: Text(
+                              "${product['name']} (x$quantity) added to cart!",
+                            ),
+                          ),
                         );
                       },
                       child: Text(
                         "Add Item - ₹${product['price'] * quantity}",
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
@@ -655,6 +829,7 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
       },
     );
   }
+
   Widget _buildProductCard(Map<String, dynamic> product) {
     return Container(
       decoration: BoxDecoration(
@@ -677,7 +852,9 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(12),
+                    ),
                     image: DecorationImage(
                       image: AssetImage(product['image']),
                       fit: BoxFit.cover,
@@ -689,14 +866,21 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                     top: 8,
                     left: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.green,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         product['discount'],
-                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
@@ -713,14 +897,20 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                   product['name'],
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                 ),
                 const SizedBox(height: 5),
                 Row(
                   children: [
                     Text(
                       "₹${product['price']}",
-                      style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 15,
+                      ),
                     ),
                     if (product['oldPrice'] != null) ...[
                       const SizedBox(width: 5),
@@ -750,11 +940,19 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 14),
+                        Icon(
+                          Icons.shopping_cart_outlined,
+                          color: Colors.white,
+                          size: 14,
+                        ),
                         SizedBox(width: 5),
                         Text(
                           "Add To Cart",
-                          style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -767,6 +965,7 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
       ),
     );
   }
+
   Widget _buildMultipleDeals() {
     return Column(
       children: [
@@ -797,7 +996,9 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                 height: 6,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: _currentDealIndex == index ? Colors.red : Colors.grey.shade300,
+                  color: _currentDealIndex == index
+                      ? Colors.red
+                      : Colors.grey.shade300,
                 ),
               );
             }),
@@ -805,6 +1006,7 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
       ],
     );
   }
+
   Widget _buildSingleDealCard(Map<String, String> deal) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -820,8 +1022,12 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
         children: [
           // Background Circle design (Optional, but looks premium)
           Positioned(
-            right: -15, top: -15,
-            child: CircleAvatar(radius: 35, backgroundColor: Colors.white.withOpacity(0.1)),
+            right: -15,
+            top: -15,
+            child: CircleAvatar(
+              radius: 35,
+              backgroundColor: Colors.white.withOpacity(0.1),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -836,19 +1042,19 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                       Text(
                         deal['title']!,
                         style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            letterSpacing: 0.5
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          letterSpacing: 0.5,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         deal['desc']!,
                         style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -859,21 +1065,24 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                 const SizedBox(width: 10),
                 // "CLAIM" Button
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black12, blurRadius: 4)
-                      ]
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black12, blurRadius: 4),
+                    ],
                   ),
                   child: const Text(
-                      "CLAIM",
-                      style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12
-                      )
+                    "CLAIM",
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ],
@@ -883,6 +1092,7 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
       ),
     );
   }
+
   Widget _buildNavArrow({required IconData icon, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
@@ -899,6 +1109,7 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
       ),
     );
   }
+
   Widget _buildExpansionTile(String title, String content) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -913,11 +1124,19 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
           initiallyExpanded: true,
           title: Text(
             title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Colors.black87,
+            ),
           ),
           iconColor: Colors.grey,
           collapsedIconColor: Colors.grey,
-          childrenPadding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+          childrenPadding: const EdgeInsets.only(
+            left: 16,
+            right: 16,
+            bottom: 16,
+          ),
           expandedCrossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Divider(height: 1),
@@ -931,13 +1150,16 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
       ),
     );
   }
-    void _showEnquiryDialog(BuildContext context) {
+
+  void _showEnquiryDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
           backgroundColor: AppColors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           insetPadding: const EdgeInsets.all(20),
           child: SingleChildScrollView(
             child: Column(
@@ -945,14 +1167,27 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
               children: [
                 // Header with Close Icon
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text("Enquiry", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      const Text(
+                        "Enquiry",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       GestureDetector(
                         onTap: () => Navigator.pop(context),
-                        child: const Icon(Icons.cancel, color: Colors.black54, size: 24),
+                        child: const Icon(
+                          Icons.cancel,
+                          color: Colors.black54,
+                          size: 24,
+                        ),
                       ),
                     ],
                   ),
@@ -975,23 +1210,41 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: Image.asset('assets/food.png', width: 60, height: 60, fit: BoxFit.cover),
+                              child: Image.asset(
+                                'assets/food.png',
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                             const SizedBox(width: 12),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text("Nature Velly", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                const Text(
+                                  "Nature Velly",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                  ),
+                                ),
                                 const SizedBox(height: 4),
                                 Row(
                                   children: [
-                                    Icon(Icons.star, color: Colors.amber[700], size: 16),
+                                    Icon(
+                                      Icons.star,
+                                      color: Colors.amber[700],
+                                      size: 16,
+                                    ),
                                     const SizedBox(width: 4),
-                                    const Text("0.0", style: TextStyle(fontSize: 14)),
+                                    const Text(
+                                      "0.0",
+                                      style: TextStyle(fontSize: 14),
+                                    ),
                                   ],
                                 ),
                               ],
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -1002,7 +1255,11 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                       _buildInputField("Last Name", "Enter Last Name"),
                       _buildInputField("Email", "Enter Email"),
                       _buildInputField("Phone Number", "Enter Phone Number"),
-                      _buildInputField("Write us a Message", "Enter Enquiry Now", maxLines: 3),
+                      _buildInputField(
+                        "Write us a Message",
+                        "Enter Enquiry Now",
+                        maxLines: 3,
+                      ),
 
                       const SizedBox(height: 10),
                     ],
@@ -1019,15 +1276,27 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                       onPressed: () => Navigator.pop(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0D1724),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
                       ),
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text("Enquiry", style: TextStyle(color: Colors.white)),
+                          Text(
+                            "Enquiry",
+                            style: TextStyle(color: Colors.white),
+                          ),
                           SizedBox(width: 8),
-                          Icon(Icons.arrow_circle_right_outlined, color: Colors.white, size: 18),
+                          Icon(
+                            Icons.arrow_circle_right_outlined,
+                            color: Colors.white,
+                            size: 18,
+                          ),
                         ],
                       ),
                     ),
@@ -1040,39 +1309,64 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
       },
     );
   }
+
   Widget _buildInputField(String label, String hint, {int maxLines = 1}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Colors.black87)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              color: Colors.black87,
+            ),
+          ),
           const SizedBox(height: 8),
           TextField(
             maxLines: maxLines,
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: const TextStyle(color: Colors.grey, fontSize: 13),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Colors.grey.shade300)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Colors.grey.shade300)),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 12,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
             ),
           ),
         ],
       ),
     );
   }
+
   Widget _buildVendorInfoRow(IconData icon, String title, String value) {
     return Row(
       children: [
         Icon(icon, size: 18, color: Colors.black87),
         const SizedBox(width: 8),
-        Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+        Text(
+          title,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        ),
         const Spacer(),
-        Text(value, style: TextStyle(fontSize: 14, color: Colors.blue.shade900)),
+        Text(
+          value,
+          style: TextStyle(fontSize: 14, color: Colors.blue.shade900),
+        ),
       ],
     );
   }
+
   Widget _buildActionItem(IconData icon, String label) {
     return InkWell(
       onTap: () {},
@@ -1082,13 +1376,24 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
           const SizedBox(width: 6),
           Text(
             label,
-            style: const TextStyle(color: Colors.black87, fontSize: 14, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              color: Colors.black87,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
     );
   }
-  Widget _buildSwiggyTab(int index, String label, String icon, bool isSelected, {String? badge}) {
+
+  Widget _buildSwiggyTab(
+    int index,
+    String label,
+    String icon,
+    bool isSelected, {
+    String? badge,
+  }) {
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() => selectedIndex = index),
@@ -1104,19 +1409,29 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                   clipBehavior: Clip.none,
                   alignment: Alignment.center,
                   children: [
-                    SvgPicture.asset(icon, color: isSelected ? Colors.white : Colors.grey[400]),
+                    SvgPicture.asset(
+                      icon,
+                      color: isSelected ? Colors.white : Colors.grey[400],
+                    ),
                     if (badge != null)
                       Positioned(
                         bottom: -8,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.blue[700],
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: Text(
                             badge,
-                            style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -1127,7 +1442,9 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
                   label,
                   style: TextStyle(
                     color: isSelected ? Colors.white : Colors.grey[400],
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                     fontSize: 12,
                   ),
                 ),
@@ -1138,7 +1455,6 @@ class _SubCategoryDetailScreenState extends State<SubCategoryDetailScreen> {
       ),
     );
   }
-
 }
 
 class TabShapePainter extends CustomPainter {
@@ -1161,12 +1477,7 @@ class TabShapePainter extends CustomPainter {
     path.moveTo(size.width * 0.12, 0);
 
     /// LEFT CURVE
-    path.quadraticBezierTo(
-      0,
-      0,
-      0,
-      size.height * 0.35,
-    );
+    path.quadraticBezierTo(0, 0, 0, size.height * 0.35);
 
     path.lineTo(0, size.height);
 
@@ -1175,12 +1486,7 @@ class TabShapePainter extends CustomPainter {
     path.lineTo(size.width, size.height * 0.35);
 
     /// RIGHT CURVE
-    path.quadraticBezierTo(
-      size.width,
-      0,
-      size.width * 0.88,
-      0,
-    );
+    path.quadraticBezierTo(size.width, 0, size.width * 0.88, 0);
 
     path.close();
 
@@ -1189,7 +1495,8 @@ class TabShapePainter extends CustomPainter {
 
     /// 🔥 VISIBLE DIVIDER LINE
     final borderPaint = Paint()
-      ..color = Colors.black12 // CHANGE COLOR HERE
+      ..color = Colors
+          .black12 // CHANGE COLOR HERE
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2; // THICKER LINE
 
@@ -1200,10 +1507,7 @@ class TabShapePainter extends CustomPainter {
       ..color = Colors.white.withOpacity(0.3)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4
-      ..maskFilter = const MaskFilter.blur(
-        BlurStyle.normal,
-        3,
-      );
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
 
     canvas.drawPath(path, glowPaint);
   }

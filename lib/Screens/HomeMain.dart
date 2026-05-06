@@ -1,5 +1,3 @@
-
-
 import 'dart:developer';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -27,6 +25,7 @@ import 'Login/view/LoginScreen.dart';
 import 'LuxuryCardItem.dart';
 import 'NewlyAddedListing/NewlyAddedListing.dart';
 import 'OurFeaturedServices/OurFeaturedServicesScreen.dart';
+import 'User/Account/AccountScreen.dart';
 
 class HomeMainScreen extends StatefulWidget {
   const HomeMainScreen({super.key});
@@ -35,21 +34,20 @@ class HomeMainScreen extends StatefulWidget {
 }
 
 class _HomeMainScreenState extends State<HomeMainScreen> {
-
-  ValueNotifier<bool> isApiComplete=ValueNotifier(false);
-  ValueNotifier<bool> isDataAvailable=ValueNotifier(false);
+  ValueNotifier<bool> isApiComplete = ValueNotifier(false);
+  ValueNotifier<bool> isDataAvailable = ValueNotifier(false);
   List<Sliders>? banner;
-  List<Categories>?  homeCollection;
+  List<Categories>? homeCollection;
   List<NearbyListings>? homeLatestRelease;
   List<LatestListings>? homeNearListing;
-  List<Services>?   homeService;
+  List<Services>? homeService;
   List<NearbyDeals>? homeDeal;
-  bool _isSearching = false;
+  final bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
   String selectedCityName = "Select City";
   int selectedCityId = 0;
   ValueNotifier<bool> isCitySelected = ValueNotifier(false);
-  List<Cities> allCities=[];
+  List<Cities> allCities = [];
 
   @override
   void initState() {
@@ -57,15 +55,13 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkInitialCity();
     });
-   callHome();
+    callHome();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _buildHomeScreen(),
-    );
+    return Scaffold(body: _buildHomeScreen());
   }
 
   Future<void> _checkInitialCity() async {
@@ -85,75 +81,105 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
     List<Cities> filteredCities = List.from(allCities);
     Get.bottomSheet(
       StatefulBuilder(
-          builder: (context, setSheetState) {
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      height: 4, width: 40,
-                      margin: const EdgeInsets.only(bottom: 20),
-                      decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
-                    ),
-                  ),
-
-                  Text("Select Your City",
-                      style: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.w800, color: ModernHeritageApp.textDark)),
-                  const SizedBox(height: 15),
-
-                  Container(
-                    height: 45,
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
+        builder: (context, setSheetState) {
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    height: 4,
+                    width: 40,
+                    margin: const EdgeInsets.only(bottom: 20),
                     decoration: BoxDecoration(
-                      color: ModernHeritageApp.appBg,
-                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: TextField(
-                      onChanged: (value) {
-                        setSheetState(() {
-                          filteredCities = allCities
-                              .where((city) => city.name.toString().toLowerCase().contains(value.toLowerCase()))
-                              .toList();
-                        });
-                      },
-                      decoration: InputDecoration(
-                        hintText: "Search your city...",
-                        hintStyle: GoogleFonts.montserrat(fontSize: 12, color: Colors.grey),
-                        prefixIcon: const Icon(Icons.search, size: 20, color: ModernHeritageApp.primaryCyan),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                  ),
+                ),
+
+                Text(
+                  "Select Your City",
+                  style: GoogleFonts.montserrat(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: ModernHeritageApp.textDark,
+                  ),
+                ),
+                const SizedBox(height: 15),
+
+                Container(
+                  height: 45,
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(
+                    color: ModernHeritageApp.appBg,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: TextField(
+                    onChanged: (value) {
+                      setSheetState(() {
+                        filteredCities = allCities
+                            .where(
+                              (city) => city.name
+                                  .toString()
+                                  .toLowerCase()
+                                  .contains(value.toLowerCase()),
+                            )
+                            .toList();
+                      });
+                    },
+                    decoration: InputDecoration(
+                      hintText: "Search your city...",
+                      hintStyle: GoogleFonts.montserrat(
+                        fontSize: 12,
+                        color: Colors.grey,
                       ),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        size: 20,
+                        color: ModernHeritageApp.primaryCyan,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  Flexible(
-                    child: filteredCities.isEmpty
-                        ? Center(child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Text("No city found", style: GoogleFonts.montserrat(color: Colors.grey)),
-                    ))
-                        : ListView.builder(
-                      shrinkWrap: true,
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: filteredCities.length,
-                      itemBuilder: (context, index) {
-                        var city = filteredCities[index];
-                        return _cityTile(city.id ?? 0, city.name ?? "Unknown");
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            );
-          }
+                ),
+                const SizedBox(height: 20),
+                Flexible(
+                  child: filteredCities.isEmpty
+                      ? Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Text(
+                              "No city found",
+                              style: GoogleFonts.montserrat(color: Colors.grey),
+                            ),
+                          ),
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: filteredCities.length,
+                          itemBuilder: (context, index) {
+                            var city = filteredCities[index];
+                            return _cityTile(
+                              city.id ?? 0,
+                              city.name ?? "Unknown",
+                            );
+                          },
+                        ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          );
+        },
       ),
       isDismissible: true,
       enableDrag: true,
@@ -170,13 +196,24 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
       contentPadding: EdgeInsets.zero,
       leading: const CircleAvatar(
         backgroundColor: ModernHeritageApp.appBg,
-        child: Icon(Icons.location_city, color: ModernHeritageApp.primaryCyan, size: 18),
+        child: Icon(
+          Icons.location_city,
+          color: ModernHeritageApp.primaryCyan,
+          size: 18,
+        ),
       ),
       title: Text(
         name,
-        style: GoogleFonts.montserrat(fontWeight: FontWeight.w600, fontSize: 15),
+        style: GoogleFonts.montserrat(
+          fontWeight: FontWeight.w600,
+          fontSize: 15,
+        ),
       ),
-      trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+      trailing: const Icon(
+        Icons.arrow_forward_ios,
+        size: 14,
+        color: Colors.grey,
+      ),
       onTap: () async {
         await AppPrefs.setCity(id, name);
         setState(() {
@@ -198,7 +235,9 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
         if (!cityDone) {
           return const Scaffold(
             body: Center(
-              child: CircularProgressIndicator(color: ModernHeritageApp.primaryCyan),
+              child: CircularProgressIndicator(
+                color: ModernHeritageApp.primaryCyan,
+              ),
             ),
           );
         }
@@ -222,7 +261,9 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                     const SliverFillRemaining(
                       hasScrollBody: false,
                       child: Center(
-                        child: CircularProgressIndicator(color: ModernHeritageApp.primaryCyan),
+                        child: CircularProgressIndicator(
+                          color: ModernHeritageApp.primaryCyan,
+                        ),
                       ),
                     )
                   else
@@ -254,35 +295,37 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
 
                               _buildSectionLabel(
                                 "CURATED COLLECTIONS",
-                                    () => Get.to(() => const AllCollectionScreen()),
+                                () => Get.to(() => const AllCollectionScreen()),
                               ),
                               _buildPremiumBentoCollections(),
                               const SizedBox(height: 45),
 
                               _buildSectionLabel(
                                 "LATEST RELEASES",
-                                    () => Get.to(() => const LatestReleaseScreen()),
+                                () => Get.to(() => const LatestReleaseScreen()),
                               ),
                               _buildLuxuryProductGallery(),
                               const SizedBox(height: 45),
 
                               _buildSectionLabel(
                                 "NEWLY ADDED LISTING",
-                                    () => Get.to(() => const NewlyAddedListing()),
+                                () => Get.to(() => const NewlyAddedListing()),
                               ),
                               _buildNewlyAddedListings(),
                               const SizedBox(height: 45),
 
                               _buildSectionLabel(
                                 "OUR FEATURED SERVICES",
-                                    () => Get.to(() => const OurFeaturedServicesScreen()),
+                                () => Get.to(
+                                  () => const OurFeaturedServicesScreen(),
+                                ),
                               ),
                               _buildFeaturedServices(),
                               const SizedBox(height: 45),
 
                               _buildSectionLabel(
                                 "EXCLUSIVE DEALS",
-                                    () => Get.to(() => const DealsScreen()),
+                                () => Get.to(() => const DealsScreen()),
                               ),
                               _buildExclusiveDeals(),
                               const SizedBox(height: 45),
@@ -312,72 +355,95 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
       elevation: 0,
       title: _isSearching
           ? Container(
-        height: 45,
-        margin: const EdgeInsets.only(top: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
-        ),
-        child: TextField(
-          controller: _searchController,
-          autofocus: true,
-          style: GoogleFonts.montserrat(color: ModernHeritageApp.textDark, fontSize: 14),
-          decoration: InputDecoration(
-            hintText: "Search here...",
-            hintStyle: GoogleFonts.montserrat(color: ModernHeritageApp.subtleGrey, fontSize: 12),
-            prefixIcon: const Icon(Icons.search_rounded, color: ModernHeritageApp.primaryCyan, size: 20),
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(vertical: 10),
-          ),
-        ),
-      )
-          : Align(
-        alignment: Alignment.centerLeft,
-        child: GestureDetector(
-          onTap: () => _showCitySelectionSheet(),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.location_on, color: ModernHeritageApp.primaryCyan, size: 14),
-              const SizedBox(width: 4),
-              Text(
-                selectedCityName.toUpperCase(),
+              height: 45,
+              margin: const EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: _searchController,
+                autofocus: true,
                 style: GoogleFonts.montserrat(
-                  color: ModernHeritageApp.primaryCyan,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2,
+                  color: ModernHeritageApp.textDark,
+                  fontSize: 14,
+                ),
+                decoration: InputDecoration(
+                  hintText: "Search here...",
+                  hintStyle: GoogleFonts.montserrat(
+                    color: ModernHeritageApp.subtleGrey,
+                    fontSize: 12,
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.search_rounded,
+                    color: ModernHeritageApp.primaryCyan,
+                    size: 20,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
                 ),
               ),
-              const Icon(Icons.keyboard_arrow_down, color: ModernHeritageApp.subtleGrey, size: 14),
-            ],
-          ),
-        ),
-      ),
+            )
+          : Align(
+              alignment: Alignment.centerLeft,
+              child: GestureDetector(
+                onTap: () => _showCitySelectionSheet(),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      color: ModernHeritageApp.primaryCyan,
+                      size: 14,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      selectedCityName.toUpperCase(),
+                      style: GoogleFonts.montserrat(
+                        color: ModernHeritageApp.primaryCyan,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    const Icon(
+                      Icons.keyboard_arrow_down,
+                      color: ModernHeritageApp.subtleGrey,
+                      size: 14,
+                    ),
+                  ],
+                ),
+              ),
+            ),
       flexibleSpace: _isSearching
           ? null
           : FlexibleSpaceBar(
-        centerTitle: true,
-        titlePadding: const EdgeInsets.only(bottom: 12),
-        expandedTitleScale: 1.2,
-        title: Text(
-          "GOTILO",
-          style: GoogleFonts.playfairDisplay(
-            color: ModernHeritageApp.textDark,
-            fontSize: 22,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 0.5,
-          ),
-        ),
-      ),
+              centerTitle: true,
+              titlePadding: const EdgeInsets.only(bottom: 12),
+              expandedTitleScale: 1.2,
+              title: Text(
+                "GOTILO",
+                style: GoogleFonts.playfairDisplay(
+                  color: ModernHeritageApp.textDark,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
 
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 5),
           child: IconButton(
             onPressed: () {
-              Get.to(()=>const SearchScreen());
+              Get.to(() => const SearchScreen());
             },
             icon: const Icon(Icons.search),
           ),
@@ -386,22 +452,31 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 15),
             child: InkWell(
-              onTap:() {
-                if(AppPrefs.userId != ""){
+              onTap: () {
+                // Get.to(()=> AccountScreen());
+                if (AppPrefs.userId != "") {
                   Get.to(() => const Userdashboardscreen());
-                }else{
+                } else {
                   Get.to(() => const ModernLoginScreen());
                 }
-
               },
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.circle,
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                    ),
+                  ],
                 ),
-                child: const Icon(Icons.person_2_outlined, color: ModernHeritageApp.textDark, size: 18),
+                child: const Icon(
+                  Icons.person_2_outlined,
+                  color: ModernHeritageApp.textDark,
+                  size: 18,
+                ),
               ),
             ),
           ),
@@ -411,64 +486,81 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
 
   Widget _buildPremiumImageSlider() {
     return ValueListenableBuilder(
-        valueListenable: isApiComplete,
-        builder: (context, apiDone, child) {
-          return Visibility(
-            visible: apiDone,
-            replacement: _buildBannerShimmer(),
-            child: ValueListenableBuilder(
-                valueListenable: isDataAvailable,
-                builder: (context, dataDone, child) {
-                  if (!dataDone || banner == null || banner!.isEmpty) {
-                    return const SizedBox(height: 280, child: Center(child: Text("No Data Available")));
-                  }
-                  return SizedBox(
-                    height: 280,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.only(left: 25),
-                      itemCount: banner!.length,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          width: 300,
-                          margin: const EdgeInsets.only(right: 20),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(32),
-                            boxShadow: [BoxShadow(color: const Color(0xFF0D1B1E).withOpacity(0.08), blurRadius: 30, offset: const Offset(0, 15))],
+      valueListenable: isApiComplete,
+      builder: (context, apiDone, child) {
+        return Visibility(
+          visible: apiDone,
+          replacement: _buildBannerShimmer(),
+          child: ValueListenableBuilder(
+            valueListenable: isDataAvailable,
+            builder: (context, dataDone, child) {
+              if (!dataDone || banner == null || banner!.isEmpty) {
+                return const SizedBox(
+                  height: 280,
+                  child: Center(child: Text("No Data Available")),
+                );
+              }
+              return SizedBox(
+                height: 280,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.only(left: 25),
+                  itemCount: banner!.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      width: 300,
+                      margin: const EdgeInsets.only(right: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(32),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF0D1B1E).withOpacity(0.08),
+                            blurRadius: 30,
+                            offset: const Offset(0, 15),
                           ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(30),
-                            child: Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                CachedNetworkImage(
-                                  imageUrl: banner![index].image ?? "",
-                                  fadeOutDuration: const Duration(milliseconds: 500),
-                                  fadeInDuration: const Duration(milliseconds: 700),
-                                  fit: BoxFit.cover,
-                                  placeholder: (context, url) => _shimmerBox(),
-                                  errorWidget: (context, url, error) => Container(color: Colors.grey[200], child: const Icon(Icons.error)),
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: [Colors.transparent, const Color(0xFF0D1B1E).withOpacity(0.7)],
-                                    ),
-                                  ),
-                                ),
-                              ],
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(30),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            CachedNetworkImage(
+                              imageUrl: banner![index].image ?? "",
+                              fadeOutDuration: const Duration(
+                                milliseconds: 500,
+                              ),
+                              fadeInDuration: const Duration(milliseconds: 700),
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => _shimmerBox(),
+                              errorWidget: (context, url, error) => Container(
+                                color: Colors.grey[200],
+                                child: const Icon(Icons.error),
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                }
-            ),
-          );
-        }
+                            Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.transparent,
+                                    const Color(0xFF0D1B1E).withOpacity(0.7),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -485,7 +577,10 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
           itemBuilder: (_, __) => Container(
             width: 300,
             margin: const EdgeInsets.only(right: 20),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(32)),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(32),
+            ),
           ),
         ),
       ),
@@ -493,9 +588,16 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
   }
 
   Widget _buildPremiumBentoCollections() {
-    final List<Color> colors = [Colors.blueAccent, Colors.redAccent, Colors.greenAccent, Colors.orangeAccent, Colors.purpleAccent];
+    final List<Color> colors = [
+      Colors.blueAccent,
+      Colors.redAccent,
+      Colors.greenAccent,
+      Colors.orangeAccent,
+      Colors.purpleAccent,
+    ];
 
-    if (homeCollection == null || homeCollection!.isEmpty) return const SizedBox.shrink();
+    if (homeCollection == null || homeCollection!.isEmpty)
+      return const SizedBox.shrink();
 
     return SizedBox(
       height: 180,
@@ -510,40 +612,69 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
           final category = homeCollection![index];
 
           return GestureDetector(
-            onTap:() {
-              Get.to(()=> CollectionDetailScreen(categoryId: homeCollection?[index].id,));
-            } ,
+            onTap: () {
+              Get.to(
+                () => CollectionDetailScreen(
+                  categoryId: homeCollection?[index].id,
+                ),
+              );
+            },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 500),
               width: 150,
-              margin: EdgeInsets.only(right: 18, top: isLong ? 0 : 25, bottom: isLong ? 25 : 0),
+              margin: EdgeInsets.only(
+                right: 18,
+                top: isLong ? 0 : 25,
+                bottom: isLong ? 25 : 0,
+              ),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(32),
-                boxShadow: [BoxShadow(color: const Color(0xFF0D1B1E).withOpacity(0.05), blurRadius: 25, offset: const Offset(0, 12))],
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF0D1B1E).withOpacity(0.05),
+                    blurRadius: 25,
+                    offset: const Offset(0, 12),
+                  ),
+                ],
               ),
               child: Stack(
                 children: [
-                  Positioned(top: -25, right: -25, child: CircleAvatar(radius: 50, backgroundColor: circleColor.withOpacity(0.3))),
+                  Positioned(
+                    top: -25,
+                    right: -25,
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: circleColor.withOpacity(0.3),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(22),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(
-                          height: 42, width: 42,
+                          height: 42,
+                          width: 42,
                           child: category.icon!.contains('.svg')
                               ? SvgPicture.network(
-                            category.icon!,
-                            placeholderBuilder: (context) => _shimmerCircle(),
-                          )
+                                  category.icon!,
+                                  placeholderBuilder: (context) =>
+                                      _shimmerCircle(),
+                                )
                               : CachedNetworkImage(
-                            fadeOutDuration: const Duration(milliseconds: 500),
-                            fadeInDuration: const Duration(milliseconds: 700),
-                            imageUrl: category.icon!,
-                            placeholder: (context, url) => _shimmerCircle(),
-                            errorWidget: (context, url, error) => const Icon(Icons.category),
-                          ),
+                                  fadeOutDuration: const Duration(
+                                    milliseconds: 500,
+                                  ),
+                                  fadeInDuration: const Duration(
+                                    milliseconds: 700,
+                                  ),
+                                  imageUrl: category.icon!,
+                                  placeholder: (context, url) =>
+                                      _shimmerCircle(),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.category),
+                                ),
                         ),
                         const Spacer(),
                         SizedBox(
@@ -553,15 +684,15 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.montserrat(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF0D1B1E)
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF0D1B1E),
                             ),
                           ),
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -590,23 +721,23 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-              text,
-              style: GoogleFonts.montserrat(
-                  color: ModernHeritageApp.textDark,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.5
-              )
+            text,
+            style: GoogleFonts.montserrat(
+              color: ModernHeritageApp.textDark,
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.5,
+            ),
           ),
           GestureDetector(
             onTap: onViewAllTap,
             child: Text(
-                "VIEW ALL",
-                style: GoogleFonts.montserrat(
-                    color: ModernHeritageApp.primaryCyan,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold
-                )
+              "VIEW ALL",
+              style: GoogleFonts.montserrat(
+                color: ModernHeritageApp.primaryCyan,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
@@ -626,7 +757,10 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
           final item = homeNearListing![index];
           return GestureDetector(
             onTap: () {
-              Get.to(()=>AllListingDetailScreen(listId: homeNearListing?[index].id,));
+              Get.to(
+                () =>
+                    AllListingDetailScreen(listId: homeNearListing?[index].id),
+              );
             },
             child: Container(
               width: 260,
@@ -634,18 +768,28 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(35),
-                boxShadow: [BoxShadow(color: const Color(0xFF0D1B1E).withOpacity(0.05), blurRadius: 25, offset: const Offset(0, 15))],
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF0D1B1E).withOpacity(0.05),
+                    blurRadius: 25,
+                    offset: const Offset(0, 15),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(35)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(35),
+                    ),
                     child: CachedNetworkImage(
                       fadeOutDuration: const Duration(milliseconds: 500),
                       fadeInDuration: const Duration(milliseconds: 700),
                       imageUrl: item.listingImage ?? "",
-                      height: 200, width: double.infinity, fit: BoxFit.cover,
+                      height: 200,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
                       placeholder: (context, url) => _shimmerBox(),
                     ),
                   ),
@@ -654,15 +798,39 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(item.listingTitle ?? "", style: GoogleFonts.montserrat(fontSize: 16, fontWeight: FontWeight.w800)),
+                        Text(
+                          item.listingTitle ?? "",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
                         const SizedBox(height: 5),
-                        Text(item.description ?? "", maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.montserrat(fontSize: 11, color: Colors.grey)),
+                        Text(
+                          item.description ?? "",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.montserrat(
+                            fontSize: 11,
+                            color: Colors.grey,
+                          ),
+                        ),
                         const SizedBox(height: 15),
                         Row(
                           children: [
-                            const Icon(Icons.location_on_rounded, color: Colors.cyan, size: 14),
+                            const Icon(
+                              Icons.location_on_rounded,
+                              color: Colors.cyan,
+                              size: 14,
+                            ),
                             const SizedBox(width: 5),
-                            Text(item.cityName ?? "", style: GoogleFonts.montserrat(fontSize: 11, fontWeight: FontWeight.w600)),
+                            Text(
+                              item.cityName ?? "",
+                              style: GoogleFonts.montserrat(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -691,15 +859,30 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
           children: [
             GestureDetector(
               onTap: () {
-                Get.to(()=>CollectionDetailScreen(categoryId: homeService?[index].id,));
+                Get.to(
+                  () => CollectionDetailScreen(
+                    categoryId: homeService?[index].id,
+                  ),
+                );
               },
               child: Container(
                 margin: const EdgeInsets.only(bottom: 45),
-                padding: const EdgeInsets.only(left: 70, right: 20, top: 25, bottom: 25),
+                padding: const EdgeInsets.only(
+                  left: 70,
+                  right: 20,
+                  top: 25,
+                  bottom: 25,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(35),
-                  boxShadow: [BoxShadow(color: const Color(0xFF0D1B1E).withOpacity(0.06), blurRadius: 35, offset: const Offset(0, 15))],
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF0D1B1E).withOpacity(0.06),
+                      blurRadius: 35,
+                      offset: const Offset(0, 15),
+                    ),
+                  ],
                 ),
                 child: Row(
                   children: [
@@ -707,22 +890,43 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(service.name ?? "", style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.w900)),
+                          Text(
+                            service.name ?? "",
+                            style: GoogleFonts.montserrat(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
                           const SizedBox(height: 8),
-                          Text(service.slug ?? "", style: GoogleFonts.montserrat(fontSize: 13, color: Colors.grey)),
+                          Text(
+                            service.slug ?? "",
+                            style: GoogleFonts.montserrat(
+                              fontSize: 13,
+                              color: Colors.grey,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    const Icon(Icons.arrow_forward_ios_rounded, color: Colors.cyan, size: 22),
+                    const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      color: Colors.cyan,
+                      size: 22,
+                    ),
                   ],
                 ),
               ),
             ),
             Positioned(
-              left: -40, top: 10,
+              left: -40,
+              top: 10,
               child: Container(
-                height: 100, width: 100,
-                decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 5)),
+                height: 100,
+                width: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 5),
+                ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(50),
                   child: CachedNetworkImage(
@@ -763,16 +967,17 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                   color: ModernHeritageApp.textDark.withOpacity(0.08),
                   blurRadius: 25,
                   offset: const Offset(0, 15),
-                )
+                ),
               ],
             ),
             child: Column(
               children: [
                 Stack(
                   children: [
-
                     ClipRRect(
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(35)),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(35),
+                      ),
                       child: CachedNetworkImage(
                         fadeOutDuration: const Duration(milliseconds: 500),
                         fadeInDuration: const Duration(milliseconds: 700),
@@ -787,7 +992,10 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                         ),
                         errorWidget: (context, url, error) => Container(
                           color: Colors.grey[200],
-                          child: const Icon(Icons.broken_image, color: Colors.grey),
+                          child: const Icon(
+                            Icons.broken_image,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
                     ),
@@ -795,7 +1003,10 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                       top: 20,
                       left: 20,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.redAccent,
                           borderRadius: BorderRadius.circular(15),
@@ -803,7 +1014,7 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                             BoxShadow(
                               color: Colors.redAccent.withOpacity(0.3),
                               blurRadius: 10,
-                            )
+                            ),
                           ],
                         ),
                         child: Text(
@@ -841,22 +1052,30 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                         height: 50,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [ModernHeritageApp.primaryCyan, ModernHeritageApp.accentCyan],
+                            colors: [
+                              ModernHeritageApp.primaryCyan,
+                              ModernHeritageApp.accentCyan,
+                            ],
                             begin: Alignment.centerLeft,
                             end: Alignment.centerRight,
                           ),
                           borderRadius: BorderRadius.circular(18),
                           boxShadow: [
                             BoxShadow(
-                              color: ModernHeritageApp.primaryCyan.withOpacity(0.3),
+                              color: ModernHeritageApp.primaryCyan.withOpacity(
+                                0.3,
+                              ),
                               blurRadius: 12,
                               offset: const Offset(0, 6),
-                            )
+                            ),
                           ],
                         ),
                         child: ElevatedButton(
                           onPressed: () {
-                            SharedWidgets.showTopSnackBar(context, message: "Login First");
+                            SharedWidgets.showTopSnackBar(
+                              context,
+                              message: "Login First",
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
@@ -887,26 +1106,25 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
     );
   }
 
-  Widget _buildHowItWorks()
-  {
+  Widget _buildHowItWorks() {
     List<Map<String, String>> steps = [
       {
         "id": "1",
         "title": "Choose Location",
         "desc": "Enter your mobile number to get started.",
-        "icon": "📍"
+        "icon": "📍",
       },
       {
         "id": "2",
         "title": "Pick Category",
         "desc": "Select the most relevant category for your needs.",
-        "icon": "📂"
+        "icon": "📂",
       },
       {
         "id": "3",
         "title": "Explore Place",
         "desc": "Discover locations tailored to your specific needs.",
-        "icon": "⭐"
+        "icon": "⭐",
       },
     ];
 
@@ -915,7 +1133,10 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [ModernHeritageApp.textDark, ModernHeritageApp.textDark.withOpacity(0.8)],
+          colors: [
+            ModernHeritageApp.textDark,
+            ModernHeritageApp.textDark.withOpacity(0.8),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -925,17 +1146,24 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
             color: ModernHeritageApp.primaryCyan.withOpacity(0.15),
             blurRadius: 30,
             offset: const Offset(0, 15),
-          )
+          ),
         ],
       ),
       child: Column(
         children: [
           RichText(
             text: TextSpan(
-              style: GoogleFonts.montserrat(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white),
+              style: GoogleFonts.montserrat(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
               children: const [
                 TextSpan(text: "How Gotilo "),
-                TextSpan(text: "Works", style: TextStyle(color: ModernHeritageApp.accentCyan)),
+                TextSpan(
+                  text: "Works",
+                  style: TextStyle(color: ModernHeritageApp.accentCyan),
+                ),
               ],
             ),
           ),
@@ -943,7 +1171,11 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
           Text(
             "Discover how Gotilo connects you with trusted businesses in just a few simple steps.",
             textAlign: TextAlign.center,
-            style: GoogleFonts.montserrat(color: Colors.white.withOpacity(0.6), fontSize: 11, height: 1.5),
+            style: GoogleFonts.montserrat(
+              color: Colors.white.withOpacity(0.6),
+              fontSize: 11,
+              height: 1.5,
+            ),
           ),
           const SizedBox(height: 40),
 
@@ -960,10 +1192,15 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.05),
                         shape: BoxShape.circle,
-                        border: Border.all(color: ModernHeritageApp.accentCyan.withOpacity(0.3)),
+                        border: Border.all(
+                          color: ModernHeritageApp.accentCyan.withOpacity(0.3),
+                        ),
                       ),
                       alignment: Alignment.center,
-                      child: Text(step["icon"]!, style: const TextStyle(fontSize: 20)),
+                      child: Text(
+                        step["icon"]!,
+                        style: const TextStyle(fontSize: 20),
+                      ),
                     ),
                     const SizedBox(width: 20),
                     Expanded(
@@ -972,12 +1209,19 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                         children: [
                           Text(
                             "${step["id"]}. ${step["title"]}",
-                            style: GoogleFonts.montserrat(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                            style: GoogleFonts.montserrat(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 5),
                           Text(
                             step["desc"]!,
-                            style: GoogleFonts.montserrat(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                            style: GoogleFonts.montserrat(
+                              color: Colors.white.withOpacity(0.5),
+                              fontSize: 12,
+                            ),
                           ),
                         ],
                       ),
@@ -995,7 +1239,7 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                   ),
               ],
             );
-          }).toList(),
+          }),
         ],
       ),
     );
@@ -1018,13 +1262,12 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
   }
 
   Future<void> callHome() async {
-    isDataAvailable.value=false;
-    isApiComplete.value=false;
+    isDataAvailable.value = false;
+    isApiComplete.value = false;
     _callHome();
   }
 
   Future<void> _callHome() async {
-
     try {
       bool internet = await MyApplication.checkInternet();
 
@@ -1041,16 +1284,15 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
           response.result!.isNotEmpty &&
           response.result!.toLowerCase().contains("pass") &&
           response.data != null) {
-
-        banner ??=[];
+        banner ??= [];
         banner!.clear();
-        homeCollection ??=[];
+        homeCollection ??= [];
         homeCollection!.clear();
-        homeNearListing ??=[];
+        homeNearListing ??= [];
         homeNearListing!.clear();
-        homeLatestRelease ??=[];
+        homeLatestRelease ??= [];
         homeLatestRelease!.clear();
-        homeService ??=[];
+        homeService ??= [];
         homeService!.clear();
         homeDeal ??= [];
         homeDeal!.clear();
@@ -1063,40 +1305,37 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
         homeService!.addAll(response.data!.services!);
 
         isDataAvailable.value = true;
-
       } else {
-        banner ??=[];
+        banner ??= [];
         banner!.clear();
-        homeCollection ??=[];
+        homeCollection ??= [];
         homeCollection!.clear();
-        homeNearListing ??=[];
+        homeNearListing ??= [];
         homeNearListing!.clear();
-        homeLatestRelease ??=[];
+        homeLatestRelease ??= [];
         homeLatestRelease!.clear();
-        homeService ??=[];
+        homeService ??= [];
         homeService!.clear();
         homeDeal ??= [];
         homeDeal!.clear();
 
         isDataAvailable.value = false;
       }
-
     } catch (e) {
       log("HomeBanner Error: $e");
-      banner ??=[];
+      banner ??= [];
       banner!.clear();
-      homeCollection ??=[];
+      homeCollection ??= [];
       homeCollection!.clear();
-      homeNearListing ??=[];
+      homeNearListing ??= [];
       homeNearListing!.clear();
-      homeLatestRelease ??=[];
+      homeLatestRelease ??= [];
       homeLatestRelease!.clear();
-      homeService ??=[];
+      homeService ??= [];
       homeService!.clear();
       homeDeal ??= [];
       homeDeal!.clear();
       isDataAvailable.value = false;
-
     } finally {
       isApiComplete.value = true;
       if (mounted) {
@@ -1110,7 +1349,6 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
   }
 
   Future<void> _callCity() async {
-
     try {
       bool internet = await MyApplication.checkInternet();
 
@@ -1131,16 +1369,15 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
       } else {
         allCities.clear();
       }
-
     } catch (e) {
       log("HomeBanner Error: $e");
       allCities.clear();
-
     } finally {
       if (mounted) {
         setState(() {});
       }
     }
   }
-
 }
+// W/WindowOnBackDispatcher(16564): OnBackInvokedCallback is not enabled for the application.
+// W/WindowOnBackDispatcher(16564): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.

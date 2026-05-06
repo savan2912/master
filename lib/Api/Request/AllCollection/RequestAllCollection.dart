@@ -10,9 +10,9 @@ class RequestAllCollection {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['search'] = this.search;
-    data['counter'] = this.counter;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['search'] = search;
+    data['counter'] = counter;
     return data;
   }
 }

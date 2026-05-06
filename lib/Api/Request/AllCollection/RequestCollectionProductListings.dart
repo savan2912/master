@@ -2,10 +2,7 @@ class RequestCollectionProductListings {
   int? categoryId;
   int? cityId;
 
-  RequestCollectionProductListings({
-    this.categoryId,
-    this.cityId
-  });
+  RequestCollectionProductListings({this.categoryId, this.cityId});
 
   RequestCollectionProductListings.fromJson(Map<String, dynamic> json) {
     categoryId = json['category_id'];
@@ -13,9 +10,9 @@ class RequestCollectionProductListings {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['category_id'] = this.categoryId;
-    data['city_id'] = this.cityId;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['category_id'] = categoryId;
+    data['city_id'] = cityId;
     return data;
   }
 }

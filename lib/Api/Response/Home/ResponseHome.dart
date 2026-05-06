@@ -8,13 +8,13 @@ class ResponseHome {
   ResponseHome.fromJson(Map<String, dynamic> json) {
     result = json['result'];
     message = json['message'];
-    data = json['data'] != null ? new Home.fromJson(json['data']) : null;
+    data = json['data'] != null ? Home.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['result'] = result;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -30,74 +30,73 @@ class Home {
   List<Services>? services;
   List<NearbyDeals>? nearbyDeals;
 
-  Home(
-      {this.sliders,
-        this.categories,
-        this.nearbyListings,
-        this.latestListings,
-        this.services,
-        this.nearbyDeals});
+  Home({
+    this.sliders,
+    this.categories,
+    this.nearbyListings,
+    this.latestListings,
+    this.services,
+    this.nearbyDeals,
+  });
 
   Home.fromJson(Map<String, dynamic> json) {
     if (json['sliders'] != null) {
       sliders = <Sliders>[];
       json['sliders'].forEach((v) {
-        sliders!.add(new Sliders.fromJson(v));
+        sliders!.add(Sliders.fromJson(v));
       });
     }
     if (json['categories'] != null) {
       categories = <Categories>[];
       json['categories'].forEach((v) {
-        categories!.add(new Categories.fromJson(v));
+        categories!.add(Categories.fromJson(v));
       });
     }
     if (json['nearbyListings'] != null) {
       nearbyListings = <NearbyListings>[];
       json['nearbyListings'].forEach((v) {
-        nearbyListings!.add(new NearbyListings.fromJson(v));
+        nearbyListings!.add(NearbyListings.fromJson(v));
       });
     }
     if (json['latestListings'] != null) {
       latestListings = <LatestListings>[];
       json['latestListings'].forEach((v) {
-        latestListings!.add(new LatestListings.fromJson(v));
+        latestListings!.add(LatestListings.fromJson(v));
       });
     }
     if (json['services'] != null) {
       services = <Services>[];
       json['services'].forEach((v) {
-        services!.add(new Services.fromJson(v));
+        services!.add(Services.fromJson(v));
       });
     }
     if (json['nearbyDeals'] != null) {
       nearbyDeals = <NearbyDeals>[];
       json['nearbyDeals'].forEach((v) {
-        nearbyDeals!.add(new NearbyDeals.fromJson(v));
+        nearbyDeals!.add(NearbyDeals.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.sliders != null) {
-      data['sliders'] = this.sliders!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (sliders != null) {
+      data['sliders'] = sliders!.map((v) => v.toJson()).toList();
     }
-    if (this.categories != null) {
-      data['categories'] = this.categories!.map((v) => v.toJson()).toList();
+    if (categories != null) {
+      data['categories'] = categories!.map((v) => v.toJson()).toList();
     }
-    if (this.nearbyListings != null) {
-      data['nearbyListings'] =
-          this.nearbyListings!.map((v) => v.toJson()).toList();
+    if (nearbyListings != null) {
+      data['nearbyListings'] = nearbyListings!.map((v) => v.toJson()).toList();
     }
-    if (this.latestListings != null) {
-      data['latestListings'] =
-          this.latestListings!.map((v) => v.toJson()).toList();
+    if (latestListings != null) {
+      data['latestListings'] = latestListings!.map((v) => v.toJson()).toList();
     }
-    if (this.services != null) {
-      data['services'] = this.services!.map((v) => v.toJson()).toList();
+    if (services != null) {
+      data['services'] = services!.map((v) => v.toJson()).toList();
     }
-    if (this.nearbyDeals != null) {
-      data['nearbyDeals'] = this.nearbyDeals!.map((v) => v.toJson()).toList();
+    if (nearbyDeals != null) {
+      data['nearbyDeals'] = nearbyDeals!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -117,10 +116,10 @@ class Sliders {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['image'] = this.image;
-    data['title'] = this.title;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['image'] = image;
+    data['title'] = title;
     return data;
   }
 }
@@ -142,22 +141,23 @@ class Categories {
   String? createdAt;
   String? updatedAt;
 
-  Categories(
-      {this.id,
-        this.name,
-        this.slug,
-        this.image,
-        this.icon,
-        this.bannerImage,
-        this.serviceImage,
-        this.parentId,
-        this.position,
-        this.status,
-        this.serviceStatus,
-        this.priority,
-        this.amenityId,
-        this.createdAt,
-        this.updatedAt});
+  Categories({
+    this.id,
+    this.name,
+    this.slug,
+    this.image,
+    this.icon,
+    this.bannerImage,
+    this.serviceImage,
+    this.parentId,
+    this.position,
+    this.status,
+    this.serviceStatus,
+    this.priority,
+    this.amenityId,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Categories.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -178,22 +178,22 @@ class Categories {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['slug'] = this.slug;
-    data['image'] = this.image;
-    data['icon'] = this.icon;
-    data['banner_image'] = this.bannerImage;
-    data['service_image'] = this.serviceImage;
-    data['parent_id'] = this.parentId;
-    data['position'] = this.position;
-    data['status'] = this.status;
-    data['service_status'] = this.serviceStatus;
-    data['priority'] = this.priority;
-    data['amenity_id'] = this.amenityId;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['slug'] = slug;
+    data['image'] = image;
+    data['icon'] = icon;
+    data['banner_image'] = bannerImage;
+    data['service_image'] = serviceImage;
+    data['parent_id'] = parentId;
+    data['position'] = position;
+    data['status'] = status;
+    data['service_status'] = serviceStatus;
+    data['priority'] = priority;
+    data['amenity_id'] = amenityId;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }
@@ -249,56 +249,57 @@ class NearbyListings {
   String? cityName;
   String? listingImage;
 
-  NearbyListings(
-      {this.id,
-        this.liveMediaStatus,
-        this.listingTitle,
-        this.mobileNo,
-        this.verifyCode,
-        this.phoneExtra,
-        this.logoImage,
-        this.vendorId,
-        this.adminId,
-        this.categoryId,
-        this.countryId,
-        this.stateId,
-        this.cityId,
-        this.keywords,
-        this.chatgptDescription,
-        this.description,
-        this.address,
-        this.zipCode,
-        this.amenities,
-        this.status,
-        this.isActive,
-        this.serviceType,
-        this.rowId,
-        this.openClose,
-        this.mapLink,
-        this.latitude,
-        this.longitude,
-        this.socialMediasLink,
-        this.rewardHeaderImg,
-        this.rewardLogoImg,
-        this.rating,
-        this.listingType,
-        this.standyImg,
-        this.standyStatus,
-        this.facebookLink,
-        this.instaLink,
-        this.youtubeLink,
-        this.linkdinLink,
-        this.gst,
-        this.taxPercent,
-        this.adminApproveDate,
-        this.seoData,
-        this.metaTitle,
-        this.metaDescription,
-        this.metaKeywords,
-        this.createdAt,
-        this.updatedAt,
-        this.cityName,
-        this.listingImage});
+  NearbyListings({
+    this.id,
+    this.liveMediaStatus,
+    this.listingTitle,
+    this.mobileNo,
+    this.verifyCode,
+    this.phoneExtra,
+    this.logoImage,
+    this.vendorId,
+    this.adminId,
+    this.categoryId,
+    this.countryId,
+    this.stateId,
+    this.cityId,
+    this.keywords,
+    this.chatgptDescription,
+    this.description,
+    this.address,
+    this.zipCode,
+    this.amenities,
+    this.status,
+    this.isActive,
+    this.serviceType,
+    this.rowId,
+    this.openClose,
+    this.mapLink,
+    this.latitude,
+    this.longitude,
+    this.socialMediasLink,
+    this.rewardHeaderImg,
+    this.rewardLogoImg,
+    this.rating,
+    this.listingType,
+    this.standyImg,
+    this.standyStatus,
+    this.facebookLink,
+    this.instaLink,
+    this.youtubeLink,
+    this.linkdinLink,
+    this.gst,
+    this.taxPercent,
+    this.adminApproveDate,
+    this.seoData,
+    this.metaTitle,
+    this.metaDescription,
+    this.metaKeywords,
+    this.createdAt,
+    this.updatedAt,
+    this.cityName,
+    this.listingImage,
+  });
 
   NearbyListings.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -353,56 +354,56 @@ class NearbyListings {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['live_media_status'] = this.liveMediaStatus;
-    data['listing_title'] = this.listingTitle;
-    data['mobile_no'] = this.mobileNo;
-    data['verify_code'] = this.verifyCode;
-    data['phone_extra'] = this.phoneExtra;
-    data['logo_image'] = this.logoImage;
-    data['vendor_id'] = this.vendorId;
-    data['admin_id'] = this.adminId;
-    data['category_id'] = this.categoryId;
-    data['country_id'] = this.countryId;
-    data['state_id'] = this.stateId;
-    data['city_id'] = this.cityId;
-    data['keywords'] = this.keywords;
-    data['chatgpt_description'] = this.chatgptDescription;
-    data['description'] = this.description;
-    data['address'] = this.address;
-    data['zip_code'] = this.zipCode;
-    data['amenities'] = this.amenities;
-    data['status'] = this.status;
-    data['is_active'] = this.isActive;
-    data['service_type'] = this.serviceType;
-    data['row_id'] = this.rowId;
-    data['open_close'] = this.openClose;
-    data['map_link'] = this.mapLink;
-    data['latitude'] = this.latitude;
-    data['longitude'] = this.longitude;
-    data['social_medias_link'] = this.socialMediasLink;
-    data['reward_header_img'] = this.rewardHeaderImg;
-    data['reward_logo_img'] = this.rewardLogoImg;
-    data['rating'] = this.rating;
-    data['listing_type'] = this.listingType;
-    data['standy_img'] = this.standyImg;
-    data['standy_status'] = this.standyStatus;
-    data['facebook_link'] = this.facebookLink;
-    data['insta_link'] = this.instaLink;
-    data['youtube_link'] = this.youtubeLink;
-    data['linkdin_link'] = this.linkdinLink;
-    data['gst'] = this.gst;
-    data['tax_percent'] = this.taxPercent;
-    data['admin_approve_date'] = this.adminApproveDate;
-    data['seo_data'] = this.seoData;
-    data['meta_title'] = this.metaTitle;
-    data['meta_description'] = this.metaDescription;
-    data['meta_keywords'] = this.metaKeywords;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['city_name'] = this.cityName;
-    data['listing_image'] = this.listingImage;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['live_media_status'] = liveMediaStatus;
+    data['listing_title'] = listingTitle;
+    data['mobile_no'] = mobileNo;
+    data['verify_code'] = verifyCode;
+    data['phone_extra'] = phoneExtra;
+    data['logo_image'] = logoImage;
+    data['vendor_id'] = vendorId;
+    data['admin_id'] = adminId;
+    data['category_id'] = categoryId;
+    data['country_id'] = countryId;
+    data['state_id'] = stateId;
+    data['city_id'] = cityId;
+    data['keywords'] = keywords;
+    data['chatgpt_description'] = chatgptDescription;
+    data['description'] = description;
+    data['address'] = address;
+    data['zip_code'] = zipCode;
+    data['amenities'] = amenities;
+    data['status'] = status;
+    data['is_active'] = isActive;
+    data['service_type'] = serviceType;
+    data['row_id'] = rowId;
+    data['open_close'] = openClose;
+    data['map_link'] = mapLink;
+    data['latitude'] = latitude;
+    data['longitude'] = longitude;
+    data['social_medias_link'] = socialMediasLink;
+    data['reward_header_img'] = rewardHeaderImg;
+    data['reward_logo_img'] = rewardLogoImg;
+    data['rating'] = rating;
+    data['listing_type'] = listingType;
+    data['standy_img'] = standyImg;
+    data['standy_status'] = standyStatus;
+    data['facebook_link'] = facebookLink;
+    data['insta_link'] = instaLink;
+    data['youtube_link'] = youtubeLink;
+    data['linkdin_link'] = linkdinLink;
+    data['gst'] = gst;
+    data['tax_percent'] = taxPercent;
+    data['admin_approve_date'] = adminApproveDate;
+    data['seo_data'] = seoData;
+    data['meta_title'] = metaTitle;
+    data['meta_description'] = metaDescription;
+    data['meta_keywords'] = metaKeywords;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    data['city_name'] = cityName;
+    data['listing_image'] = listingImage;
     return data;
   }
 }
@@ -458,56 +459,57 @@ class LatestListings {
   String? cityName;
   String? listingImage;
 
-  LatestListings(
-      {this.id,
-        this.liveMediaStatus,
-        this.listingTitle,
-        this.mobileNo,
-        this.verifyCode,
-        this.phoneExtra,
-        this.logoImage,
-        this.vendorId,
-        this.adminId,
-        this.categoryId,
-        this.countryId,
-        this.stateId,
-        this.cityId,
-        this.keywords,
-        this.chatgptDescription,
-        this.description,
-        this.address,
-        this.zipCode,
-        this.amenities,
-        this.status,
-        this.isActive,
-        this.serviceType,
-        this.rowId,
-        this.openClose,
-        this.mapLink,
-        this.latitude,
-        this.longitude,
-        this.socialMediasLink,
-        this.rewardHeaderImg,
-        this.rewardLogoImg,
-        this.rating,
-        this.listingType,
-        this.standyImg,
-        this.standyStatus,
-        this.facebookLink,
-        this.instaLink,
-        this.youtubeLink,
-        this.linkdinLink,
-        this.gst,
-        this.taxPercent,
-        this.adminApproveDate,
-        this.seoData,
-        this.metaTitle,
-        this.metaDescription,
-        this.metaKeywords,
-        this.createdAt,
-        this.updatedAt,
-        this.cityName,
-        this.listingImage});
+  LatestListings({
+    this.id,
+    this.liveMediaStatus,
+    this.listingTitle,
+    this.mobileNo,
+    this.verifyCode,
+    this.phoneExtra,
+    this.logoImage,
+    this.vendorId,
+    this.adminId,
+    this.categoryId,
+    this.countryId,
+    this.stateId,
+    this.cityId,
+    this.keywords,
+    this.chatgptDescription,
+    this.description,
+    this.address,
+    this.zipCode,
+    this.amenities,
+    this.status,
+    this.isActive,
+    this.serviceType,
+    this.rowId,
+    this.openClose,
+    this.mapLink,
+    this.latitude,
+    this.longitude,
+    this.socialMediasLink,
+    this.rewardHeaderImg,
+    this.rewardLogoImg,
+    this.rating,
+    this.listingType,
+    this.standyImg,
+    this.standyStatus,
+    this.facebookLink,
+    this.instaLink,
+    this.youtubeLink,
+    this.linkdinLink,
+    this.gst,
+    this.taxPercent,
+    this.adminApproveDate,
+    this.seoData,
+    this.metaTitle,
+    this.metaDescription,
+    this.metaKeywords,
+    this.createdAt,
+    this.updatedAt,
+    this.cityName,
+    this.listingImage,
+  });
 
   LatestListings.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -562,56 +564,56 @@ class LatestListings {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['live_media_status'] = this.liveMediaStatus;
-    data['listing_title'] = this.listingTitle;
-    data['mobile_no'] = this.mobileNo;
-    data['verify_code'] = this.verifyCode;
-    data['phone_extra'] = this.phoneExtra;
-    data['logo_image'] = this.logoImage;
-    data['vendor_id'] = this.vendorId;
-    data['admin_id'] = this.adminId;
-    data['category_id'] = this.categoryId;
-    data['country_id'] = this.countryId;
-    data['state_id'] = this.stateId;
-    data['city_id'] = this.cityId;
-    data['keywords'] = this.keywords;
-    data['chatgpt_description'] = this.chatgptDescription;
-    data['description'] = this.description;
-    data['address'] = this.address;
-    data['zip_code'] = this.zipCode;
-    data['amenities'] = this.amenities;
-    data['status'] = this.status;
-    data['is_active'] = this.isActive;
-    data['service_type'] = this.serviceType;
-    data['row_id'] = this.rowId;
-    data['open_close'] = this.openClose;
-    data['map_link'] = this.mapLink;
-    data['latitude'] = this.latitude;
-    data['longitude'] = this.longitude;
-    data['social_medias_link'] = this.socialMediasLink;
-    data['reward_header_img'] = this.rewardHeaderImg;
-    data['reward_logo_img'] = this.rewardLogoImg;
-    data['rating'] = this.rating;
-    data['listing_type'] = this.listingType;
-    data['standy_img'] = this.standyImg;
-    data['standy_status'] = this.standyStatus;
-    data['facebook_link'] = this.facebookLink;
-    data['insta_link'] = this.instaLink;
-    data['youtube_link'] = this.youtubeLink;
-    data['linkdin_link'] = this.linkdinLink;
-    data['gst'] = this.gst;
-    data['tax_percent'] = this.taxPercent;
-    data['admin_approve_date'] = this.adminApproveDate;
-    data['seo_data'] = this.seoData;
-    data['meta_title'] = this.metaTitle;
-    data['meta_description'] = this.metaDescription;
-    data['meta_keywords'] = this.metaKeywords;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['city_name'] = this.cityName;
-    data['listing_image'] = this.listingImage;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['live_media_status'] = liveMediaStatus;
+    data['listing_title'] = listingTitle;
+    data['mobile_no'] = mobileNo;
+    data['verify_code'] = verifyCode;
+    data['phone_extra'] = phoneExtra;
+    data['logo_image'] = logoImage;
+    data['vendor_id'] = vendorId;
+    data['admin_id'] = adminId;
+    data['category_id'] = categoryId;
+    data['country_id'] = countryId;
+    data['state_id'] = stateId;
+    data['city_id'] = cityId;
+    data['keywords'] = keywords;
+    data['chatgpt_description'] = chatgptDescription;
+    data['description'] = description;
+    data['address'] = address;
+    data['zip_code'] = zipCode;
+    data['amenities'] = amenities;
+    data['status'] = status;
+    data['is_active'] = isActive;
+    data['service_type'] = serviceType;
+    data['row_id'] = rowId;
+    data['open_close'] = openClose;
+    data['map_link'] = mapLink;
+    data['latitude'] = latitude;
+    data['longitude'] = longitude;
+    data['social_medias_link'] = socialMediasLink;
+    data['reward_header_img'] = rewardHeaderImg;
+    data['reward_logo_img'] = rewardLogoImg;
+    data['rating'] = rating;
+    data['listing_type'] = listingType;
+    data['standy_img'] = standyImg;
+    data['standy_status'] = standyStatus;
+    data['facebook_link'] = facebookLink;
+    data['insta_link'] = instaLink;
+    data['youtube_link'] = youtubeLink;
+    data['linkdin_link'] = linkdinLink;
+    data['gst'] = gst;
+    data['tax_percent'] = taxPercent;
+    data['admin_approve_date'] = adminApproveDate;
+    data['seo_data'] = seoData;
+    data['meta_title'] = metaTitle;
+    data['meta_description'] = metaDescription;
+    data['meta_keywords'] = metaKeywords;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    data['city_name'] = cityName;
+    data['listing_image'] = listingImage;
     return data;
   }
 }
@@ -624,13 +626,14 @@ class Services {
   String? serviceImage;
   String? image;
 
-  Services(
-      {this.id,
-        this.name,
-        this.slug,
-        this.icon,
-        this.serviceImage,
-        this.image});
+  Services({
+    this.id,
+    this.name,
+    this.slug,
+    this.icon,
+    this.serviceImage,
+    this.image,
+  });
 
   Services.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -642,13 +645,13 @@ class Services {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['slug'] = this.slug;
-    data['icon'] = this.icon;
-    data['service_image'] = this.serviceImage;
-    data['image'] = this.image;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['slug'] = slug;
+    data['icon'] = icon;
+    data['service_image'] = serviceImage;
+    data['image'] = image;
     return data;
   }
 }
@@ -681,33 +684,34 @@ class NearbyDeals {
   String? listingImage;
   double? distance;
 
-  NearbyDeals(
-      {this.id,
-        this.vendorId,
-        this.listingId,
-        this.dealTempId,
-        this.dealName,
-        this.dealDesc,
-        this.startDate,
-        this.endDate,
-        this.status,
-        this.autopilotStatus,
-        this.couponCode,
-        this.discountType,
-        this.dealPoint,
-        this.noOfUser,
-        this.discountValue,
-        this.msgSent,
-        this.pushNotifyStatus,
-        this.autopilotId,
-        this.image,
-        this.createdAt,
-        this.updatedAt,
-        this.cityId,
-        this.cityName,
-        this.templateImage,
-        this.listingImage,
-        this.distance});
+  NearbyDeals({
+    this.id,
+    this.vendorId,
+    this.listingId,
+    this.dealTempId,
+    this.dealName,
+    this.dealDesc,
+    this.startDate,
+    this.endDate,
+    this.status,
+    this.autopilotStatus,
+    this.couponCode,
+    this.discountType,
+    this.dealPoint,
+    this.noOfUser,
+    this.discountValue,
+    this.msgSent,
+    this.pushNotifyStatus,
+    this.autopilotId,
+    this.image,
+    this.createdAt,
+    this.updatedAt,
+    this.cityId,
+    this.cityName,
+    this.templateImage,
+    this.listingImage,
+    this.distance,
+  });
 
   NearbyDeals.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -739,33 +743,33 @@ class NearbyDeals {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['vendor_id'] = this.vendorId;
-    data['listing_id'] = this.listingId;
-    data['deal_temp_id'] = this.dealTempId;
-    data['deal_name'] = this.dealName;
-    data['deal_desc'] = this.dealDesc;
-    data['start_date'] = this.startDate;
-    data['end_date'] = this.endDate;
-    data['status'] = this.status;
-    data['autopilot_status'] = this.autopilotStatus;
-    data['coupon_code'] = this.couponCode;
-    data['discount_type'] = this.discountType;
-    data['deal_point'] = this.dealPoint;
-    data['no_of_user'] = this.noOfUser;
-    data['discount_value'] = this.discountValue;
-    data['msg_sent'] = this.msgSent;
-    data['push_notify_status'] = this.pushNotifyStatus;
-    data['autopilot_id'] = this.autopilotId;
-    data['image'] = this.image;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['city_id'] = this.cityId;
-    data['city_name'] = this.cityName;
-    data['template_image'] = this.templateImage;
-    data['listing_image'] = this.listingImage;
-    data['distance'] = this.distance;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['vendor_id'] = vendorId;
+    data['listing_id'] = listingId;
+    data['deal_temp_id'] = dealTempId;
+    data['deal_name'] = dealName;
+    data['deal_desc'] = dealDesc;
+    data['start_date'] = startDate;
+    data['end_date'] = endDate;
+    data['status'] = status;
+    data['autopilot_status'] = autopilotStatus;
+    data['coupon_code'] = couponCode;
+    data['discount_type'] = discountType;
+    data['deal_point'] = dealPoint;
+    data['no_of_user'] = noOfUser;
+    data['discount_value'] = discountValue;
+    data['msg_sent'] = msgSent;
+    data['push_notify_status'] = pushNotifyStatus;
+    data['autopilot_id'] = autopilotId;
+    data['image'] = image;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    data['city_id'] = cityId;
+    data['city_name'] = cityName;
+    data['template_image'] = templateImage;
+    data['listing_image'] = listingImage;
+    data['distance'] = distance;
     return data;
   }
 }

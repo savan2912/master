@@ -3,11 +3,7 @@ class RequestSubCategoryProductList {
   String? search;
   int? counter;
 
-  RequestSubCategoryProductList({
-    this.listingId,
-    this.search,
-    this.counter,
-  });
+  RequestSubCategoryProductList({this.listingId, this.search, this.counter});
 
   RequestSubCategoryProductList.fromJson(Map<String, dynamic> json) {
     listingId = json['listing_id'];
@@ -16,10 +12,10 @@ class RequestSubCategoryProductList {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['listing_id'] = this.listingId;
-    data['search'] = this.search;
-    data['counter'] = this.counter;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['listing_id'] = listingId;
+    data['search'] = search;
+    data['counter'] = counter;
     return data;
   }
 }

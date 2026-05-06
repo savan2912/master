@@ -5,7 +5,7 @@ class  ApiList {
   //TODO: ----------------------------- Clint URL -----------------------------
 
   //TODO: Local URL
-  static String get baseURL => "http://192.168.1.9:8000/api/v1";
+  static String get baseURL => "http://192.168.1.21:8000/api/v1";
 
   //TODO: -------------------------------- App URL --------------------------------
 
@@ -35,9 +35,39 @@ class  ApiList {
   static String get urlRegister => "$baseURL/auth/sign-up";
   static String get urlLogout => "$baseURL/auth/logout";
   static String get urlBlogDetail => "$baseURL/blog-details";
+  static String get urlAddCart => "$baseURL/add-to-cart";
+  static String get urlAddEnquiry => "$baseURL/users/enquiry-create";
+  static String get urlProductDetail => "$baseURL/product-details";
   static String get urlAboutUs => "$baseURL/about-us";
 
   //TODO USER API LIST
   static String get urlUserDashboard => "$baseURL/auth/dashboard-overview";
   static String get urlMenu => "$baseURL/auth/get-menus";
+  static String get urlNotification => "$baseURL/auth/notifications";
+  static String get urlProfile => "$baseURL/auth/user-profile-detail";
+  static String get urlMyOrder => "$baseURL/auth/user-orders";
+  static String get urlMyOrderDetail => "$baseURL/auth/order-details";
+  static String get urlUserDeal => "$baseURL/users/pending-deal";
+  static String get urlCrackedDeal => "$baseURL/users/cracked-deal";
+  static String get urlBilling => "$baseURL/auth/billing";
+  static String get urlBillHistory => "$baseURL/auth/bill-history";
+  static String get urlBookingHistory => "$baseURL/auth/booking-history";
+  static String get urlBookingHistoryDetail => "$baseURL/auth/booking-details";
+  static String get urlUserPoint => "$baseURL/auth/user-points";
+  static String get urlUserPointDetail => "$baseURL/auth/user-point-details";
+  static String get urlFavData => "$baseURL/auth/user-favourite";
+  static String get urlFavDelete => "$baseURL/auth/remove-favourite";
+  static String get urlHotelBooking => "$baseURL/auth/hotel-booking-history";
+  static String get urlHotelBookingDetail => "$baseURL/auth/hotel-booking-details";
+  static String get urlHotelBookingCancellation => "$baseURL/auth/hotel-booking-cancelation";
+  static String get urlHotelBookingRoomHistory => "$baseURL/auth/booking-room-history";
+  static String get urlHotelBookingServiceHistory => "$baseURL/auth/booking-additional-service-history";
+  static String get urlHotelBookingRoomPricePlan => "$baseURL/auth/booking-room-plan-price";
+  static String get urlHotelBookingCancellationHistory => "$baseURL/auth/booking-cancelation-history";
+  static String get urlProfileAddress => "$baseURL/auth/address-list";
+  static String get urlEditAddress => "$baseURL/auth/add-or-update-address";
+  static String get urlDeleteAddress => "$baseURL/auth/delete-address";
+  static String get urlChangePassword => "$baseURL/auth/update-password";
+  static String get urlUpdatePassword => "$baseURL/auth/user-profile-update";
+
 }

@@ -8,13 +8,13 @@ class ResponseAboutUs {
   ResponseAboutUs.fromJson(Map<String, dynamic> json) {
     result = json['result'];
     message = json['message'];
-    data = json['data'] != null ? new AboutUs.fromJson(json['data']) : null;
+    data = json['data'] != null ? AboutUs.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['result'] = result;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -40,23 +40,24 @@ class AboutUs {
   String? createdAt;
   String? updatedAt;
 
-  AboutUs(
-      {this.id,
-        this.aboutTitle,
-        this.aboutSubtitle,
-        this.aboutContent,
-        this.aboutImage,
-        this.howItWorksTitle,
-        this.howItWorksSubtitle,
-        this.whyChooseTitle,
-        this.whyChooseContent,
-        this.whyChooseImage,
-        this.faq,
-        this.howItWorks,
-        this.stats,
-        this.status,
-        this.createdAt,
-        this.updatedAt});
+  AboutUs({
+    this.id,
+    this.aboutTitle,
+    this.aboutSubtitle,
+    this.aboutContent,
+    this.aboutImage,
+    this.howItWorksTitle,
+    this.howItWorksSubtitle,
+    this.whyChooseTitle,
+    this.whyChooseContent,
+    this.whyChooseImage,
+    this.faq,
+    this.howItWorks,
+    this.stats,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   AboutUs.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -72,19 +73,19 @@ class AboutUs {
     if (json['faq'] != null) {
       faq = <Faq>[];
       json['faq'].forEach((v) {
-        faq!.add(new Faq.fromJson(v));
+        faq!.add(Faq.fromJson(v));
       });
     }
     if (json['how_it_works'] != null) {
       howItWorks = <HowItWorks>[];
       json['how_it_works'].forEach((v) {
-        howItWorks!.add(new HowItWorks.fromJson(v));
+        howItWorks!.add(HowItWorks.fromJson(v));
       });
     }
     if (json['stats'] != null) {
       stats = <Stats>[];
       json['stats'].forEach((v) {
-        stats!.add(new Stats.fromJson(v));
+        stats!.add(Stats.fromJson(v));
       });
     }
     status = json['status'];
@@ -93,29 +94,29 @@ class AboutUs {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['about_title'] = this.aboutTitle;
-    data['about_subtitle'] = this.aboutSubtitle;
-    data['about_content'] = this.aboutContent;
-    data['about_image'] = this.aboutImage;
-    data['how_it_works_title'] = this.howItWorksTitle;
-    data['how_it_works_subtitle'] = this.howItWorksSubtitle;
-    data['why_choose_title'] = this.whyChooseTitle;
-    data['why_choose_content'] = this.whyChooseContent;
-    data['why_choose_image'] = this.whyChooseImage;
-    if (this.faq != null) {
-      data['faq'] = this.faq!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['about_title'] = aboutTitle;
+    data['about_subtitle'] = aboutSubtitle;
+    data['about_content'] = aboutContent;
+    data['about_image'] = aboutImage;
+    data['how_it_works_title'] = howItWorksTitle;
+    data['how_it_works_subtitle'] = howItWorksSubtitle;
+    data['why_choose_title'] = whyChooseTitle;
+    data['why_choose_content'] = whyChooseContent;
+    data['why_choose_image'] = whyChooseImage;
+    if (faq != null) {
+      data['faq'] = faq!.map((v) => v.toJson()).toList();
     }
-    if (this.howItWorks != null) {
-      data['how_it_works'] = this.howItWorks!.map((v) => v.toJson()).toList();
+    if (howItWorks != null) {
+      data['how_it_works'] = howItWorks!.map((v) => v.toJson()).toList();
     }
-    if (this.stats != null) {
-      data['stats'] = this.stats!.map((v) => v.toJson()).toList();
+    if (stats != null) {
+      data['stats'] = stats!.map((v) => v.toJson()).toList();
     }
-    data['status'] = this.status;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    data['status'] = status;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }
@@ -132,9 +133,9 @@ class Faq {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['question'] = this.question;
-    data['answer'] = this.answer;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['question'] = question;
+    data['answer'] = answer;
     return data;
   }
 }
@@ -155,11 +156,11 @@ class HowItWorks {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['step_no'] = this.stepNo;
-    data['title'] = this.title;
-    data['description'] = this.description;
-    data['image'] = this.image;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['step_no'] = stepNo;
+    data['title'] = title;
+    data['description'] = description;
+    data['image'] = image;
     return data;
   }
 }
@@ -178,10 +179,10 @@ class Stats {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['count'] = this.count;
-    data['label'] = this.label;
-    data['image'] = this.image;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['count'] = count;
+    data['label'] = label;
+    data['image'] = image;
     return data;
   }
 }

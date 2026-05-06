@@ -11,15 +11,15 @@ class ResponseAllListing {
     if (json['data'] != null) {
       data = <AllListingsData>[];
       json['data'].forEach((v) {
-        data!.add(new AllListingsData.fromJson(v));
+        data!.add(AllListingsData.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['result'] = result;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -43,21 +43,22 @@ class AllListingsData {
   String? cityName;
   String? categoryName;
 
-  AllListingsData(
-      {this.id,
-        this.listingTitle,
-        this.categoryId,
-        this.cityId,
-        this.description,
-        this.address,
-        this.zipCode,
-        this.status,
-        this.isActive,
-        this.serviceType,
-        this.rating,
-        this.imageUrl,
-        this.cityName,
-        this.categoryName});
+  AllListingsData({
+    this.id,
+    this.listingTitle,
+    this.categoryId,
+    this.cityId,
+    this.description,
+    this.address,
+    this.zipCode,
+    this.status,
+    this.isActive,
+    this.serviceType,
+    this.rating,
+    this.imageUrl,
+    this.cityName,
+    this.categoryName,
+  });
 
   AllListingsData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -77,21 +78,21 @@ class AllListingsData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['listing_title'] = this.listingTitle;
-    data['category_id'] = this.categoryId;
-    data['city_id'] = this.cityId;
-    data['description'] = this.description;
-    data['address'] = this.address;
-    data['zip_code'] = this.zipCode;
-    data['status'] = this.status;
-    data['is_active'] = this.isActive;
-    data['service_type'] = this.serviceType;
-    data['rating'] = this.rating;
-    data['image_url'] = this.imageUrl;
-    data['city_name'] = this.cityName;
-    data['category_name'] = this.categoryName;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['listing_title'] = listingTitle;
+    data['category_id'] = categoryId;
+    data['city_id'] = cityId;
+    data['description'] = description;
+    data['address'] = address;
+    data['zip_code'] = zipCode;
+    data['status'] = status;
+    data['is_active'] = isActive;
+    data['service_type'] = serviceType;
+    data['rating'] = rating;
+    data['image_url'] = imageUrl;
+    data['city_name'] = cityName;
+    data['category_name'] = categoryName;
     return data;
   }
 }

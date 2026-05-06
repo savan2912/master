@@ -1,17 +1,15 @@
 class RequestSearch {
   String? search;
 
-  RequestSearch({
-    this.search,
-  });
+  RequestSearch({this.search});
 
   RequestSearch.fromJson(Map<String, dynamic> json) {
     search = json['search'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['search'] = this.search;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['search'] = search;
     return data;
   }
 }

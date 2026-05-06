@@ -4,7 +4,12 @@ class RequestAllListings {
   int? counter;
   String? search;
 
-  RequestAllListings({this.locationid, this.categoryid,this.counter,this.search});
+  RequestAllListings({
+    this.locationid,
+    this.categoryid,
+    this.counter,
+    this.search,
+  });
 
   RequestAllListings.fromJson(Map<String, dynamic> json) {
     locationid = json['location_id'];
@@ -14,11 +19,11 @@ class RequestAllListings {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['location_id'] = this.locationid;
-    data['category_id'] = this.categoryid;
-    data['counter'] = this.counter;
-    data['search'] = this.search;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['location_id'] = locationid;
+    data['category_id'] = categoryid;
+    data['counter'] = counter;
+    data['search'] = search;
     return data;
   }
 }

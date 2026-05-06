@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import 'WorkCard.dart';
@@ -16,27 +15,24 @@ class HowItWorksSection extends StatelessWidget {
       child: const Column(
         children: [
           Text(
-           "How It Works",
-           style: TextStyle(
-             fontSize: 32,
-             fontWeight: FontWeight.bold,
-           ),
+            "How It Works",
+            style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
           ),
 
-           Padding(
-             padding: EdgeInsets.all(8.0),
-             child: Text(
+          Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
               "Simplifying your service search with Gotilo – fast, easy, and local.",
               style: TextStyle(color: Colors.black54),
-             ),
-           ),
+            ),
+          ),
 
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(8.0),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: const [
+                children: [
                   SizedBox(width: 10),
 
                   WorkCard(
@@ -68,7 +64,7 @@ class HowItWorksSection extends StatelessWidget {
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );

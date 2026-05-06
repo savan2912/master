@@ -11,17 +11,17 @@ class ResponseCollectionProductList {
     if (json['listings'] != null) {
       listings = <CollectionProductList>[];
       json['listings'].forEach((v) {
-        listings!.add(new CollectionProductList.fromJson(v));
+        listings!.add(CollectionProductList.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
-    if (this.listings != null) {
-      data['listings'] = this.listings!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['result'] = result;
+    data['message'] = message;
+    if (listings != null) {
+      data['listings'] = listings!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -36,14 +36,15 @@ class CollectionProductList {
   String? path;
   int? isFavourite;
 
-  CollectionProductList(
-      {this.listingId,
-        this.rating,
-        this.listingTitle,
-        this.address,
-        this.categoryName,
-        this.path,
-        this.isFavourite});
+  CollectionProductList({
+    this.listingId,
+    this.rating,
+    this.listingTitle,
+    this.address,
+    this.categoryName,
+    this.path,
+    this.isFavourite,
+  });
 
   CollectionProductList.fromJson(Map<String, dynamic> json) {
     listingId = json['listing_id'];
@@ -56,14 +57,14 @@ class CollectionProductList {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['listing_id'] = this.listingId;
-    data['rating'] = this.rating;
-    data['listing_title'] = this.listingTitle;
-    data['address'] = this.address;
-    data['category_name'] = this.categoryName;
-    data['path'] = this.path;
-    data['is_favourite'] = this.isFavourite;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['listing_id'] = listingId;
+    data['rating'] = rating;
+    data['listing_title'] = listingTitle;
+    data['address'] = address;
+    data['category_name'] = categoryName;
+    data['path'] = path;
+    data['is_favourite'] = isFavourite;
     return data;
   }
 }

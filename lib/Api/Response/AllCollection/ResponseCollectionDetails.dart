@@ -4,8 +4,12 @@ class ResponseCollectionDetail {
   String? mainCategoryName;
   List<CollectionDetail>? collectionDetail;
 
-  ResponseCollectionDetail(
-      {this.result, this.message, this.mainCategoryName, this.collectionDetail});
+  ResponseCollectionDetail({
+    this.result,
+    this.message,
+    this.mainCategoryName,
+    this.collectionDetail,
+  });
 
   ResponseCollectionDetail.fromJson(Map<String, dynamic> json) {
     result = json['result'];
@@ -14,19 +18,20 @@ class ResponseCollectionDetail {
     if (json['child_categories'] != null) {
       collectionDetail = <CollectionDetail>[];
       json['child_categories'].forEach((v) {
-        collectionDetail!.add(new CollectionDetail.fromJson(v));
+        collectionDetail!.add(CollectionDetail.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
-    data['main_category_name'] = this.mainCategoryName;
-    if (this.collectionDetail != null) {
-      data['child_categories'] =
-          this.collectionDetail!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['result'] = result;
+    data['message'] = message;
+    data['main_category_name'] = mainCategoryName;
+    if (collectionDetail != null) {
+      data['child_categories'] = collectionDetail!
+          .map((v) => v.toJson())
+          .toList();
     }
     return data;
   }
@@ -48,11 +53,11 @@ class CollectionDetail {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['image_link'] = this.imageLink;
-    data['parent_id'] = this.parentId;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['image_link'] = imageLink;
+    data['parent_id'] = parentId;
     return data;
   }
 }

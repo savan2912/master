@@ -11,15 +11,15 @@ class ResponseSearchData {
     if (json['data'] != null) {
       data = <SearchData>[];
       json['data'].forEach((v) {
-        data!.add(new SearchData.fromJson(v));
+        data!.add(SearchData.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['result'] = result;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -33,7 +33,12 @@ class SearchData {
   String? listingTitle;
   String? imageUrl;
 
-  SearchData({this.listingId, this.categoryName, this.listingTitle, this.imageUrl});
+  SearchData({
+    this.listingId,
+    this.categoryName,
+    this.listingTitle,
+    this.imageUrl,
+  });
 
   SearchData.fromJson(Map<String, dynamic> json) {
     listingId = json['listing_id'];
@@ -43,11 +48,11 @@ class SearchData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['listing_id'] = this.listingId;
-    data['category_name'] = this.categoryName;
-    data['listing_title'] = this.listingTitle;
-    data['image_url'] = this.imageUrl;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['listing_id'] = listingId;
+    data['category_name'] = categoryName;
+    data['listing_title'] = listingTitle;
+    data['image_url'] = imageUrl;
     return data;
   }
 }

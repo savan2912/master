@@ -11,15 +11,15 @@ class ResponseHomeCollection {
     if (json['data'] != null) {
       data = <HomeCollection>[];
       json['data'].forEach((v) {
-        data!.add(new HomeCollection.fromJson(v));
+        data!.add(HomeCollection.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['result'] = result;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -35,7 +35,7 @@ class HomeCollection {
   String? icon;
   String? bannerImage;
   String? serviceImage;
-  Null? parentId;
+  Null parentId;
   int? position;
   int? status;
   int? serviceStatus;
@@ -44,22 +44,23 @@ class HomeCollection {
   String? createdAt;
   String? updatedAt;
 
-  HomeCollection(
-      {this.id,
-        this.name,
-        this.slug,
-        this.image,
-        this.icon,
-        this.bannerImage,
-        this.serviceImage,
-        this.parentId,
-        this.position,
-        this.status,
-        this.serviceStatus,
-        this.priority,
-        this.amenityId,
-        this.createdAt,
-        this.updatedAt});
+  HomeCollection({
+    this.id,
+    this.name,
+    this.slug,
+    this.image,
+    this.icon,
+    this.bannerImage,
+    this.serviceImage,
+    this.parentId,
+    this.position,
+    this.status,
+    this.serviceStatus,
+    this.priority,
+    this.amenityId,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   HomeCollection.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -80,22 +81,22 @@ class HomeCollection {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['slug'] = this.slug;
-    data['image'] = this.image;
-    data['icon'] = this.icon;
-    data['banner_image'] = this.bannerImage;
-    data['service_image'] = this.serviceImage;
-    data['parent_id'] = this.parentId;
-    data['position'] = this.position;
-    data['status'] = this.status;
-    data['service_status'] = this.serviceStatus;
-    data['priority'] = this.priority;
-    data['amenity_id'] = this.amenityId;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['slug'] = slug;
+    data['image'] = image;
+    data['icon'] = icon;
+    data['banner_image'] = bannerImage;
+    data['service_image'] = serviceImage;
+    data['parent_id'] = parentId;
+    data['position'] = position;
+    data['status'] = status;
+    data['service_status'] = serviceStatus;
+    data['priority'] = priority;
+    data['amenity_id'] = amenityId;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }

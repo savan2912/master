@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
@@ -18,7 +17,8 @@ class OurFeaturedServicesScreen extends StatefulWidget {
   const OurFeaturedServicesScreen({super.key});
 
   @override
-  State<OurFeaturedServicesScreen> createState() => _OurFeaturedServicesScreenState();
+  State<OurFeaturedServicesScreen> createState() =>
+      _OurFeaturedServicesScreenState();
 }
 
 class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
@@ -41,7 +41,8 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
     print("User Lat :- ${Constants.userLat}");
     print("User Long :- ${Constants.userLong}");
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
         if (!isLoadingMore.value && hasMoreData && isApiComplete.value) {
           loadMoreData();
         }
@@ -82,7 +83,11 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
             backgroundColor: const Color(0xFFFDFDFD),
             surfaceTintColor: const Color(0xFFFDFDFD),
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF0D1B1E), size: 18),
+              icon: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Color(0xFF0D1B1E),
+                size: 18,
+              ),
               onPressed: () => Navigator.pop(context),
             ),
             actions: [
@@ -96,8 +101,11 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
                     }
                   });
                 },
-                icon: Icon(isSearchActive ? Icons.close : Icons.search, color: const Color(0xFF0D1B1E)),
-              )
+                icon: Icon(
+                  isSearchActive ? Icons.close : Icons.search,
+                  color: const Color(0xFF0D1B1E),
+                ),
+              ),
             ],
             centerTitle: true,
             flexibleSpace: FlexibleSpaceBar(
@@ -105,39 +113,48 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
               titlePadding: const EdgeInsets.only(bottom: 15),
               title: isSearchActive
                   ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50),
-                child: SizedBox(
-                  height: 32,
-                  child: TextField(
-                    controller: searchController,
-                    onChanged: onSearchChanged,
-                    autofocus: true,
-                    cursorColor: const Color(0xFF00ACC1),
-                    cursorHeight: 16,
-                    style: GoogleFonts.montserrat(fontSize: 13, color: Colors.black),
-                    decoration: InputDecoration(
-                      hintText: "Search services...",
-                      hintStyle: GoogleFonts.montserrat(fontSize: 11, color: Colors.grey),
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide.none,
+                      padding: const EdgeInsets.symmetric(horizontal: 50),
+                      child: SizedBox(
+                        height: 32,
+                        child: TextField(
+                          controller: searchController,
+                          onChanged: onSearchChanged,
+                          autofocus: true,
+                          cursorColor: const Color(0xFF00ACC1),
+                          cursorHeight: 16,
+                          style: GoogleFonts.montserrat(
+                            fontSize: 13,
+                            color: Colors.black,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: "Search services...",
+                            hintStyle: GoogleFonts.montserrat(
+                              fontSize: 11,
+                              color: Colors.grey,
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey[200],
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 0,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  : Text(
+                      "FEATURED SERVICES",
+                      style: GoogleFonts.montserrat(
+                        color: const Color(0xFF0D1B1E),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 14,
+                        letterSpacing: 2,
                       ),
                     ),
-                  ),
-                ),
-              )
-                  : Text(
-                "FEATURED SERVICES",
-                style: GoogleFonts.montserrat(
-                  color: const Color(0xFF0D1B1E),
-                  fontWeight: FontWeight.w900,
-                  fontSize: 14,
-                  letterSpacing: 2,
-                ),
-              ),
             ),
           ),
 
@@ -146,7 +163,9 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
             builder: (context, loading, child) {
               if (loading) {
                 return const SliverFillRemaining(
-                  child: Center(child: CircularProgressIndicator(color: Color(0xFF00ACC1))),
+                  child: Center(
+                    child: CircularProgressIndicator(color: Color(0xFF00ACC1)),
+                  ),
                 );
               }
 
@@ -159,25 +178,27 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
               return SliverPadding(
                 padding: const EdgeInsets.only(left: 45, right: 20, top: 20),
                 sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                      if (index == services.length) {
-                        return ValueListenableBuilder(
-                          valueListenable: isLoadingMore,
-                          builder: (context, loadingMore, child) {
-                            return loadingMore
-                                ? const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 20),
-                              child: Center(child: CircularProgressIndicator(color: Color(0xFF00ACC1), strokeWidth: 2)),
-                            )
-                                : const SizedBox.shrink();
-                          },
-                        );
-                      }
-                      return _buildModernServiceCard(services[index]);
-                    },
-                    childCount: services.length + 1,
-                  ),
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    if (index == services.length) {
+                      return ValueListenableBuilder(
+                        valueListenable: isLoadingMore,
+                        builder: (context, loadingMore, child) {
+                          return loadingMore
+                              ? const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 20),
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: Color(0xFF00ACC1),
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox.shrink();
+                        },
+                      );
+                    }
+                    return _buildModernServiceCard(services[index]);
+                  }, childCount: services.length + 1),
                 ),
               );
             },
@@ -191,7 +212,7 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
   Widget _buildModernServiceCard(AllService service) {
     return GestureDetector(
       onTap: () {
-        Get.to(()=> CollectionDetailScreen(categoryId: service.id,));
+        Get.to(() => CollectionDetailScreen(categoryId: service.id));
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 40),
@@ -214,7 +235,7 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
                     color: const Color(0xFF0D1B1E).withOpacity(0.06),
                     blurRadius: 30,
                     offset: const Offset(0, 15),
-                  )
+                  ),
                 ],
               ),
               child: Row(
@@ -253,7 +274,11 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
                       shape: BoxShape.circle,
                       color: const Color(0xFF1A1A1A).withOpacity(0.05),
                     ),
-                    child: const Icon(Icons.chevron_right_rounded, color: Color(0xFF1A1A1A), size: 22),
+                    child: const Icon(
+                      Icons.chevron_right_rounded,
+                      color: Color(0xFF1A1A1A),
+                      size: 22,
+                    ),
                   ),
                 ],
               ),
@@ -271,7 +296,7 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
                       color: const Color(0xFF00ACC1).withOpacity(0.25),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
-                    )
+                    ),
                   ],
                 ),
                 child: ClipRRect(
@@ -304,7 +329,10 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
     await _callAllService(searchQuery: searchController.text);
   }
 
-  Future<void> callAllService({bool isFirstLoad = false, String searchQuery = ""}) async {
+  Future<void> callAllService({
+    bool isFirstLoad = false,
+    String searchQuery = "",
+  }) async {
     if (isFirstLoad) {
       isApiComplete.value = false;
       isSearching.value = true;
@@ -326,16 +354,16 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
       }
 
       ResponseAllService? response = await ApiCalls.callAllService(
-          RequestAllService(
-              search: searchQuery,
-              counter: currentCounter.toString()
-          ));
+        RequestAllService(
+          search: searchQuery,
+          counter: currentCounter.toString(),
+        ),
+      );
 
       if (response != null &&
           response.result != null &&
           response.result!.toLowerCase().contains("pass") &&
           response.data != null) {
-
         if (response.data!.isEmpty) {
           hasMoreData = false;
         } else {

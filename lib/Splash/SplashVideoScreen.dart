@@ -4,8 +4,6 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:gotilo_new/Routes/app_routes.dart';
 import 'package:video_player/video_player.dart';
 
-import '../Notifications/PushNotificationService.dart';
-
 class SplashVideoScreen extends StatefulWidget {
   const SplashVideoScreen({super.key});
 
@@ -20,16 +18,13 @@ class _SplashVideoScreenState extends State<SplashVideoScreen> {
   void initState() {
     super.initState();
 
-    _controller = VideoPlayerController.asset(
-      "assets/videos/logo_splash1.mp4",
-    )
+    _controller = VideoPlayerController.asset("assets/videos/logo_splash1.mp4")
       ..initialize().then((_) {
         setState(() {});
         _controller.play();
       });
     _controller.addListener(() {
-      if (_controller.value.position ==
-          _controller.value.duration) {
+      if (_controller.value.position == _controller.value.duration) {
         Get.offNamed(AppRoutes.home);
       }
     });
@@ -48,17 +43,15 @@ class _SplashVideoScreenState extends State<SplashVideoScreen> {
       body: Center(
         child: _controller.value.isInitialized
             ? SizedBox.expand(
-          child: FittedBox(
-            fit: BoxFit.contain,
-            child: SizedBox(
-              width: _controller
-                  .value.size.width,
-              height: _controller
-                  .value.size.height,
-              child: VideoPlayer(_controller),
-            ),
-          ),
-        )
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: SizedBox(
+                    width: _controller.value.size.width,
+                    height: _controller.value.size.height,
+                    child: VideoPlayer(_controller),
+                  ),
+                ),
+              )
             : const CircularProgressIndicator(),
       ),
     );

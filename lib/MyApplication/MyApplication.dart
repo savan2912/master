@@ -13,6 +13,8 @@ import 'package:gotilo_new/Constant/AppPref.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/Screens/Login/view/LoginScreen.dart';
 
+import '../Api/Request/User/Profile/RequestProfile.dart';
+import '../Api/Response/User/Profile/ResponseProfile.dart';
 import '../Constant/Constants.dart';
 
 class MyApplication {
@@ -110,5 +112,9 @@ class MyApplication {
       }
     }
   }
+
+
+
+
 
 }

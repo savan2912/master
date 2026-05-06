@@ -11,17 +11,17 @@ class ResponseCity {
     if (json['cities'] != null) {
       cities = <Cities>[];
       json['cities'].forEach((v) {
-        cities!.add(new Cities.fromJson(v));
+        cities!.add(Cities.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
-    if (this.cities != null) {
-      data['cities'] = this.cities!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['result'] = result;
+    data['message'] = message;
+    if (cities != null) {
+      data['cities'] = cities!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -40,18 +40,19 @@ class Cities {
   String? createdAt;
   String? updatedAt;
 
-  Cities(
-      {this.id,
-        this.name,
-        this.slug,
-        this.image,
-        this.stateId,
-        this.longitude,
-        this.latitude,
-        this.priority,
-        this.status,
-        this.createdAt,
-        this.updatedAt});
+  Cities({
+    this.id,
+    this.name,
+    this.slug,
+    this.image,
+    this.stateId,
+    this.longitude,
+    this.latitude,
+    this.priority,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Cities.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -68,18 +69,18 @@ class Cities {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['slug'] = this.slug;
-    data['image'] = this.image;
-    data['state_id'] = this.stateId;
-    data['longitude'] = this.longitude;
-    data['latitude'] = this.latitude;
-    data['priority'] = this.priority;
-    data['status'] = this.status;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['slug'] = slug;
+    data['image'] = image;
+    data['state_id'] = stateId;
+    data['longitude'] = longitude;
+    data['latitude'] = latitude;
+    data['priority'] = priority;
+    data['status'] = status;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }

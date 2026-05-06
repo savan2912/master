@@ -6,10 +6,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gotilo_new/Api/Request/Cart/RequestAddCart.dart';
+import 'package:gotilo_new/Api/Request/Enquiry/RequestAddEnquiry.dart';
 import 'package:gotilo_new/Api/Request/SubCategoryList/RequestSubCategoryListDetails.dart';
 import 'package:gotilo_new/Api/Request/SubCategoryList/RequestSubCategoryProductList.dart';
+import 'package:gotilo_new/Api/Response/Cart/ResponseAddCart.dart';
+import 'package:gotilo_new/Api/Response/Enquiry/ResponseAddEnquiry.dart';
 import 'package:gotilo_new/Api/Response/SubCategoryList/ResponseSubCategoryProductList.dart';
 import 'package:gotilo_new/Api/Response/SubCategoryList/ResponseSubcategoryListDetails.dart';
+import 'package:gotilo_new/Constant/AppPref.dart';
+import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
+import 'package:gotilo_new/Screens/Product/ProductDetailScreen.dart';
 import 'package:marquee/marquee.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../Api/ApiCalls.dart';
@@ -21,20 +28,20 @@ const Color primaryColor = Color(0xFFF012BE);
 const Color darkBlue = Color(0xFF1B2E3F);
 
 class AllListingDetailScreen extends StatefulWidget {
-  int? listId=0;
-  AllListingDetailScreen({super.key,this.listId});
+  int? listId = 0;
+  AllListingDetailScreen({super.key, this.listId});
 
   @override
   State<AllListingDetailScreen> createState() => _AllListingDetailScreenState();
 }
 
-class _AllListingDetailScreenState extends State<AllListingDetailScreen> with SingleTickerProviderStateMixin {
+class _AllListingDetailScreenState extends State<AllListingDetailScreen>
+    with SingleTickerProviderStateMixin {
+  ValueNotifier<bool> isDataAvailable = ValueNotifier(false);
+  ValueNotifier<bool> isApiComplete = ValueNotifier(false);
 
-  ValueNotifier<bool> isDataAvailable=ValueNotifier(false);
-  ValueNotifier<bool> isApiComplete=ValueNotifier(false);
-
-  ValueNotifier<bool> isProductDataAvailable=ValueNotifier(false);
-  ValueNotifier<bool> isProductApiComplete=ValueNotifier(false);
+  ValueNotifier<bool> isProductDataAvailable = ValueNotifier(false);
+  ValueNotifier<bool> isProductApiComplete = ValueNotifier(false);
 
   late ScrollController _scrollController;
   late ScrollController _marqueeController;
@@ -45,19 +52,24 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
   List<Lisitngdeals> myDealsList = [];
 
   bool _isSearching = false;
-  int _selectedDealIndex = 0;
+  final int _selectedDealIndex = 0;
   int _currentImageIndex = 0;
   final TextEditingController _searchController = TextEditingController();
 
   ListDetail? listDetail;
-  List<DetailImages> _bannerImages=[];
-  List<Amenities> amenities=[];
-  List<SubCategoryProductList> products=[];
+  final List<DetailImages> _bannerImages = [];
+  List<Amenities> amenities = [];
+  List<SubCategoryProductList> products = [];
   Vendor? vendor;
 
-
-
   TextEditingController searchController = TextEditingController();
+  final TextEditingController _fNameController = TextEditingController();
+  final TextEditingController _lNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _numberController = TextEditingController();
+  final TextEditingController _messageController = TextEditingController();
+
+
   Timer? _debouncer;
   int currentCounter = 0;
   bool isLoadMore = false;
@@ -141,24 +153,27 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
               onPressed: () => _showEnquiryModal(context),
               backgroundColor: primaryColor,
               elevation: 8,
-              child: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.white, size: 24),
+              child: const Icon(
+                Icons.chat_bubble_outline_rounded,
+                color: Colors.white,
+                size: 24,
+              ),
             ),
           );
-        }
+        },
       ),
-      body:
-      ValueListenableBuilder(
+      body: ValueListenableBuilder(
         valueListenable: isApiComplete,
         builder: (context, value, child) {
           return Visibility(
             visible: value,
-            replacement:const Center(child: CircularProgressIndicator(),),
+            replacement: const Center(child: CircularProgressIndicator()),
             child: ValueListenableBuilder(
               valueListenable: isDataAvailable,
               builder: (context, value, child) {
                 return Visibility(
                   visible: value,
-                  replacement:const Center(child: Text("No data"),),
+                  replacement: const Center(child: Text("No data")),
                   child: NestedScrollView(
                     controller: _scrollController,
                     physics: const BouncingScrollPhysics(),
@@ -172,30 +187,43 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
                           leadingWidth: _isSearching ? 20 : 60,
                           leading: _isSearching
                               ? const SizedBox.shrink()
-                              : _buildHeaderButton(Icons.arrow_back_ios_new, () => Navigator.pop(context)),
+                              : _buildHeaderButton(
+                                  Icons.arrow_back_ios_new,
+                                  () => Navigator.pop(context),
+                                ),
                           centerTitle: true,
                           title: _isSearching
                               ? _buildPremiumSearchBar()
                               : ListenableBuilder(
-                            listenable: _scrollController,
-                            builder: (context, child) {
-                              double offset = _scrollController.hasClients ? _scrollController.offset : 0;
-                              double opacity = (offset / 180).clamp(0.0, 1.0);
-                              return Opacity(
-                                opacity: opacity,
-                                child: _buildMarqueeTitle("${listDetail!.listingTitle}"),
-                              );
-                            },
-                          ),
+                                  listenable: _scrollController,
+                                  builder: (context, child) {
+                                    double offset = _scrollController.hasClients
+                                        ? _scrollController.offset
+                                        : 0;
+                                    double opacity = (offset / 180).clamp(
+                                      0.0,
+                                      1.0,
+                                    );
+                                    return Opacity(
+                                      opacity: opacity,
+                                      child: _buildMarqueeTitle(
+                                        "${listDetail!.listingTitle}",
+                                      ),
+                                    );
+                                  },
+                                ),
                           actions: [
                             if (!_isSearching) ...[
                               if (_tabController.index == 1) ...[
                                 _buildHeaderButton(Icons.add_shopping_cart, () {
-                                  Get.to(()=>const CartScreen());
+                                  Get.to(() => const CartScreen());
                                 }),
                               ] else ...[
                                 _buildHeaderButton(Icons.share_outlined, () {}),
-                                _buildHeaderButton(Icons.favorite_border, () {}),
+                                _buildHeaderButton(
+                                  Icons.favorite_border,
+                                  () {},
+                                ),
                               ],
                             ],
                             const SizedBox(width: 8),
@@ -207,9 +235,14 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
                                 PageView.builder(
                                   controller: _pageController,
                                   itemCount: _bannerImages.length,
-                                  onPageChanged: (index) => setState(() => _currentImageIndex = index),
+                                  onPageChanged: (index) => setState(
+                                    () => _currentImageIndex = index,
+                                  ),
                                   itemBuilder: (context, index) {
-                                    return Image.network(_bannerImages[index].imagePath!, fit: BoxFit.cover);
+                                    return Image.network(
+                                      _bannerImages[index].imagePath!,
+                                      fit: BoxFit.cover,
+                                    );
                                   },
                                 ),
 
@@ -218,7 +251,11 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
                                     gradient: LinearGradient(
                                       begin: Alignment.topCenter,
                                       end: Alignment.bottomCenter,
-                                      colors: [Colors.black45, Colors.transparent, Colors.black54],
+                                      colors: [
+                                        Colors.black45,
+                                        Colors.transparent,
+                                        Colors.black54,
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -235,19 +272,27 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                  ),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           _buildCategoryBadge("PREMIUM CAFE"),
                                           const SizedBox(height: 8),
                                           Text(
                                             "${listDetail!.listingTitle}",
-                                            style: const TextStyle(color: darkBlue, fontSize: 26, fontWeight: FontWeight.bold),
+                                            style: const TextStyle(
+                                              color: darkBlue,
+                                              fontSize: 26,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -260,29 +305,49 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
                                   height: 65,
                                   child: ListView.builder(
                                     scrollDirection: Axis.horizontal,
-                                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                    ),
                                     itemCount: _bannerImages.length,
                                     itemBuilder: (context, index) {
-                                      bool isSelected = _currentImageIndex == index;
+                                      bool isSelected =
+                                          _currentImageIndex == index;
                                       return GestureDetector(
                                         onTap: () {
                                           if (mounted) {
-                                            _pageController.animateToPage(index,
-                                                duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+                                            _pageController.animateToPage(
+                                              index,
+                                              duration: const Duration(
+                                                milliseconds: 300,
+                                              ),
+                                              curve: Curves.easeInOut,
+                                            );
                                           }
                                         },
                                         child: AnimatedContainer(
-                                          duration: const Duration(milliseconds: 200),
+                                          duration: const Duration(
+                                            milliseconds: 200,
+                                          ),
                                           width: 65,
-                                          margin: const EdgeInsets.only(right: 12),
+                                          margin: const EdgeInsets.only(
+                                            right: 12,
+                                          ),
                                           decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                             border: Border.all(
-                                                color: isSelected ? primaryColor : Colors.grey.shade300,
-                                                width: 2),
+                                              color: isSelected
+                                                  ? primaryColor
+                                                  : Colors.grey.shade300,
+                                              width: 2,
+                                            ),
                                             image: DecorationImage(
-                                                image: NetworkImage(_bannerImages[index].imagePath!),
-                                                fit: BoxFit.cover),
+                                              image: NetworkImage(
+                                                _bannerImages[index].imagePath!,
+                                              ),
+                                              fit: BoxFit.cover,
+                                            ),
                                           ),
                                         ),
                                       );
@@ -302,19 +367,36 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
                             height: 75,
                             child: Container(
                               color: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 12,
+                              ),
                               child: Container(
-                                decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(20)),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF1F5F9),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
                                 child: TabBar(
                                   controller: _tabController,
-                                  onTap: (index) => setState(() {}), // Refresh logic on tab tap
+                                  onTap: (index) => setState(
+                                    () {},
+                                  ), // Refresh logic on tab tap
                                   indicatorSize: TabBarIndicatorSize.tab,
                                   dividerColor: Colors.transparent,
-                                  indicator: BoxDecoration(color: darkBlue, borderRadius: BorderRadius.circular(18)),
+                                  indicator: BoxDecoration(
+                                    color: darkBlue,
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
                                   labelColor: Colors.white,
                                   unselectedLabelColor: const Color(0xFF64748B),
-                                  labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                                  tabs: const [Tab(text: "Overview"), Tab(text: "Products")],
+                                  labelStyle: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                  tabs: const [
+                                    Tab(text: "Overview"),
+                                    Tab(text: "Products"),
+                                  ],
                                 ),
                               ),
                             ),
@@ -331,34 +413,39 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
                     ),
                   ),
                 );
-              }
+              },
             ),
           );
-        }
+        },
       ),
       // bottomNavigationBar: _buildActionBottomBar(),
     );
   }
 
-
-
-
   Widget _buildViewAllButton() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(8)
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: const Row(
         children: [
           Icon(Icons.photo_library_outlined, size: 14, color: darkBlue),
           SizedBox(width: 5),
-          Text("View all", style: TextStyle(color: darkBlue, fontSize: 10, fontWeight: FontWeight.bold)),
+          Text(
+            "View all",
+            style: TextStyle(
+              color: darkBlue,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );
   }
+
   Widget _circleNavButton(IconData icon, VoidCallback onTap) {
     return GestureDetector(
       onTap: () {
@@ -400,7 +487,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
             const SizedBox(height: 35),
             _sectionHeader("Exclusive Deals"),
             const SizedBox(height: 15),
-          _buildMyDealsList(myDealsList),
+            _buildMyDealsList(myDealsList),
 
             const SizedBox(height: 40),
             _sectionHeader("Amenities"),
@@ -417,13 +504,20 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
             const SizedBox(height: 12),
             Text(
               "${listDetail!.description}",
-              style: TextStyle(color: Colors.grey[600], height: 1.6, fontSize: 15),
+              style: TextStyle(
+                color: Colors.grey[600],
+                height: 1.6,
+                fontSize: 15,
+              ),
             ),
 
             const SizedBox(height: 40),
             _sectionHeader("Location"),
             const SizedBox(height: 12),
-            _buildDetailCard(Icons.location_on_rounded, "${listDetail!.address}"),
+            _buildDetailCard(
+              Icons.location_on_rounded,
+              "${listDetail!.address}",
+            ),
             const SizedBox(height: 120),
           ],
         ),
@@ -455,11 +549,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgPicture.asset(
-                "assets/amenities.svg",
-                height: 50,
-                width: 50,
-              ),
+              SvgPicture.asset("assets/amenities.svg", height: 50, width: 50),
 
               const SizedBox(height: 8),
 
@@ -543,7 +633,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
     );
   }
 
-// --- INDIVIDUAL DEAL CARD DESIGN ---
+  // --- INDIVIDUAL DEAL CARD DESIGN ---
   Widget _buildModernDealCard(Lisitngdeals dealData) {
     String title = dealData.dealName ?? "Special Offer";
     String desc = dealData.dealDesc ?? "No description available";
@@ -565,7 +655,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
             color: const Color(0xFF0D1B1E).withOpacity(0.12),
             blurRadius: 12,
             offset: const Offset(0, 8),
-          )
+          ),
         ],
       ),
       child: Stack(
@@ -588,11 +678,16 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF6C63FF).withOpacity(0.2),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: const Color(0xFF6C63FF).withOpacity(0.3)),
+                        border: Border.all(
+                          color: const Color(0xFF6C63FF).withOpacity(0.3),
+                        ),
                       ),
                       child: Text(
                         "ACTIVE",
@@ -653,18 +748,35 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text("Started On", style: TextStyle(color: Colors.white38, fontSize: 9)),
-                        Text(startDate, style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold)),
+                        const Text(
+                          "Started On",
+                          style: TextStyle(color: Colors.white38, fontSize: 9),
+                        ),
+                        Text(
+                          startDate,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(14),
-                          boxShadow: [
-                            BoxShadow(color: Colors.white.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 2))
-                          ]
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.white.withOpacity(0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: Text(
                         "REDEEM",
@@ -686,7 +798,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
     );
   }
 
-/*  Widget _dealOption(int index, String title, IconData icon) {
+  /*  Widget _dealOption(int index, String title, IconData icon) {
     bool isSelected = _selectedDealIndex == index;
     return Expanded(
       child: GestureDetector(
@@ -729,7 +841,9 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
     String endDate = dealData['end_date'] ?? "";
 
     // Extracting discount percentage from title if possible
-    String discount = title.contains("%") ? title.split("off")[0].trim() : "OFFER";
+    String discount = title.contains("%")
+        ? title.split("off")[0].trim()
+        : "OFFER";
 
     return Container(
       width: double.infinity,
@@ -741,7 +855,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
             color: const Color(0xFF0D1B1E).withOpacity(0.06),
             blurRadius: 20,
             offset: const Offset(0, 10),
-          )
+          ),
         ],
       ),
       child: ClipRRect(
@@ -768,7 +882,10 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFFFF4081),
                           borderRadius: BorderRadius.circular(12),
@@ -785,7 +902,11 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
                       ),
                       Row(
                         children: [
-                          const Icon(Icons.calendar_month_outlined, size: 14, color: Colors.grey),
+                          const Icon(
+                            Icons.calendar_month_outlined,
+                            size: 14,
+                            color: Colors.grey,
+                          ),
                           const SizedBox(width: 5),
                           Text(
                             "$startDate  to  $endDate",
@@ -838,12 +959,17 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
 
                   // Bottom Section: Dotted Divider & Button
                   Row(
-                    children: List.generate(20, (index) => Expanded(
-                      child: Container(
-                        color: index % 2 == 0 ? Colors.transparent : Colors.grey.withOpacity(0.3),
-                        height: 1,
+                    children: List.generate(
+                      20,
+                      (index) => Expanded(
+                        child: Container(
+                          color: index % 2 == 0
+                              ? Colors.transparent
+                              : Colors.grey.withOpacity(0.3),
+                          height: 1,
+                        ),
                       ),
-                    )),
+                    ),
                   ),
 
                   const SizedBox(height: 20),
@@ -857,7 +983,9 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0D1B1E),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
                         elevation: 0,
                       ),
                       child: Row(
@@ -873,7 +1001,11 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
                             ),
                           ),
                           const SizedBox(width: 10),
-                          const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 18),
+                          const Icon(
+                            Icons.arrow_forward_rounded,
+                            color: Colors.white,
+                            size: 18,
+                          ),
                         ],
                       ),
                     ),
@@ -895,41 +1027,78 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(26),
-          border: Border.all(color: const Color(0xFFF1F5F9)),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 15)]
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(color: const Color(0xFFF1F5F9)),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 15),
+        ],
       ),
       child: Column(
         children: [
           Row(
             children: [
-              CircleAvatar(radius: 28, backgroundColor: darkBlue.withOpacity(0.08), child: const Icon(Icons.person, color: darkBlue)),
+              CircleAvatar(
+                radius: 28,
+                backgroundColor: darkBlue.withOpacity(0.08),
+                child: const Icon(Icons.person, color: darkBlue),
+              ),
               const SizedBox(width: 15),
               Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text("${vendor!.name ?? listDetail!.listingTitle}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
-                  Text("Founder & Owner", style: TextStyle(color: Colors.grey, fontSize: 13)),
-                ]),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "${vendor!.name ?? listDetail!.listingTitle}",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                      ),
+                    ),
+                    const Text(
+                      "Founder & Owner",
+                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
+                  ],
+                ),
               ),
-              GestureDetector(onTap: () => _launchPhone(ownerPhone), child: _circleAction(Icons.call, Colors.green)),
+              GestureDetector(
+                onTap: () => _launchPhone(ownerPhone),
+                child: _circleAction(Icons.call, Colors.green),
+              ),
               const SizedBox(width: 10),
-              GestureDetector(onTap: () => _launchEmail(ownerEmail), child: _circleAction(Icons.mail_rounded, Colors.blue)),
+              GestureDetector(
+                onTap: () => _launchEmail(ownerEmail),
+                child: _circleAction(Icons.mail_rounded, Colors.blue),
+              ),
             ],
           ),
-          const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Divider(color: Color(0xFFF1F5F9), thickness: 1)),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Divider(color: Color(0xFFF1F5F9), thickness: 1),
+          ),
           Row(
             children: [
-              Icon(Icons.alternate_email_rounded, size: 16, color: darkBlue.withOpacity(0.4)),
+              Icon(
+                Icons.alternate_email_rounded,
+                size: 16,
+                color: darkBlue.withOpacity(0.4),
+              ),
               const SizedBox(width: 10),
-              Text(ownerEmail, style: TextStyle(color: Colors.grey[600], fontSize: 14, fontWeight: FontWeight.w500)),
+              Text(
+                ownerEmail,
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
   }
-
 
   Widget _buildProductsContent() {
     return Column(
@@ -943,7 +1112,8 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
               // FIX: Upside scroll check & Length check
               // logic: pixels >= maxScrollExtent (bottom) AND items 10 na multiple ma hoy toh j
               if (!isLoadMore &&
-                  scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent &&
+                  scrollInfo.metrics.pixels >=
+                      scrollInfo.metrics.maxScrollExtent &&
                   scrollInfo.metrics.pixels > 0 && // Upside loader block
                   products.length >= 10 &&
                   products.length % 10 == 0) {
@@ -972,7 +1142,8 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
                     mainAxisSpacing: 15,
                   ),
                   itemCount: products.length,
-                  itemBuilder: (context, index) => _buildProductCard(products[index]),
+                  itemBuilder: (context, index) =>
+                      _buildProductCard(products[index]),
                 );
               },
             ),
@@ -989,147 +1160,168 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
     );
   }
 
-  Widget _buildProductCard(dynamic product) {
+  Widget _buildProductCard(SubCategoryProductList product) {
     /// 1. DATA EXTRACTION
-    final String name = (product.name ?? "").trim().isEmpty ? "No Name" : product.name!;
-    final String slug = (product.slug ?? "").trim().isEmpty ? "-" : product.slug!;
+    final String name = (product.name ?? "").trim().isEmpty
+        ? "No Name"
+        : product.name!;
+    final String slug = (product.slug ?? "").trim().isEmpty
+        ? "-"
+        : product.slug!;
     final String imageUrl = product.thumbnail ?? "";
 
     final double price = (product.unitPrice ?? 0).toDouble();
     final double finalPrice = (product.discountedPrice ?? price).toDouble();
-    final double discount = double.tryParse(product.discount?.toString() ?? "0") ?? 0;
+    final double discount =
+        double.tryParse(product.discount?.toString() ?? "0") ?? 0;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 15,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: Column(
-          children: [
-            /// 🖼️ IMAGE SECTION
-            Expanded(
-              flex: 11,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  // Product Image
-                  imageUrl.isNotEmpty
-                      ? Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        Container(color: Colors.grey[100], child: const Icon(Icons.broken_image)),
-                  )
-                      : Container(color: Colors.grey[100], child: const Icon(Icons.image)),
-
-
-                  // Discount Badge (Top Right)
-                  if (discount > 0)
-                    Positioned(
-                      top: 10,
-                      right: 10,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.redAccent,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          "${discount.toInt()}% OFF",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+    return GestureDetector(
+      onTap: () {
+        Get.to(()=> ProductDetailScreen(productId: product.id.toString(),listId: widget.listId!,));
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 15,
+              offset: const Offset(0, 6),
             ),
-
-            /// 📝 DETAILS SECTION
-            Expanded(
-              flex: 9,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: Column(
+            children: [
+              /// 🖼️ IMAGE SECTION
+              Expanded(
+                flex: 11,
+                child: Stack(
+                  fit: StackFit.expand,
                   children: [
-                    // Product Name
-                    Text(
-                      name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                        color: Color(0xFF1E293B),
-                        height: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-
-                    // Slug/Category
-                    Text(
-                      slug,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Colors.grey[400],
-                        fontSize: 10,
-                      ),
-                    ),
-
-                    const Spacer(),
-
-                    // Price Row
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (discount > 0)
-                                Text(
-                                  "₹${price.toInt()}",
-                                  style: TextStyle(
-                                    decoration: TextDecoration.lineThrough,
-                                    color: Colors.grey[400],
-                                    fontSize: 11,
-                                  ),
+                    // Product Image
+                    imageUrl.isNotEmpty
+                        ? Image.network(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  color: Colors.grey[100],
+                                  child: const Icon(Icons.broken_image),
                                 ),
-                              Text(
-                                "₹${finalPrice.toInt()}",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 18,
-                                  color: Color(0xFF0F172A),
-                                ),
-                              ),
-                            ],
+                          )
+                        : Container(
+                            color: Colors.grey[100],
+                            child: const Icon(Icons.image),
+                          ),
+      
+                    // Discount Badge (Top Right)
+                    if (discount > 0)
+                      Positioned(
+                        top: 10,
+                        right: 10,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.redAccent,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            "${discount.toInt()}% OFF",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-
-                        // Add Button
-                        _buildAddButton(), // Tamaru existing Add Button aya call thase
-                      ],
-                    ),
+                      ),
                   ],
                 ),
               ),
-            ),
-          ],
+      
+              /// 📝 DETAILS SECTION
+              Expanded(
+                flex: 9,
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Product Name
+                      Text(
+                        name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                          color: Color(0xFF1E293B),
+                          height: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+      
+                      Text(
+                        slug,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: Colors.grey[400], fontSize: 10),
+                      ),
+      
+                      const Spacer(),
+      
+      
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (discount > 0)
+                                  Text(
+                                    "₹${price.toInt()}",
+                                    style: TextStyle(
+                                      decoration: TextDecoration.lineThrough,
+                                      color: Colors.grey[400],
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                Text(
+                                  "₹${finalPrice.toInt()}",
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 18,
+                                    color: Color(0xFF0F172A),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+      
+                          // Add Button
+                          _buildAddButton(onTap: () {
+                            callAddCart(
+                                  name: product.name,
+                                  price: product.unitPrice,
+                                  productid: product.id,
+                                  qty: 1
+                              );
+                          },),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1143,12 +1335,17 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20, offset: const Offset(0, 8))],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
         child: TextField(
           controller: searchController,
           onChanged: (val) {
-            // Instant Reset for clear UI feel
             setState(() {
               isSearching = true;
               if (val.isEmpty) {
@@ -1165,13 +1362,23 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
           decoration: InputDecoration(
             hintText: "Search products...",
             prefixIcon: isSearching
-                ? const Padding(padding: EdgeInsets.all(14), child: SizedBox(height: 10, width: 10, child: CircularProgressIndicator(strokeWidth: 2)))
+                ? const Padding(
+                    padding: EdgeInsets.all(14),
+                    child: SizedBox(
+                      height: 10,
+                      width: 10,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  )
                 : const Icon(Icons.search_rounded),
             suffixIcon: searchController.text.isNotEmpty
-                ? IconButton(icon: const Icon(Icons.close), onPressed: () {
-              searchController.clear();
-              _callSubCategoryProductList();
-            })
+                ? IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      searchController.clear();
+                      _callSubCategoryProductList();
+                    },
+                  )
                 : const Icon(Icons.tune_rounded),
             border: InputBorder.none,
             contentPadding: const EdgeInsets.symmetric(vertical: 15),
@@ -1181,20 +1388,25 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
     );
   }
 
-// Helper for Discount Badge
+  // Helper for Discount Badge
   Widget _buildDiscountBadge(int percentage) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.black, // Dark premium look
+        color: Colors.black,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         "$percentage% OFF",
-        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 9,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
+
   // --- MODAL & FORM ---
   void _showEnquiryModal(BuildContext context) {
     showModalBottomSheet(
@@ -1202,8 +1414,13 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-        decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(25))),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1212,8 +1429,21 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text("Enquiry", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: darkBlue)),
-                  IconButton(onPressed: () => Navigator.pop(context), icon: Icon(Icons.cancel_rounded, color: darkBlue.withOpacity(0.5))),
+                  const Text(
+                    "Enquiry",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      color: darkBlue,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(
+                      Icons.cancel_rounded,
+                      color: darkBlue.withOpacity(0.5),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -1224,18 +1454,56 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildTextField("First Name", "Enter First Name"),
-                    _buildTextField("Last Name", "Enter Last Name"),
-                    _buildTextField("Email", "Enter Email"),
-                    _buildTextField("Phone Number", "Enter Phone Number"),
-                    _buildTextField("Write us a Message", "Enter Enquiry Now", maxLines: 3),
+                    _buildTextField("First Name", "Enter First Name",_fNameController),
+                    _buildTextField("Last Name", "Enter Last Name",_lNameController),
+                    _buildTextField("Email", "Enter Email",_emailController),
+                    _buildTextField("Phone Number", "Enter Phone Number",_numberController),
+                    _buildTextField(
+                      "Write us a Message",
+                      "Enter Enquiry Now",
+                      _messageController,
+                      maxLines: 3,
+                    ),
                     const SizedBox(height: 20),
                     Align(
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
-                        style: ElevatedButton.styleFrom(backgroundColor: darkBlue, padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                        child: const Row(mainAxisSize: MainAxisSize.min, children: [Text("Enquiry", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), SizedBox(width: 8), Icon(Icons.arrow_circle_right_outlined, color: Colors.white, size: 18)]),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          if(_fNameController.text != "" && _numberController.text != "" && _emailController.text != ""){
+                            callAddEnquiry();
+                          }else{
+                            SharedWidgets.showTopSnackBar(context, message: "Please fill Field");
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: darkBlue,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 25,
+                            vertical: 15,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "Enquiry",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Icon(
+                              Icons.arrow_circle_right_outlined,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -1249,22 +1517,39 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
   }
 
   // --- SHARED UI HELPER METHODS ---
-  Widget _buildTextField(String label, String hint, {int maxLines = 1}) {
+  Widget _buildTextField(String label, String hint,TextEditingController controller, {int maxLines = 1}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: darkBlue.withOpacity(0.8))),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: darkBlue.withOpacity(0.8),
+            ),
+          ),
           const SizedBox(height: 8),
           TextField(
             maxLines: maxLines,
+            controller:controller,
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: TextStyle(color: Colors.grey[400], fontSize: 13),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey[300]!)),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: darkBlue, width: 1.5)),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 15,
+                vertical: 12,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: darkBlue, width: 1.5),
+              ),
             ),
           ),
         ],
@@ -1275,16 +1560,33 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
   Widget _buildPremiumSearchBar() {
     return Container(
       height: 48,
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10)]),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10),
+        ],
+      ),
       child: TextField(
         controller: _searchController,
         autofocus: true,
-        style: const TextStyle(color: darkBlue, fontSize: 15, fontWeight: FontWeight.w600),
+        style: const TextStyle(
+          color: darkBlue,
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+        ),
         decoration: InputDecoration(
           hintText: "Search dishes...",
           hintStyle: TextStyle(color: darkBlue.withOpacity(0.4), fontSize: 14),
-          prefixIcon: const Icon(Icons.search_rounded, color: darkBlue, size: 22),
-          suffixIcon: IconButton(icon: const Icon(Icons.close_rounded, color: darkBlue), onPressed: () => setState(() => _isSearching = false)),
+          prefixIcon: const Icon(
+            Icons.search_rounded,
+            color: darkBlue,
+            size: 22,
+          ),
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.close_rounded, color: darkBlue),
+            onPressed: () => setState(() => _isSearching = false),
+          ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 12),
         ),
@@ -1293,45 +1595,169 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
   }
 
   Widget _buildInfoRow() {
-    return Row(children: [Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: _buildMiniStat(Icons.star_rounded, "${listDetail!.rating}", "Rating", Colors.orange),
-    ), Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: _buildMiniStat(Icons.access_time_filled_rounded, "Open", "${listDetail!.openClose}", Colors.blue),
-    ), /*_buildMiniStat(Icons.verified_rounded, "Verified", "Business", Colors.green)*/]);
+    return Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _buildMiniStat(
+            Icons.star_rounded,
+            "${listDetail!.rating}",
+            "Rating",
+            Colors.orange,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _buildMiniStat(
+            Icons.access_time_filled_rounded,
+            "Open",
+            "${listDetail!.openClose}",
+            Colors.blue,
+          ),
+        ) /*_buildMiniStat(Icons.verified_rounded, "Verified", "Business", Colors.green)*/,
+      ],
+    );
   }
 
   Widget _buildMiniStat(IconData icon, String title, String sub, Color color) {
-    return Container(width: MediaQuery.of(context).size.width * 0.28, padding: const EdgeInsets.symmetric(vertical: 18), decoration: BoxDecoration(color: const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(22)), child: Column(children: [Icon(icon, color: color, size: 22), const SizedBox(height: 8), Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)), Text(sub, style: const TextStyle(color: Colors.grey, fontSize: 11))]));
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.28,
+      padding: const EdgeInsets.symmetric(vertical: 18),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 22),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+          Text(sub, style: const TextStyle(color: Colors.grey, fontSize: 11)),
+        ],
+      ),
+    );
   }
 
   Widget _buildDetailCard(IconData icon, String text) {
-    return Container(padding: const EdgeInsets.all(20), decoration: BoxDecoration(color: const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(22)), child: Row(children: [Icon(icon, size: 20, color: darkBlue), const SizedBox(width: 15), Expanded(child: Text(text, style: const TextStyle(fontWeight: FontWeight.w500)))]));
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: darkBlue),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  Widget _buildAddButton() {
-    return Container(height: 32, width: 65, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), border: Border.all(color: primaryColor.withOpacity(0.3))), child: const Center(child: Text("ADD", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w900, fontSize: 11))));
+  Widget _buildAddButton({required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10), // Ripple effect ne container ni border mujab set karva
+      child: Container(
+        height: 32,
+        width: 65,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: primaryColor.withOpacity(0.3)),
+        ),
+        child: const Center(
+          child: Text(
+            "ADD",
+            style: TextStyle(
+              color: primaryColor,
+              fontWeight: FontWeight.w900,
+              fontSize: 11,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _circleAction(IconData icon, Color color) {
-    return Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle), child: Icon(icon, color: color, size: 20));
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(icon, color: color, size: 20),
+    );
   }
 
   Widget _buildHeaderButton(IconData icon, VoidCallback onTap) {
-    return Container(margin: const EdgeInsets.all(6), decoration: BoxDecoration(color: Colors.black.withOpacity(0.4), shape: BoxShape.circle), child: IconButton(icon: Icon(icon, color: Colors.white, size: 16), onPressed: onTap));
+    return Container(
+      margin: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.4),
+        shape: BoxShape.circle,
+      ),
+      child: IconButton(
+        icon: Icon(icon, color: Colors.white, size: 16),
+        onPressed: onTap,
+      ),
+    );
   }
 
   Widget _buildCategoryBadge(String text) {
-    return Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: primaryColor, borderRadius: BorderRadius.circular(10)), child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)));
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: primaryColor,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
   }
 
   Widget _buildMarqueeTitle(String text) {
-    return SingleChildScrollView(controller: _marqueeController, scrollDirection: Axis.horizontal, physics: const NeverScrollableScrollPhysics(), child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)));
+    return SingleChildScrollView(
+      controller: _marqueeController,
+      scrollDirection: Axis.horizontal,
+      physics: const NeverScrollableScrollPhysics(),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
   }
 
   Widget _sectionHeader(String title) {
-    return Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: darkBlue, letterSpacing: -0.5));
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w900,
+        color: darkBlue,
+        letterSpacing: -0.5,
+      ),
+    );
   }
 
   // Widget _buildActionBottomBar() {
@@ -1424,19 +1850,24 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
   // }
 
   Widget _vegBadge() {
-    return Container(padding: const EdgeInsets.all(3), decoration: BoxDecoration(color: Colors.white.withOpacity(0.9), borderRadius: BorderRadius.circular(4), border: Border.all(color: Colors.green, width: 1)), child: const Icon(Icons.circle, color: Colors.green, size: 7));
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Colors.green, width: 1),
+      ),
+      child: const Icon(Icons.circle, color: Colors.green, size: 7),
+    );
   }
 
-
-
   Future<void> callSubCategoryListDetails() async {
-    isDataAvailable.value=false;
-    isApiComplete.value=false;
+    isDataAvailable.value = false;
+    isApiComplete.value = false;
     _callSubCategoryListDetails();
   }
 
   Future<void> _callSubCategoryListDetails() async {
-
     try {
       bool internet = await MyApplication.checkInternet();
 
@@ -1446,17 +1877,19 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
         return;
       }
 
-      ResponseSubcategoryListDetails? response = await ApiCalls.callSubCategoryListDetails(RequestSubCategoryListDetails(
-        listId: widget.listId ?? 0,
-        userID: 0,
-      ));
+      ResponseSubcategoryListDetails? response =
+          await ApiCalls.callSubCategoryListDetails(
+            RequestSubCategoryListDetails(
+              listId: widget.listId ?? 0,
+              userID: 0,
+            ),
+          );
 
       if (response != null &&
           response.result != null &&
           response.result!.isNotEmpty &&
           response.result!.toLowerCase().contains("pass") &&
           response.data != null) {
-
         _bannerImages.clear();
         myDealsList.clear();
         amenities.clear();
@@ -1467,7 +1900,6 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
         amenities.addAll(response.data!.amenities!);
 
         isDataAvailable.value = true;
-
       } else {
         _bannerImages.clear();
         myDealsList.clear();
@@ -1475,7 +1907,6 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
 
         isDataAvailable.value = false;
       }
-
     } catch (e) {
       log("HomeBanner Error: $e");
 
@@ -1483,7 +1914,6 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
       myDealsList.clear();
       amenities.clear();
       isDataAvailable.value = false;
-
     } finally {
       isApiComplete.value = true;
       if (mounted) {
@@ -1491,6 +1921,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
       }
     }
   }
+
   void _stopLoaders() {
     isProductApiComplete.value = true;
     isLoadMore = false;
@@ -1522,7 +1953,9 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
         ),
       );
 
-      if (response != null && response.data != null && response.data!.isNotEmpty) {
+      if (response != null &&
+          response.data != null &&
+          response.data!.isNotEmpty) {
         if (isPagination) {
           products.addAll(response.data!);
         } else {
@@ -1545,15 +1978,84 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen> with Si
   }
 
 
+  Future<void> callAddCart({int? productid, int? price, int? qty, String? name}) async {
+    MyApplication.checkInternet().then((internet) async {
+        if(internet){
+          try{
+            ResponseAddCart? response= await ApiCalls.callAddCart(RequestAddCart(
+              userId: AppPrefs.userId,
+              listingId: widget.listId ?? 0,
+              productId: productid,
+              productName: name,
+              productPrice: price,
+              quantity: qty
+            ));
+            if(response != null){
+              if(response.result!.isNotEmpty && response.result != null &&
+              response.result!.toLowerCase().contains("pass")){
+                SharedWidgets.showTopSnackBar(context, message: response.message!);
+              }
+            }
+          }on Exception catch(e){
+            log("$e");
+          }catch(e){
+            log("$e");
+          }finally{
+
+          }
+        }else{
+          SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+        }
+    },);
+  }
+
+
+  Future<void> callAddEnquiry() async {
+    MyApplication.checkInternet().then((internet) async {
+      if(internet){
+        try{
+          ResponseAddEnquiry? response= await ApiCalls.callAddEnquiry(RequestAddEnquiry(
+              listingId: 0,
+              userId: AppPrefs.userId ?? "",
+              email: _emailController.text,
+              phone: _numberController.text,
+              enquiry: _messageController.text,
+              fName: _fNameController.text,
+              lName:_lNameController.text,
+          ));
+          if(response != null){
+            if(response.result!.isNotEmpty && response.result != null &&
+                response.result!.toLowerCase().contains("pass")){
+              SharedWidgets.showTopSnackBar(context, message: response.message!);
+            }
+          }
+        }on Exception catch(e){
+          log("$e");
+        }catch(e){
+          log("$e");
+        }finally{
+
+        }
+      }else{
+        SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      }
+    },);
+  }
+
+
 
 }
 
 class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  final Widget child; final double height;
+  final Widget child;
+  final double height;
   _SliverAppBarDelegate({required this.child, required this.height});
-  @override double get minExtent => height;
-  @override double get maxExtent => height;
-  @override Widget build(context, offset, overlaps) => SizedBox.expand(child: child);
-  @override bool shouldRebuild(old) => true;
+  @override
+  double get minExtent => height;
+  @override
+  double get maxExtent => height;
+  @override
+  Widget build(context, offset, overlaps) => SizedBox.expand(child: child);
+  @override
+  bool shouldRebuild(old) => true;
 }
-

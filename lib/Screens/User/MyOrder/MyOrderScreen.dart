@@ -1,8 +1,22 @@
-
+import 'dart:developer';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gotilo_new/Api/ApiCalls.dart';
+import 'package:gotilo_new/Api/Request/User/MyOrder/RequestMyOrder.dart';
+import 'package:gotilo_new/Api/Request/User/MyOrder/RequestMyOrderDetail.dart';
+import 'package:gotilo_new/Api/Response/User/MyOrder/ResponseMyOrder.dart';
+import 'package:gotilo_new/Api/Response/User/MyOrder/ResponseMyOrderDetail.dart';
+import 'package:gotilo_new/Constant/AppPref.dart';
+import 'package:gotilo_new/CustomeWidgets/CustomAppbar.dart';
+import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
+import 'package:gotilo_new/MyApplication/MyApplication.dart';
+import 'package:gotilo_new/Screens/HeritageHomeScreen.dart';
+import 'package:intl/intl.dart';
 
 import '../../../CustomeWidgets/CustomDrawer.dart';
+import '../../../CustomeWidgets/CustomLoader.dart';
+
 class MyOrderScreen extends StatefulWidget {
   const MyOrderScreen({super.key});
 
@@ -11,39 +25,367 @@ class MyOrderScreen extends StatefulWidget {
 }
 
 class _MyOrderScreenState extends State<MyOrderScreen> {
-  final Color primaryDark = const Color(0xFF0F172A);
-  final Color accentCyan = const Color(0xFF00E5FF);
-  final Color glassWhite = Colors.white.withOpacity(0.9);
+  List<MyOrder> myOrder = [];
+  MyOrderDetail? myOrderDetail;
+
+  ValueNotifier<bool> isApiComplete = ValueNotifier(false);
+  ValueNotifier<bool> isDataAvailable = ValueNotifier(false);
+
+  String loadingToken = "";
+  final Color primaryDark = const Color(0xFF1A1C1E);
+  final Color accentGold = const Color(0xFFC5A358);
+  final Color surfaceLight = const Color(0xFFF8F9FA);
+  final Color statusGreen = const Color(0xFF2D6A4F);
+  final Color iconBg = const Color(0xFF0F172A);
+  final Color icon = const Color(0xFF1E293B);
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    callMyOrder();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer:  const CustomDrawer(initialRoute: 'user.orders'),
-      body:   CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 170.0,
-            pinned: true,
-            elevation: 0,
-            backgroundColor: primaryDark,
-            stretch: true,
-            centerTitle: true,
-            leading: Builder(
-              builder: (context) => IconButton(
-                icon: const Icon(Icons.align_horizontal_left, color: Colors.white, size: 28),
-                onPressed: () => Scaffold.of(context).openDrawer(),
-              ),
+      key: _scaffoldKey,
+      backgroundColor: surfaceLight,
+      drawer: const CustomDrawer(initialRoute: 'user.orders'),
+      appBar: CustomAppBar(
+        title: "MY ORDERS",
+        showAction: false,
+        onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
+      ),
+      body: RefreshIndicator(
+        onRefresh: () async => callMyOrder(),
+        color: icon,
+        child: ValueListenableBuilder(
+          valueListenable: isApiComplete,
+          builder: (context, apiDone, child) {
+            if (!apiDone) {
+              return const Center(child:CustomLoader(message: "Loading MyOrder..",));
+            }
+            return ValueListenableBuilder(
+              valueListenable: isDataAvailable,
+              builder: (context, dataExists, child) {
+                if (!dataExists || myOrder.isEmpty) {
+                  return _buildEmptyState();
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: myOrder.length,
+                  itemBuilder: (context, index) {
+                    return myOrderDesign(myOrder[index]);
+                  },
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget myOrderDesign(MyOrder item) {
+    String displayDate = "N/A";
+    try {
+      displayDate = DateFormat('dd MMM, yyyy').format(DateTime.parse(item.orderDate!));
+    } catch (_) {}
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.withOpacity(0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: primaryDark.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: primaryDark.withOpacity(0.02),
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
             ),
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              titlePadding:  const EdgeInsets.only(bottom: 16),
-              title: Text("My Order", style: GoogleFonts.montserrat(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800, letterSpacing: 2)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.calendar_month_outlined, size: 16, color: iconBg),
+                    const SizedBox(width: 8),
+                    Text(displayDate,
+                        style: GoogleFonts.montserrat(fontWeight: FontWeight.w600, fontSize: 12, color: primaryDark.withOpacity(0.7))),
+                  ],
+                ),
+                _statusTag(item.status ?? "Pending"),
+              ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: iconBg,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(Icons.restaurant_menu_rounded, color: surfaceLight, size: 22),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.listingTitle ?? "Cafe/Restaurant",
+                            style: GoogleFonts.montserrat(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 15,
+                                color: primaryDark
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Token: ${item.tokenNumber}",
+                            style: GoogleFonts.montserrat(
+                                color: iconBg,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 40,
+                      width: 40,
+                      child: loadingToken == item.tokenNumber
+                          ? Center(
+                        child: SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: icon,
+                          ),
+                        ),
+                      )
+                          : GestureDetector(
+                        onTap: () async {
+                          setState(() => loadingToken = item.tokenNumber!);
+                          await callMyOrderDetail(tokenNumber: item.tokenNumber);
+                          setState(() => loadingToken = "");
+                          _showOrderDetailsSheet();
+                        },
+                        child: Icon(
+                          CupertinoIcons.eye_fill,
+                          color: icon,
+                          size: 26,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Divider(height: 1, thickness: 0.5),
+                ),
+
+                Row(
+                  children: [
+                    Icon(Icons.near_me_outlined, size: 14, color: iconBg),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        item.address ?? "Address not available",
+                        style: GoogleFonts.montserrat(
+                            fontSize: 11,
+                            color: Colors.grey[500],
+                            fontWeight: FontWeight.w500
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _statusTag(String status) {
+    bool isDone = status.toLowerCase() == "approved" || status.toLowerCase() == "pass";
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+      decoration: BoxDecoration(
+        color: isDone ? statusGreen.withOpacity(0.1) : accentGold.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        status.toUpperCase(),
+        style: GoogleFonts.montserrat(
+            color: isDone ? statusGreen : CupertinoColors.systemYellow,
+            fontSize: 9,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.5
+        ),
+      ),
+    );
+  }
+
+  void _showOrderDetailsSheet() {
+    if (myOrderDetail == null) return;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _orderDetailsSheet(),
+    );
+  }
+
+  Widget _orderDetailsSheet() {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.75,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(24), topRight: Radius.circular(24)),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 12),
+          Container(height: 4, width: 40, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10))),
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Order Summary", style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.w700, color: primaryDark)),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Icon(Icons.close_rounded, color: primaryDark),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: myOrderDetail?.products?.length ?? 0,
+              itemBuilder: (context, index) => _buildProductListItem(myOrderDetail!.products![index]),
             ),
           ),
 
         ],
       ),
     );
+  }
+
+  Widget _buildProductListItem(Products item) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: surfaceLight,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              "${item.image}",
+              height: 50, width: 50, fit: BoxFit.cover,
+              errorBuilder: (c, e, s) => Container(color: Colors.grey[200], child: Icon(Icons.image_not_supported_outlined, color: Colors.grey[400])),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("${item.name}", style: GoogleFonts.montserrat(fontWeight: FontWeight.w600, fontSize: 13, color: primaryDark), maxLines: 1),
+                Text("Quantity: ${item.quantity}", style: GoogleFonts.montserrat(fontSize: 11, color: Colors.grey[600])),
+              ],
+            ),
+          ),
+          Text("₹${item.price}", style: GoogleFonts.montserrat(fontWeight: FontWeight.w700, color: primaryDark, fontSize: 14)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.receipt_long_outlined, size: 80, color: accentGold.withOpacity(0.2)),
+          const SizedBox(height: 16),
+          Text("No orders yet", style: GoogleFonts.montserrat(color: primaryDark.withOpacity(0.5), fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
+  }
+
+  Future<void> callMyOrder() async {
+    isApiComplete.value = false;
+    myOrder.clear();
+    _callMyOrder();
+  }
+
+  Future<void> _callMyOrder() async {
+    bool internet = await MyApplication.checkInternet();
+    if (internet) {
+      try {
+        ResponseMyOrder? response = await ApiCalls.callMyOrder(RequestMyOrder(userId: AppPrefs.userId, counter: "0"));
+        if (response != null && response.result!.toLowerCase().contains("pass")) {
+          myOrder.addAll(response.data!);
+          isDataAvailable.value = true;
+        }
+      } catch (e) {
+        log("Order API Error: $e");
+      } finally {
+        isApiComplete.value = true;
+      }
+    } else {
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Connection");
+    }
+  }
+
+  Future<void> callMyOrderDetail({String? tokenNumber}) async {
+    bool internet = await MyApplication.checkInternet();
+    if (internet) {
+      try {
+        ResponseMyOrderDetail? response = await ApiCalls.callMyOrderDetail(RequestMyOrderDetail(tokenNumber: tokenNumber));
+        if (response != null && response.result!.toLowerCase().contains("pass")) {
+          myOrderDetail = response.data!;
+        }
+      } catch (e) {
+        log("Detail API Error: $e");
+      }
+    }
   }
 }

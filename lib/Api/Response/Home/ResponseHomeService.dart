@@ -11,15 +11,15 @@ class ResponseHomeService {
     if (json['data'] != null) {
       data = <HomeService>[];
       json['data'].forEach((v) {
-        data!.add(new HomeService.fromJson(v));
+        data!.add(HomeService.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['result'] = result;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -35,13 +35,14 @@ class HomeService {
   String? serviceImage;
   String? image;
 
-  HomeService(
-      {this.id,
-        this.name,
-        this.slug,
-        this.icon,
-        this.serviceImage,
-        this.image});
+  HomeService({
+    this.id,
+    this.name,
+    this.slug,
+    this.icon,
+    this.serviceImage,
+    this.image,
+  });
 
   HomeService.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -53,13 +54,13 @@ class HomeService {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['slug'] = this.slug;
-    data['icon'] = this.icon;
-    data['service_image'] = this.serviceImage;
-    data['image'] = this.image;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['slug'] = slug;
+    data['icon'] = icon;
+    data['service_image'] = serviceImage;
+    data['image'] = image;
     return data;
   }
 }

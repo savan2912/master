@@ -8,13 +8,13 @@ class ResponseSubcategoryListDetails {
   ResponseSubcategoryListDetails.fromJson(Map<String, dynamic> json) {
     result = json['result'];
     message = json['message'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['result'] = result;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -30,66 +30,67 @@ class Data {
   List<Keywords>? keywords;
   List<Amenities>? amenities;
 
-  Data(
-      {this.listDetail,
-        this.vendorDetails,
-        this.detailImages,
-        this.lisitngdeals,
-        this.keywords,
-        this.amenities});
+  Data({
+    this.listDetail,
+    this.vendorDetails,
+    this.detailImages,
+    this.lisitngdeals,
+    this.keywords,
+    this.amenities,
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     listDetail = json['listDetail'] != null
-        ? new ListDetail.fromJson(json['listDetail'])
+        ? ListDetail.fromJson(json['listDetail'])
         : null;
     vendorDetails = json['vendorDetails'] != null
-        ? new VendorDetails.fromJson(json['vendorDetails'])
+        ? VendorDetails.fromJson(json['vendorDetails'])
         : null;
     if (json['detailImages'] != null) {
       detailImages = <DetailImages>[];
       json['detailImages'].forEach((v) {
-        detailImages!.add(new DetailImages.fromJson(v));
+        detailImages!.add(DetailImages.fromJson(v));
       });
     }
     if (json['lisitngdeals'] != null) {
       lisitngdeals = <Lisitngdeals>[];
       json['lisitngdeals'].forEach((v) {
-        lisitngdeals!.add(new Lisitngdeals.fromJson(v));
+        lisitngdeals!.add(Lisitngdeals.fromJson(v));
       });
     }
     if (json['keywords'] != null) {
       keywords = <Keywords>[];
       json['keywords'].forEach((v) {
-        keywords!.add(new Keywords.fromJson(v));
+        keywords!.add(Keywords.fromJson(v));
       });
     }
     if (json['amenities'] != null) {
       amenities = <Amenities>[];
       json['amenities'].forEach((v) {
-        amenities!.add(new Amenities.fromJson(v));
+        amenities!.add(Amenities.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.listDetail != null) {
-      data['listDetail'] = this.listDetail!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (listDetail != null) {
+      data['listDetail'] = listDetail!.toJson();
     }
-    if (this.vendorDetails != null) {
-      data['vendorDetails'] = this.vendorDetails!.toJson();
+    if (vendorDetails != null) {
+      data['vendorDetails'] = vendorDetails!.toJson();
     }
-    if (this.detailImages != null) {
-      data['detailImages'] = this.detailImages!.map((v) => v.toJson()).toList();
+    if (detailImages != null) {
+      data['detailImages'] = detailImages!.map((v) => v.toJson()).toList();
     }
-    if (this.lisitngdeals != null) {
-      data['lisitngdeals'] = this.lisitngdeals!.map((v) => v.toJson()).toList();
+    if (lisitngdeals != null) {
+      data['lisitngdeals'] = lisitngdeals!.map((v) => v.toJson()).toList();
     }
-    if (this.keywords != null) {
-      data['keywords'] = this.keywords!.map((v) => v.toJson()).toList();
+    if (keywords != null) {
+      data['keywords'] = keywords!.map((v) => v.toJson()).toList();
     }
-    if (this.amenities != null) {
-      data['amenities'] = this.amenities!.map((v) => v.toJson()).toList();
+    if (amenities != null) {
+      data['amenities'] = amenities!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -148,58 +149,59 @@ class ListDetail {
   String? imgS3Path;
   int? isFavourite;
 
-  ListDetail(
-      {this.id,
-        this.liveMediaStatus,
-        this.listingTitle,
-        this.mobileNo,
-        this.verifyCode,
-        this.phoneExtra,
-        this.logoImage,
-        this.vendorId,
-        this.adminId,
-        this.categoryId,
-        this.countryId,
-        this.stateId,
-        this.cityId,
-        this.keywords,
-        this.chatgptDescription,
-        this.description,
-        this.address,
-        this.zipCode,
-        this.status,
-        this.isActive,
-        this.serviceType,
-        this.rowId,
-        this.openClose,
-        this.mapLink,
-        this.latitude,
-        this.longitude,
-        this.socialMediasLink,
-        this.rewardHeaderImg,
-        this.rewardLogoImg,
-        this.rating,
-        this.listingType,
-        this.standyImg,
-        this.standyStatus,
-        this.facebookLink,
-        this.instaLink,
-        this.youtubeLink,
-        this.linkdinLink,
-        this.gst,
-        this.taxPercent,
-        this.adminApproveDate,
-        this.seoData,
-        this.metaTitle,
-        this.metaDescription,
-        this.metaKeywords,
-        this.createdAt,
-        this.updatedAt,
-        this.deals,
-        this.category,
-        this.vendor,
-        this.imgS3Path,
-        this.isFavourite});
+  ListDetail({
+    this.id,
+    this.liveMediaStatus,
+    this.listingTitle,
+    this.mobileNo,
+    this.verifyCode,
+    this.phoneExtra,
+    this.logoImage,
+    this.vendorId,
+    this.adminId,
+    this.categoryId,
+    this.countryId,
+    this.stateId,
+    this.cityId,
+    this.keywords,
+    this.chatgptDescription,
+    this.description,
+    this.address,
+    this.zipCode,
+    this.status,
+    this.isActive,
+    this.serviceType,
+    this.rowId,
+    this.openClose,
+    this.mapLink,
+    this.latitude,
+    this.longitude,
+    this.socialMediasLink,
+    this.rewardHeaderImg,
+    this.rewardLogoImg,
+    this.rating,
+    this.listingType,
+    this.standyImg,
+    this.standyStatus,
+    this.facebookLink,
+    this.instaLink,
+    this.youtubeLink,
+    this.linkdinLink,
+    this.gst,
+    this.taxPercent,
+    this.adminApproveDate,
+    this.seoData,
+    this.metaTitle,
+    this.metaDescription,
+    this.metaKeywords,
+    this.createdAt,
+    this.updatedAt,
+    this.deals,
+    this.category,
+    this.vendor,
+    this.imgS3Path,
+    this.isFavourite,
+  });
 
   ListDetail.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -251,77 +253,76 @@ class ListDetail {
     if (json['deals'] != null) {
       deals = <Deals>[];
       json['deals'].forEach((v) {
-        deals!.add(new Deals.fromJson(v));
+        deals!.add(Deals.fromJson(v));
       });
     }
     category = json['category'] != null
-        ? new Category.fromJson(json['category'])
+        ? Category.fromJson(json['category'])
         : null;
-    vendor =
-    json['vendor'] != null ? new Vendor.fromJson(json['vendor']) : null;
+    vendor = json['vendor'] != null ? Vendor.fromJson(json['vendor']) : null;
     imgS3Path = json['img_s3_path'];
     isFavourite = json['is_favourite'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['live_media_status'] = this.liveMediaStatus;
-    data['listing_title'] = this.listingTitle;
-    data['mobile_no'] = this.mobileNo;
-    data['verify_code'] = this.verifyCode;
-    data['phone_extra'] = this.phoneExtra;
-    data['logo_image'] = this.logoImage;
-    data['vendor_id'] = this.vendorId;
-    data['admin_id'] = this.adminId;
-    data['category_id'] = this.categoryId;
-    data['country_id'] = this.countryId;
-    data['state_id'] = this.stateId;
-    data['city_id'] = this.cityId;
-    data['keywords'] = this.keywords;
-    data['chatgpt_description'] = this.chatgptDescription;
-    data['description'] = this.description;
-    data['address'] = this.address;
-    data['zip_code'] = this.zipCode;
-    data['status'] = this.status;
-    data['is_active'] = this.isActive;
-    data['service_type'] = this.serviceType;
-    data['row_id'] = this.rowId;
-    data['open_close'] = this.openClose;
-    data['map_link'] = this.mapLink;
-    data['latitude'] = this.latitude;
-    data['longitude'] = this.longitude;
-    data['social_medias_link'] = this.socialMediasLink;
-    data['reward_header_img'] = this.rewardHeaderImg;
-    data['reward_logo_img'] = this.rewardLogoImg;
-    data['rating'] = this.rating;
-    data['listing_type'] = this.listingType;
-    data['standy_img'] = this.standyImg;
-    data['standy_status'] = this.standyStatus;
-    data['facebook_link'] = this.facebookLink;
-    data['insta_link'] = this.instaLink;
-    data['youtube_link'] = this.youtubeLink;
-    data['linkdin_link'] = this.linkdinLink;
-    data['gst'] = this.gst;
-    data['tax_percent'] = this.taxPercent;
-    data['admin_approve_date'] = this.adminApproveDate;
-    data['seo_data'] = this.seoData;
-    data['meta_title'] = this.metaTitle;
-    data['meta_description'] = this.metaDescription;
-    data['meta_keywords'] = this.metaKeywords;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    if (this.deals != null) {
-      data['deals'] = this.deals!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['live_media_status'] = liveMediaStatus;
+    data['listing_title'] = listingTitle;
+    data['mobile_no'] = mobileNo;
+    data['verify_code'] = verifyCode;
+    data['phone_extra'] = phoneExtra;
+    data['logo_image'] = logoImage;
+    data['vendor_id'] = vendorId;
+    data['admin_id'] = adminId;
+    data['category_id'] = categoryId;
+    data['country_id'] = countryId;
+    data['state_id'] = stateId;
+    data['city_id'] = cityId;
+    data['keywords'] = keywords;
+    data['chatgpt_description'] = chatgptDescription;
+    data['description'] = description;
+    data['address'] = address;
+    data['zip_code'] = zipCode;
+    data['status'] = status;
+    data['is_active'] = isActive;
+    data['service_type'] = serviceType;
+    data['row_id'] = rowId;
+    data['open_close'] = openClose;
+    data['map_link'] = mapLink;
+    data['latitude'] = latitude;
+    data['longitude'] = longitude;
+    data['social_medias_link'] = socialMediasLink;
+    data['reward_header_img'] = rewardHeaderImg;
+    data['reward_logo_img'] = rewardLogoImg;
+    data['rating'] = rating;
+    data['listing_type'] = listingType;
+    data['standy_img'] = standyImg;
+    data['standy_status'] = standyStatus;
+    data['facebook_link'] = facebookLink;
+    data['insta_link'] = instaLink;
+    data['youtube_link'] = youtubeLink;
+    data['linkdin_link'] = linkdinLink;
+    data['gst'] = gst;
+    data['tax_percent'] = taxPercent;
+    data['admin_approve_date'] = adminApproveDate;
+    data['seo_data'] = seoData;
+    data['meta_title'] = metaTitle;
+    data['meta_description'] = metaDescription;
+    data['meta_keywords'] = metaKeywords;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    if (deals != null) {
+      data['deals'] = deals!.map((v) => v.toJson()).toList();
     }
-    if (this.category != null) {
-      data['category'] = this.category!.toJson();
+    if (category != null) {
+      data['category'] = category!.toJson();
     }
-    if (this.vendor != null) {
-      data['vendor'] = this.vendor!.toJson();
+    if (vendor != null) {
+      data['vendor'] = vendor!.toJson();
     }
-    data['img_s3_path'] = this.imgS3Path;
-    data['is_favourite'] = this.isFavourite;
+    data['img_s3_path'] = imgS3Path;
+    data['is_favourite'] = isFavourite;
     return data;
   }
 }
@@ -349,28 +350,29 @@ class Deals {
   String? createdAt;
   String? updatedAt;
 
-  Deals(
-      {this.id,
-        this.vendorId,
-        this.listingId,
-        this.dealTempId,
-        this.dealName,
-        this.dealDesc,
-        this.startDate,
-        this.endDate,
-        this.status,
-        this.autopilotStatus,
-        this.couponCode,
-        this.discountType,
-        this.dealPoint,
-        this.noOfUser,
-        this.discountValue,
-        this.msgSent,
-        this.pushNotifyStatus,
-        this.autopilotId,
-        this.image,
-        this.createdAt,
-        this.updatedAt});
+  Deals({
+    this.id,
+    this.vendorId,
+    this.listingId,
+    this.dealTempId,
+    this.dealName,
+    this.dealDesc,
+    this.startDate,
+    this.endDate,
+    this.status,
+    this.autopilotStatus,
+    this.couponCode,
+    this.discountType,
+    this.dealPoint,
+    this.noOfUser,
+    this.discountValue,
+    this.msgSent,
+    this.pushNotifyStatus,
+    this.autopilotId,
+    this.image,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Deals.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -397,28 +399,28 @@ class Deals {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['vendor_id'] = this.vendorId;
-    data['listing_id'] = this.listingId;
-    data['deal_temp_id'] = this.dealTempId;
-    data['deal_name'] = this.dealName;
-    data['deal_desc'] = this.dealDesc;
-    data['start_date'] = this.startDate;
-    data['end_date'] = this.endDate;
-    data['status'] = this.status;
-    data['autopilot_status'] = this.autopilotStatus;
-    data['coupon_code'] = this.couponCode;
-    data['discount_type'] = this.discountType;
-    data['deal_point'] = this.dealPoint;
-    data['no_of_user'] = this.noOfUser;
-    data['discount_value'] = this.discountValue;
-    data['msg_sent'] = this.msgSent;
-    data['push_notify_status'] = this.pushNotifyStatus;
-    data['autopilot_id'] = this.autopilotId;
-    data['image'] = this.image;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['vendor_id'] = vendorId;
+    data['listing_id'] = listingId;
+    data['deal_temp_id'] = dealTempId;
+    data['deal_name'] = dealName;
+    data['deal_desc'] = dealDesc;
+    data['start_date'] = startDate;
+    data['end_date'] = endDate;
+    data['status'] = status;
+    data['autopilot_status'] = autopilotStatus;
+    data['coupon_code'] = couponCode;
+    data['discount_type'] = discountType;
+    data['deal_point'] = dealPoint;
+    data['no_of_user'] = noOfUser;
+    data['discount_value'] = discountValue;
+    data['msg_sent'] = msgSent;
+    data['push_notify_status'] = pushNotifyStatus;
+    data['autopilot_id'] = autopilotId;
+    data['image'] = image;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }
@@ -440,22 +442,23 @@ class Category {
   String? createdAt;
   String? updatedAt;
 
-  Category(
-      {this.id,
-        this.name,
-        this.slug,
-        this.image,
-        this.icon,
-        this.bannerImage,
-        this.serviceImage,
-        this.parentId,
-        this.position,
-        this.status,
-        this.serviceStatus,
-        this.priority,
-        this.amenityId,
-        this.createdAt,
-        this.updatedAt});
+  Category({
+    this.id,
+    this.name,
+    this.slug,
+    this.image,
+    this.icon,
+    this.bannerImage,
+    this.serviceImage,
+    this.parentId,
+    this.position,
+    this.status,
+    this.serviceStatus,
+    this.priority,
+    this.amenityId,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Category.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -476,22 +479,22 @@ class Category {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['slug'] = this.slug;
-    data['image'] = this.image;
-    data['icon'] = this.icon;
-    data['banner_image'] = this.bannerImage;
-    data['service_image'] = this.serviceImage;
-    data['parent_id'] = this.parentId;
-    data['position'] = this.position;
-    data['status'] = this.status;
-    data['service_status'] = this.serviceStatus;
-    data['priority'] = this.priority;
-    data['amenity_id'] = this.amenityId;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['slug'] = slug;
+    data['image'] = image;
+    data['icon'] = icon;
+    data['banner_image'] = bannerImage;
+    data['service_image'] = serviceImage;
+    data['parent_id'] = parentId;
+    data['position'] = position;
+    data['status'] = status;
+    data['service_status'] = serviceStatus;
+    data['priority'] = priority;
+    data['amenity_id'] = amenityId;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }
@@ -538,47 +541,48 @@ class Vendor {
   String? platform;
   int? customerAutoDetails;
 
-  Vendor(
-      {this.id,
-        this.adminId,
-        this.storeAddedStatus,
-        this.fName,
-        this.lName,
-        this.phone,
-        this.email,
-        this.emailVerifiedAt,
-        this.password,
-        this.passwordStr,
-        this.rememberToken,
-        this.otp,
-        this.phoneVerifiedStatus,
-        this.createdAt,
-        this.updatedAt,
-        this.bankName,
-        this.branch,
-        this.holderName,
-        this.accountNo,
-        this.image,
-        this.status,
-        this.firebaseToken,
-        this.authToken,
-        this.fcmTokenWeb,
-        this.name,
-        this.rowId,
-        this.website,
-        this.address,
-        this.cityId,
-        this.fromWebsite,
-        this.noOfEnquiry,
-        this.emails,
-        this.rewardRate,
-        this.autopilotWorkingStatus,
-        this.planType,
-        this.noOfListing,
-        this.noOfMessages,
-        this.listingModuleStatus,
-        this.platform,
-        this.customerAutoDetails});
+  Vendor({
+    this.id,
+    this.adminId,
+    this.storeAddedStatus,
+    this.fName,
+    this.lName,
+    this.phone,
+    this.email,
+    this.emailVerifiedAt,
+    this.password,
+    this.passwordStr,
+    this.rememberToken,
+    this.otp,
+    this.phoneVerifiedStatus,
+    this.createdAt,
+    this.updatedAt,
+    this.bankName,
+    this.branch,
+    this.holderName,
+    this.accountNo,
+    this.image,
+    this.status,
+    this.firebaseToken,
+    this.authToken,
+    this.fcmTokenWeb,
+    this.name,
+    this.rowId,
+    this.website,
+    this.address,
+    this.cityId,
+    this.fromWebsite,
+    this.noOfEnquiry,
+    this.emails,
+    this.rewardRate,
+    this.autopilotWorkingStatus,
+    this.planType,
+    this.noOfListing,
+    this.noOfMessages,
+    this.listingModuleStatus,
+    this.platform,
+    this.customerAutoDetails,
+  });
 
   Vendor.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -624,47 +628,47 @@ class Vendor {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['admin_id'] = this.adminId;
-    data['store_added_status'] = this.storeAddedStatus;
-    data['f_name'] = this.fName;
-    data['l_name'] = this.lName;
-    data['phone'] = this.phone;
-    data['email'] = this.email;
-    data['email_verified_at'] = this.emailVerifiedAt;
-    data['password'] = this.password;
-    data['password_str'] = this.passwordStr;
-    data['remember_token'] = this.rememberToken;
-    data['otp'] = this.otp;
-    data['phone_verified_status'] = this.phoneVerifiedStatus;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['bank_name'] = this.bankName;
-    data['branch'] = this.branch;
-    data['holder_name'] = this.holderName;
-    data['account_no'] = this.accountNo;
-    data['image'] = this.image;
-    data['status'] = this.status;
-    data['firebase_token'] = this.firebaseToken;
-    data['auth_token'] = this.authToken;
-    data['fcm_token_web'] = this.fcmTokenWeb;
-    data['name'] = this.name;
-    data['row_id'] = this.rowId;
-    data['website'] = this.website;
-    data['address'] = this.address;
-    data['city_id'] = this.cityId;
-    data['from_website'] = this.fromWebsite;
-    data['no_of_enquiry'] = this.noOfEnquiry;
-    data['emails'] = this.emails;
-    data['reward_rate'] = this.rewardRate;
-    data['autopilot_working_status'] = this.autopilotWorkingStatus;
-    data['plan_type'] = this.planType;
-    data['no_of_listing'] = this.noOfListing;
-    data['no_of_messages'] = this.noOfMessages;
-    data['listing_module_status'] = this.listingModuleStatus;
-    data['platform'] = this.platform;
-    data['customer_auto_details'] = this.customerAutoDetails;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['admin_id'] = adminId;
+    data['store_added_status'] = storeAddedStatus;
+    data['f_name'] = fName;
+    data['l_name'] = lName;
+    data['phone'] = phone;
+    data['email'] = email;
+    data['email_verified_at'] = emailVerifiedAt;
+    data['password'] = password;
+    data['password_str'] = passwordStr;
+    data['remember_token'] = rememberToken;
+    data['otp'] = otp;
+    data['phone_verified_status'] = phoneVerifiedStatus;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    data['bank_name'] = bankName;
+    data['branch'] = branch;
+    data['holder_name'] = holderName;
+    data['account_no'] = accountNo;
+    data['image'] = image;
+    data['status'] = status;
+    data['firebase_token'] = firebaseToken;
+    data['auth_token'] = authToken;
+    data['fcm_token_web'] = fcmTokenWeb;
+    data['name'] = name;
+    data['row_id'] = rowId;
+    data['website'] = website;
+    data['address'] = address;
+    data['city_id'] = cityId;
+    data['from_website'] = fromWebsite;
+    data['no_of_enquiry'] = noOfEnquiry;
+    data['emails'] = emails;
+    data['reward_rate'] = rewardRate;
+    data['autopilot_working_status'] = autopilotWorkingStatus;
+    data['plan_type'] = planType;
+    data['no_of_listing'] = noOfListing;
+    data['no_of_messages'] = noOfMessages;
+    data['listing_module_status'] = listingModuleStatus;
+    data['platform'] = platform;
+    data['customer_auto_details'] = customerAutoDetails;
     return data;
   }
 }
@@ -685,11 +689,11 @@ class VendorDetails {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['vendor_id'] = this.vendorId;
-    data['vendor_name'] = this.vendorName;
-    data['vendor_email'] = this.vendorEmail;
-    data['phone'] = this.phone;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['vendor_id'] = vendorId;
+    data['vendor_name'] = vendorName;
+    data['vendor_email'] = vendorEmail;
+    data['phone'] = phone;
     return data;
   }
 }
@@ -704,8 +708,8 @@ class DetailImages {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['image_path'] = this.imagePath;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['image_path'] = imagePath;
     return data;
   }
 }
@@ -718,13 +722,14 @@ class Lisitngdeals {
   String? endDate;
   String? image;
 
-  Lisitngdeals(
-      {this.id,
-        this.dealName,
-        this.dealDesc,
-        this.startDate,
-        this.endDate,
-        this.image});
+  Lisitngdeals({
+    this.id,
+    this.dealName,
+    this.dealDesc,
+    this.startDate,
+    this.endDate,
+    this.image,
+  });
 
   Lisitngdeals.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -736,13 +741,13 @@ class Lisitngdeals {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['deal_name'] = this.dealName;
-    data['deal_desc'] = this.dealDesc;
-    data['start_date'] = this.startDate;
-    data['end_date'] = this.endDate;
-    data['image'] = this.image;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['deal_name'] = dealName;
+    data['deal_desc'] = dealDesc;
+    data['start_date'] = startDate;
+    data['end_date'] = endDate;
+    data['image'] = image;
     return data;
   }
 }
@@ -759,9 +764,9 @@ class Keywords {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['keyword'] = this.keyword;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['keyword'] = keyword;
     return data;
   }
 }
@@ -778,9 +783,9 @@ class Amenities {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
     return data;
   }
 }

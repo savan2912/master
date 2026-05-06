@@ -4,12 +4,7 @@ class RequestLogin {
   String? role;
   String? deviceToken;
 
-  RequestLogin({
-    this.phone,
-    this.password,
-    this.role,
-    this.deviceToken
-  });
+  RequestLogin({this.phone, this.password, this.role, this.deviceToken});
 
   RequestLogin.fromJson(Map<String, dynamic> json) {
     phone = json['phone'];
@@ -19,12 +14,11 @@ class RequestLogin {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['phone'] = this.phone;
-    data['password'] = this.password;
-    data['role'] = this.role;
-    data['device_token'] = this.deviceToken;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['phone'] = phone;
+    data['password'] = password;
+    data['role'] = role;
+    data['device_token'] = deviceToken;
     return data;
   }
 }
-

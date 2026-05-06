@@ -47,5 +47,9 @@
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
     <string>This app needs access to location to show featured services near you.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs access to the camera to take profile pictures.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to photos to select a profile picture.</string>
 </dict>
 </plist>

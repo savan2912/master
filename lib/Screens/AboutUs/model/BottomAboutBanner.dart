@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+
 class BottomAboutBanner extends StatelessWidget {
   const BottomAboutBanner({super.key});
 
@@ -9,7 +9,6 @@ class BottomAboutBanner extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Stack(
         children: [
-
           Container(
             height: 200,
             width: double.infinity,
@@ -31,13 +30,13 @@ class BottomAboutBanner extends StatelessWidget {
           ),
 
           /// TEXT
-          Positioned(
+          const Positioned(
             left: 20,
             top: 30,
             right: 20,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
                   "Grow Your Business with Gotilo",
                   style: TextStyle(
@@ -49,10 +48,7 @@ class BottomAboutBanner extends StatelessWidget {
                 SizedBox(height: 8),
                 Text(
                   "Join thousands of businesses and reach more customers.",
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ],
             ),
@@ -64,9 +60,7 @@ class BottomAboutBanner extends StatelessWidget {
             left: 20,
             child: ElevatedButton(
               onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.pink,
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.pink),
               child: const Text("Get Started"),
             ),
           ),

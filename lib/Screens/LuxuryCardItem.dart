@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Screens/AllListing/AllListingDetailScreen.dart';
 import 'package:shimmer/shimmer.dart';
 import '../Api/Response/Home/ResponseHome.dart';
-import '../Api/Response/Home/ResponseHomeLatestRelease.dart';
 
 class LuxuryCardItem extends StatefulWidget {
   final NearbyListings product;
@@ -18,7 +17,8 @@ class LuxuryCardItem extends StatefulWidget {
   State<LuxuryCardItem> createState() => _LuxuryCardItemState();
 }
 
-class _LuxuryCardItemState extends State<LuxuryCardItem> with SingleTickerProviderStateMixin {
+class _LuxuryCardItemState extends State<LuxuryCardItem>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
   bool _hasAnimated = false;
@@ -59,7 +59,7 @@ class _LuxuryCardItemState extends State<LuxuryCardItem> with SingleTickerProvid
           builder: (context, child) {
             return GestureDetector(
               onTap: () {
-                Get.to(()=> AllListingDetailScreen(listId: widget.product.id,));
+                Get.to(() => AllListingDetailScreen(listId: widget.product.id));
               },
               child: Container(
                 height: 200,
@@ -71,7 +71,12 @@ class _LuxuryCardItemState extends State<LuxuryCardItem> with SingleTickerProvid
                       child: Container(
                         width: double.infinity,
                         height: 160,
-                        padding: const EdgeInsets.only(left: 155, right: 20, top: 15, bottom: 15),
+                        padding: const EdgeInsets.only(
+                          left: 155,
+                          right: 20,
+                          top: 15,
+                          bottom: 15,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(30),
@@ -80,29 +85,39 @@ class _LuxuryCardItemState extends State<LuxuryCardItem> with SingleTickerProvid
                               color: Colors.black.withOpacity(0.05),
                               blurRadius: 30,
                               offset: const Offset(0, 15),
-                            )
+                            ),
                           ],
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(widget.product.listingTitle!,
-                                style: GoogleFonts.montserrat(
-                                    color: const Color(0xFF0D1B1E),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: 1.2)),
+                            Text(
+                              widget.product.listingTitle!,
+                              style: GoogleFonts.montserrat(
+                                color: const Color(0xFF0D1B1E),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
                             const SizedBox(height: 12),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(widget.product.cityName!,
-                                    style: GoogleFonts.montserrat(
-                                        color: const Color(0xFF00ACC1),
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold)),
-                                const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Color(0xFF0D1B1E)),
+                                Text(
+                                  widget.product.cityName!,
+                                  style: GoogleFonts.montserrat(
+                                    color: const Color(0xFF00ACC1),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  size: 14,
+                                  color: Color(0xFF0D1B1E),
+                                ),
                               ],
                             ),
                           ],
@@ -110,9 +125,10 @@ class _LuxuryCardItemState extends State<LuxuryCardItem> with SingleTickerProvid
                       ),
                     ),
 
-
                     Positioned(
-                      left: 0, top: 0, bottom: 20,
+                      left: 0,
+                      top: 0,
+                      bottom: 20,
                       child: Transform.translate(
                         offset: Offset(-40 * (1 - _animation.value), 0),
                         child: Transform.scale(
@@ -123,11 +139,17 @@ class _LuxuryCardItemState extends State<LuxuryCardItem> with SingleTickerProvid
                               width: 135,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(25),
-                                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 20, offset: const Offset(5, 10))],
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.15),
+                                    blurRadius: 20,
+                                    offset: const Offset(5, 10),
+                                  ),
+                                ],
                               ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(25),
-                                child:  CachedNetworkImage(
+                                child: CachedNetworkImage(
                                   imageUrl: widget.product.listingImage ?? "",
                                   fit: BoxFit.cover,
                                   placeholder: (context, url) => _shimmerBox(),
@@ -147,6 +169,7 @@ class _LuxuryCardItemState extends State<LuxuryCardItem> with SingleTickerProvid
       },
     );
   }
+
   Widget _shimmerBox() {
     return Shimmer.fromColors(
       baseColor: Colors.grey[300]!,

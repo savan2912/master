@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 
 import '../../CustomeWidgets/AppColors.dart';
@@ -15,28 +14,28 @@ class SubCategoryListing extends StatefulWidget {
 }
 
 class _SubCategoryListingState extends State<SubCategoryListing> {
-  bool? isSearch=false;
+  bool? isSearch = false;
   final List<Map<String, String>> vendors = [
     {
       "name": "KT's Cafe",
       "image": "assets/banner2.png",
       "address": "OPPO RANGOLI ICECREAM, Univer...",
       "rating": "0.0",
-      "location": "Rajkot"
+      "location": "Rajkot",
     },
     {
       "name": "FATHER'S CATERING",
       "image": "assets/banner3.png",
       "address": "Office No. 1008, Aqua Coral New 150 ...",
       "rating": "0.0",
-      "location": "Rajkot"
+      "location": "Rajkot",
     },
     {
       "name": "Ivory House Cafe",
       "image": "assets/banner4.png",
       "address": "shop 2,3,4, Surya Complex, brts, 150 ...",
       "rating": "0.0",
-      "location": "Rajkot"
+      "location": "Rajkot",
     },
   ];
 
@@ -44,25 +43,25 @@ class _SubCategoryListingState extends State<SubCategoryListing> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar:SharedWidgets.customAppBar(
+      appBar: SharedWidgets.customAppBar(
         isFilterShow: true,
         searchVisible: true,
         showSearch: isSearch!,
         onSearchTap: () {
-          isSearch=true;
+          isSearch = true;
           setState(() {});
         },
-        onCloseSearch:() {
-          isSearch=false;
+        onCloseSearch: () {
+          isSearch = false;
           setState(() {});
         },
         onFilterTap: () {
           openFilterSheet(context);
         },
         title: "Food & Dining",
-        gradient: const LinearGradient(colors: [
-          AppColors.gradientStart,AppColors.gradientEnd
-        ])
+        gradient: const LinearGradient(
+          colors: [AppColors.gradientStart, AppColors.gradientEnd],
+        ),
       ),
       body: GridView.builder(
         padding: const EdgeInsets.all(12),
@@ -84,7 +83,7 @@ class _SubCategoryListingState extends State<SubCategoryListing> {
   Widget _buildVendorCard(Map<String, String> vendor) {
     return GestureDetector(
       onTap: () {
-        Get.to(()=> const SubCategoryDetailScreen());
+        Get.to(() => const SubCategoryDetailScreen());
       },
       child: Container(
         decoration: BoxDecoration(
@@ -104,7 +103,9 @@ class _SubCategoryListingState extends State<SubCategoryListing> {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(12),
+                  ),
                   child: Image.asset(
                     vendor['image']!,
                     height: 120,
@@ -121,7 +122,10 @@ class _SubCategoryListingState extends State<SubCategoryListing> {
                   top: 8,
                   left: 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.7),
                       borderRadius: BorderRadius.circular(4),
@@ -140,13 +144,21 @@ class _SubCategoryListingState extends State<SubCategoryListing> {
                       CircleAvatar(
                         radius: 14,
                         backgroundColor: Colors.white,
-                        child: Icon(Icons.favorite_border, size: 16, color: Colors.black),
+                        child: Icon(
+                          Icons.favorite_border,
+                          size: 16,
+                          color: Colors.black,
+                        ),
                       ),
                       SizedBox(height: 8),
                       CircleAvatar(
                         radius: 14,
                         backgroundColor: Colors.white,
-                        child: Icon(Icons.share_outlined, size: 16, color: Colors.black),
+                        child: Icon(
+                          Icons.share_outlined,
+                          size: 16,
+                          color: Colors.black,
+                        ),
                       ),
                     ],
                   ),
@@ -163,19 +175,29 @@ class _SubCategoryListingState extends State<SubCategoryListing> {
                     vendor['name']!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.location_on_outlined, size: 12, color: Colors.grey),
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 12,
+                        color: Colors.grey,
+                      ),
                       const SizedBox(width: 2),
                       Expanded(
                         child: Text(
                           vendor['address']!,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(color: Colors.grey, fontSize: 11),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 11,
+                          ),
                         ),
                       ),
                     ],
@@ -189,22 +211,36 @@ class _SubCategoryListingState extends State<SubCategoryListing> {
                         children: [
                           const Icon(Icons.star, size: 14, color: Colors.amber),
                           const SizedBox(width: 2),
-                          Text(vendor['rating']!, style: const TextStyle(fontSize: 12)),
+                          Text(
+                            vendor['rating']!,
+                            style: const TextStyle(fontSize: 12),
+                          ),
                         ],
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.pink.shade50,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.location_on, size: 10, color: Colors.pink),
+                            const Icon(
+                              Icons.location_on,
+                              size: 10,
+                              color: Colors.pink,
+                            ),
                             const SizedBox(width: 2),
                             Text(
                               vendor['location']!,
-                              style: const TextStyle(color: Colors.pink, fontSize: 10, fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                color: Colors.pink,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -219,6 +255,7 @@ class _SubCategoryListingState extends State<SubCategoryListing> {
       ),
     );
   }
+
   void openFilterSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,

@@ -8,8 +8,8 @@ class RequestBlogDetail {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['blog_id'] = this.blogId;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['blog_id'] = blogId;
     return data;
   }
 }

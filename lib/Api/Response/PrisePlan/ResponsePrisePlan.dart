@@ -11,15 +11,15 @@ class ResponsePrisePlan {
     if (json['data'] != null) {
       data = <PrisePlan>[];
       json['data'].forEach((v) {
-        data!.add(new PrisePlan.fromJson(v));
+        data!.add(PrisePlan.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['result'] = result;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -37,15 +37,16 @@ class PrisePlan {
   String? updatedAt;
   List<Features>? features;
 
-  PrisePlan(
-      {this.id,
-        this.planName,
-        this.validityDays,
-        this.price,
-        this.status,
-        this.createdAt,
-        this.updatedAt,
-        this.features});
+  PrisePlan({
+    this.id,
+    this.planName,
+    this.validityDays,
+    this.price,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+    this.features,
+  });
 
   PrisePlan.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -58,22 +59,22 @@ class PrisePlan {
     if (json['features'] != null) {
       features = <Features>[];
       json['features'].forEach((v) {
-        features!.add(new Features.fromJson(v));
+        features!.add(Features.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['plan_name'] = this.planName;
-    data['validity_days'] = this.validityDays;
-    data['price'] = this.price;
-    data['status'] = this.status;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    if (this.features != null) {
-      data['features'] = this.features!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['plan_name'] = planName;
+    data['validity_days'] = validityDays;
+    data['price'] = price;
+    data['status'] = status;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    if (features != null) {
+      data['features'] = features!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -89,15 +90,16 @@ class Features {
   String? createdAt;
   String? updatedAt;
 
-  Features(
-      {this.id,
-        this.subscriptionPlanId,
-        this.featureName,
-        this.fieldKey,
-        this.fieldValue,
-        this.status,
-        this.createdAt,
-        this.updatedAt});
+  Features({
+    this.id,
+    this.subscriptionPlanId,
+    this.featureName,
+    this.fieldKey,
+    this.fieldValue,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Features.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -111,15 +113,15 @@ class Features {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['subscription_plan_id'] = this.subscriptionPlanId;
-    data['feature_name'] = this.featureName;
-    data['field_key'] = this.fieldKey;
-    data['field_value'] = this.fieldValue;
-    data['status'] = this.status;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['subscription_plan_id'] = subscriptionPlanId;
+    data['feature_name'] = featureName;
+    data['field_key'] = fieldKey;
+    data['field_value'] = fieldValue;
+    data['status'] = status;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }

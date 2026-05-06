@@ -8,13 +8,13 @@ class ResponseAllDeals {
   ResponseAllDeals.fromJson(Map<String, dynamic> json) {
     result = json['result'];
     message = json['message'];
-    data = json['data'] != null ? new AllDeals.fromJson(json['data']) : null;
+    data = json['data'] != null ? AllDeals.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['result'] = result;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -32,24 +32,24 @@ class AllDeals {
     if (json['deals'] != null) {
       deals = <Deals>[];
       json['deals'].forEach((v) {
-        deals!.add(new Deals.fromJson(v));
+        deals!.add(Deals.fromJson(v));
       });
     }
     if (json['nearbyDeals'] != null) {
       nearbyDealsData = <NearbyDeals>[];
       json['nearbyDeals'].forEach((v) {
-        nearbyDealsData!.add(new NearbyDeals.fromJson(v));
+        nearbyDealsData!.add(NearbyDeals.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.deals != null) {
-      data['deals'] = this.deals!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (deals != null) {
+      data['deals'] = deals!.map((v) => v.toJson()).toList();
     }
-    if (this.nearbyDealsData != null) {
-      data['nearbyDeals'] = this.nearbyDealsData!.map((v) => v.toJson()).toList();
+    if (nearbyDealsData != null) {
+      data['nearbyDeals'] = nearbyDealsData!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -82,32 +82,33 @@ class Deals {
   String? templateImage;
   String? listingImage;
 
-  Deals(
-      {this.id,
-        this.vendorId,
-        this.listingId,
-        this.dealTempId,
-        this.dealName,
-        this.dealDesc,
-        this.startDate,
-        this.endDate,
-        this.status,
-        this.autopilotStatus,
-        this.couponCode,
-        this.discountType,
-        this.dealPoint,
-        this.noOfUser,
-        this.discountValue,
-        this.msgSent,
-        this.pushNotifyStatus,
-        this.autopilotId,
-        this.image,
-        this.createdAt,
-        this.updatedAt,
-        this.cityId,
-        this.cityName,
-        this.templateImage,
-        this.listingImage});
+  Deals({
+    this.id,
+    this.vendorId,
+    this.listingId,
+    this.dealTempId,
+    this.dealName,
+    this.dealDesc,
+    this.startDate,
+    this.endDate,
+    this.status,
+    this.autopilotStatus,
+    this.couponCode,
+    this.discountType,
+    this.dealPoint,
+    this.noOfUser,
+    this.discountValue,
+    this.msgSent,
+    this.pushNotifyStatus,
+    this.autopilotId,
+    this.image,
+    this.createdAt,
+    this.updatedAt,
+    this.cityId,
+    this.cityName,
+    this.templateImage,
+    this.listingImage,
+  });
 
   Deals.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -138,32 +139,32 @@ class Deals {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['vendor_id'] = this.vendorId;
-    data['listing_id'] = this.listingId;
-    data['deal_temp_id'] = this.dealTempId;
-    data['deal_name'] = this.dealName;
-    data['deal_desc'] = this.dealDesc;
-    data['start_date'] = this.startDate;
-    data['end_date'] = this.endDate;
-    data['status'] = this.status;
-    data['autopilot_status'] = this.autopilotStatus;
-    data['coupon_code'] = this.couponCode;
-    data['discount_type'] = this.discountType;
-    data['deal_point'] = this.dealPoint;
-    data['no_of_user'] = this.noOfUser;
-    data['discount_value'] = this.discountValue;
-    data['msg_sent'] = this.msgSent;
-    data['push_notify_status'] = this.pushNotifyStatus;
-    data['autopilot_id'] = this.autopilotId;
-    data['image'] = this.image;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['city_id'] = this.cityId;
-    data['city_name'] = this.cityName;
-    data['template_image'] = this.templateImage;
-    data['listing_image'] = this.listingImage;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['vendor_id'] = vendorId;
+    data['listing_id'] = listingId;
+    data['deal_temp_id'] = dealTempId;
+    data['deal_name'] = dealName;
+    data['deal_desc'] = dealDesc;
+    data['start_date'] = startDate;
+    data['end_date'] = endDate;
+    data['status'] = status;
+    data['autopilot_status'] = autopilotStatus;
+    data['coupon_code'] = couponCode;
+    data['discount_type'] = discountType;
+    data['deal_point'] = dealPoint;
+    data['no_of_user'] = noOfUser;
+    data['discount_value'] = discountValue;
+    data['msg_sent'] = msgSent;
+    data['push_notify_status'] = pushNotifyStatus;
+    data['autopilot_id'] = autopilotId;
+    data['image'] = image;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    data['city_id'] = cityId;
+    data['city_name'] = cityName;
+    data['template_image'] = templateImage;
+    data['listing_image'] = listingImage;
     return data;
   }
 }
@@ -196,33 +197,34 @@ class NearbyDeals {
   String? listingImage;
   double? distance;
 
-  NearbyDeals(
-      {this.id,
-        this.vendorId,
-        this.listingId,
-        this.dealTempId,
-        this.dealName,
-        this.dealDesc,
-        this.startDate,
-        this.endDate,
-        this.status,
-        this.autopilotStatus,
-        this.couponCode,
-        this.discountType,
-        this.dealPoint,
-        this.noOfUser,
-        this.discountValue,
-        this.msgSent,
-        this.pushNotifyStatus,
-        this.autopilotId,
-        this.image,
-        this.createdAt,
-        this.updatedAt,
-        this.cityId,
-        this.cityName,
-        this.templateImage,
-        this.listingImage,
-        this.distance});
+  NearbyDeals({
+    this.id,
+    this.vendorId,
+    this.listingId,
+    this.dealTempId,
+    this.dealName,
+    this.dealDesc,
+    this.startDate,
+    this.endDate,
+    this.status,
+    this.autopilotStatus,
+    this.couponCode,
+    this.discountType,
+    this.dealPoint,
+    this.noOfUser,
+    this.discountValue,
+    this.msgSent,
+    this.pushNotifyStatus,
+    this.autopilotId,
+    this.image,
+    this.createdAt,
+    this.updatedAt,
+    this.cityId,
+    this.cityName,
+    this.templateImage,
+    this.listingImage,
+    this.distance,
+  });
 
   NearbyDeals.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -254,33 +256,33 @@ class NearbyDeals {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['vendor_id'] = this.vendorId;
-    data['listing_id'] = this.listingId;
-    data['deal_temp_id'] = this.dealTempId;
-    data['deal_name'] = this.dealName;
-    data['deal_desc'] = this.dealDesc;
-    data['start_date'] = this.startDate;
-    data['end_date'] = this.endDate;
-    data['status'] = this.status;
-    data['autopilot_status'] = this.autopilotStatus;
-    data['coupon_code'] = this.couponCode;
-    data['discount_type'] = this.discountType;
-    data['deal_point'] = this.dealPoint;
-    data['no_of_user'] = this.noOfUser;
-    data['discount_value'] = this.discountValue;
-    data['msg_sent'] = this.msgSent;
-    data['push_notify_status'] = this.pushNotifyStatus;
-    data['autopilot_id'] = this.autopilotId;
-    data['image'] = this.image;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['city_id'] = this.cityId;
-    data['city_name'] = this.cityName;
-    data['template_image'] = this.templateImage;
-    data['listing_image'] = this.listingImage;
-    data['distance'] = this.distance;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['vendor_id'] = vendorId;
+    data['listing_id'] = listingId;
+    data['deal_temp_id'] = dealTempId;
+    data['deal_name'] = dealName;
+    data['deal_desc'] = dealDesc;
+    data['start_date'] = startDate;
+    data['end_date'] = endDate;
+    data['status'] = status;
+    data['autopilot_status'] = autopilotStatus;
+    data['coupon_code'] = couponCode;
+    data['discount_type'] = discountType;
+    data['deal_point'] = dealPoint;
+    data['no_of_user'] = noOfUser;
+    data['discount_value'] = discountValue;
+    data['msg_sent'] = msgSent;
+    data['push_notify_status'] = pushNotifyStatus;
+    data['autopilot_id'] = autopilotId;
+    data['image'] = image;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    data['city_id'] = cityId;
+    data['city_name'] = cityName;
+    data['template_image'] = templateImage;
+    data['listing_image'] = listingImage;
+    data['distance'] = distance;
     return data;
   }
 }

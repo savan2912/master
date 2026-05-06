@@ -1,15 +1,16 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gotilo_new/CustomeWidgets/CustomLoader.dart';
+import 'package:intl/intl.dart';
 import 'package:gotilo_new/Api/ApiCalls.dart';
 import 'package:gotilo_new/Api/Request/User/Dashboard/RequestUserDashboard.dart';
 import 'package:gotilo_new/Api/Response/User/Dashboard/ResponseUserDashboard.dart';
 import 'package:gotilo_new/Constant/AppPref.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/MyApplication/MyApplication.dart';
-import 'package:intl/intl.dart';
 import '../../../CustomeWidgets/CustomDrawer.dart';
+import '../../../CustomeWidgets/CustomAppbar.dart';
 
 class Userdashboardscreen extends StatefulWidget {
   const Userdashboardscreen({super.key});
@@ -19,419 +20,548 @@ class Userdashboardscreen extends StatefulWidget {
 }
 
 class _UserdashboardscreenState extends State<Userdashboardscreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  ValueNotifier<bool> isApiComplete = ValueNotifier(false);
 
-  ValueNotifier<bool> isDataAvailable=ValueNotifier(false);
-  ValueNotifier<bool> isApiComplete=ValueNotifier(false);
   final Color primaryDark = const Color(0xFF0F172A);
   final Color accentCyan = const Color(0xFF00E5FF);
-  final Color glassWhite = Colors.white.withOpacity(0.9);
+  final Color bgGray = const Color(0xFFF1F5F9);
 
-  List<Rewards> rewardListingData=[];
-  List<Enquiries> enquiryData=[];
-  List<RecentBilling> billingData=[];
-  List<BookingHistory> bookingData=[];
-
-
-
-  // final List<Map<String, dynamic>> bookingData = [
-  //   {
-  //     "date": "2026-02-16",
-  //     "title": "Gotilo Cafe One",
-  //     "name": "test",
-  //     "email": "ravi.p@bbdpl.in",
-  //     "phone": "7878787878",
-  //     "time": "09:30:00 - 10:20:00",
-  //     "amount": "100.00",
-  //     "status": "Pending"
-  //   },
-  //   {
-  //     "date": "2026-02-03",
-  //     "title": "Gotilo Cafe Updated",
-  //     "name": "Home",
-  //     "email": "ravi.p@bbdpl.in",
-  //     "phone": "7542424242",
-  //     "time": "09:00:00 - 11:00:00",
-  //     "amount": "1,500.00",
-  //     "status": "Confirmed"
-  //   },
-  //   {
-  //     "date": "2026-02-03",
-  //     "title": "Gotilo Cafe Updated",
-  //     "name": "test",
-  //     "email": "test123@yopmail.com",
-  //     "phone": "7542424242",
-  //     "time": "09:30:00 - 11:30:00",
-  //     "amount": "1,500.00",
-  //     "status": "Confirmed"
-  //   },
-  //   {
-  //     "date": "2026-02-03",
-  //     "title": "Gotilo Cafe Updated",
-  //     "name": "testt",
-  //     "email": "ravi.p@bbdpl.in",
-  //     "phone": "7542424242",
-  //     "time": "18:30:00 - 20:30:00",
-  //     "amount": "1,500.00",
-  //     "status": "Confirmed"
-  //   },
-  //   {
-  //     "date": "2026-02-03",
-  //     "title": "Gotilo Cafe Updated",
-  //     "name": "test",
-  //     "email": "test554@yopmail.com",
-  //     "phone": "7672772233",
-  //     "time": "16:00:00 - 18:20:00",
-  //     "amount": "2,000.00",
-  //     "status": "Confirmed"
-  //   },
-  // ];
-
+  List<Rewards> rewardListingData = [];
+  List<Enquiries> enquiryData = [];
+  List<RecentBilling> billingData = [];
+  List<BookingHistory> bookingData = [];
 
   @override
   void initState() {
-    callUserDashboard();
     super.initState();
+    callUserDashboard();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFF8FAFC), Color(0xFFE2E8F0)],
-        ),
+    return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: bgGray,
+      drawer: const CustomDrawer(initialRoute: 'user.overview'),
+      appBar: CustomAppBar(
+        title: "Dashboard Overview",
+        onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
+        onActionTap: () {},
+        showAction: false,
       ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        drawer: const CustomDrawer(initialRoute: 'user.overview'),
-        body: RefreshIndicator(
-          onRefresh: () async  {
-            callUserDashboard();
-          },
-          child:
-          CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              SliverAppBar(
-                expandedHeight: 170.0,
-                pinned: true,
-                elevation: 0,
-                backgroundColor: primaryDark,
-                stretch: true,
-                centerTitle: true,
-                leading: Builder(
-                  builder: (context) => IconButton(
-                    icon: const Icon(Icons.align_horizontal_left, color: Colors.white, size: 28),
-                    onPressed: () => Scaffold.of(context).openDrawer(),
-                  ),
-                ),
-                flexibleSpace: FlexibleSpaceBar(
-                  centerTitle: true,
-                  titlePadding: const EdgeInsets.only(bottom: 16),
-                  title: Text("DASHBOARD", style: GoogleFonts.montserrat(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800, letterSpacing: 2)),
-                  background: Stack(
-                    children: [
-                      Positioned(right: -50, top: -50, child: CircleAvatar(radius: 100, backgroundColor: accentCyan.withOpacity(0.1))),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 25, top: 80),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Hello, Savan", style: GoogleFonts.montserrat(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900)),
-                            const SizedBox(height: 5),
-                            Row(
-                              children: [
-                                Icon(Icons.verified_user_rounded, color: accentCyan, size: 14),
-                                const SizedBox(width: 5),
-                                Text("Premium Member", style: GoogleFonts.montserrat(color: Colors.white60, fontSize: 11, fontWeight: FontWeight.w600)),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+      body: RefreshIndicator(
+        onRefresh: () async => callUserDashboard(),
+        color: accentCyan,
+        child: ValueListenableBuilder(
+          valueListenable: isApiComplete,
+          builder: (context, value, child) {
+            if (!value) {
+              return const Center(child: CustomLoader(message: "Loading Dashboard..",));
+            }
 
-            ValueListenableBuilder(
-              valueListenable: isApiComplete,
-              builder: (context, value, child) {
-                if(!value){
-                  return SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(accentCyan),
-                            strokeWidth: 3,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-                return SliverMainAxisGroup(
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 30, 20, 10),
-                        child: _buildListingRewardsSection(),
-                      ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 25, 20, 15),
-                        child: _buildSectionHeader("Recent Enquiry"),
-                      ),
-                    ),
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                              (context, index) => _buildEnquiryCard(enquiryData[index]),
-                          childCount: enquiryData.length,
-                        ),
-                      ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 30, 20, 15),
-                        child: _buildSectionHeader("Recent Billing"),
-                      ),
-                    ),
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                              (context, index) => _buildModernTransactionCard(billingData[index]),
-                          childCount: billingData.length,
-                        ),
-                      ),
-                    ),
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 30, 20, 15),
-                      sliver: SliverToBoxAdapter(child: _buildSectionHeader("Booking History")),
-                    ),
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                              (context, index) => _buildModernBookingCard(context,bookingData[index]),
-                          childCount: bookingData.length,
-                        ),
-                      ),
-                    ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 50)),
-                  ],
-                );
-               }
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-  
-
-  Widget _buildSectionHeader(String title) {
-    return Text(title.toUpperCase(), style: GoogleFonts.montserrat(fontSize: 13, fontWeight: FontWeight.w800, color: primaryDark.withOpacity(0.6), letterSpacing: 2));
-  }
-
-  Widget _buildEnquiryCard(Enquiries data) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(22), border: Border.all(color: accentCyan.withOpacity(0.2))),
-      child: Row(
-        children: [
-          Container(
-            height: 45, width: 45,
-            decoration: BoxDecoration(color: accentCyan.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-            child: Icon(Icons.question_answer_rounded, color: const Color(0xFF00ACC1), size: 18),
-          ),
-          const SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(data.enquiryListing?.listingTitle ?? "", style: GoogleFonts.montserrat(fontWeight: FontWeight.w800, fontSize: 13, color: primaryDark)),
-                Text("Date: ${data.enquiryTime}", style: GoogleFonts.montserrat(fontSize: 10, color: Colors.blueGrey[300], fontWeight: FontWeight.w600)),
-                Text("Enquiry: ${data.enquiry ?? ""}", style: GoogleFonts.montserrat(fontSize: 10, color: Colors.blueGrey[300], fontWeight: FontWeight.w600)),
-              ],
-            ),
-          ),
-          const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Colors.grey),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildListingRewardsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader("Listing Rewards"),
-        const SizedBox(height: 15),
-        ListView.builder(
-          shrinkWrap: true,
-          padding: EdgeInsets.zero,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: rewardListingData.length,
-          itemBuilder: (context, index) {
-            var data = rewardListingData[index];
-            return Container(
-              margin: const EdgeInsets.only(bottom: 15),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(25), boxShadow: [BoxShadow(color: primaryDark.withOpacity(0.02), blurRadius: 15, offset: const Offset(0, 8))]),
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.only(bottom: 30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(width: 10), Text(data.rewardsListings?.listingTitle ?? "", style: GoogleFonts.montserrat(fontWeight: FontWeight.w800, fontSize: 14, color: primaryDark)),
-                  const Padding(padding: EdgeInsets.symmetric(vertical: 15), child: Divider(height: 1, color: Color(0xFFF1F5F9))),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildRewardSmallStat("total", data.totalPoints.toString(), Colors.blueGrey),
-                      _buildRewardSmallStat("Redeemed", data.redeemedPoints.toString(), Colors.redAccent),
-                      _buildRewardSmallStat("Actual", data.actualPoints.toString(), const Color(0xFF10B981)),
-                    ],
-                  )
+                  if (rewardListingData.isNotEmpty) ...[
+                    _sectionHeader("My Listing Rewards", Icons.stars_rounded),
+                    SizedBox(
+                      height: 180,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        itemCount: rewardListingData.length,
+                        itemBuilder: (context, index) => _rewardCard(rewardListingData[index]),
+                      ),
+                    ),
+                  ],
+                  _sectionHeader("Recent Enquiries", Icons.chat_bubble_outline_rounded),
+                  ...enquiryData.map((e) => _enquiryCard(e)),
+                  _sectionHeader("Recent Billing", Icons.account_balance_wallet_outlined),
+                  ...billingData.map((e) => _billingCard(e)),
+                  _sectionHeader("Booking History", Icons.history_rounded),
+                  ...bookingData.map((e) => _bookingCard(e)),
+
+                  const SizedBox(height: 20),
                 ],
               ),
             );
           },
         ),
-      ],
+      ),
     );
   }
-
-  Widget _buildRewardSmallStat(String label, String value, Color valueColor) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label, style: GoogleFonts.montserrat(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.blueGrey[300])),
-      const SizedBox(height: 4),
-      Text(value, style: GoogleFonts.montserrat(fontSize: 14, fontWeight: FontWeight.w800, color: valueColor)),
-    ]);
-  }
-
-  Widget _buildModernTransactionCard(RecentBilling data) {
-    String apiDate = data.createdAt!;
-    DateTime dateTime = DateTime.parse(apiDate);
-    String onlyDate = DateFormat('dd-MM-yyyy').format(dateTime);
-    
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: glassWhite, borderRadius: BorderRadius.circular(22), border: Border.all(color: Colors.white)),
+  Widget _sectionHeader(String title, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 25, 20, 12),
       child: Row(
         children: [
-          Container(height: 45, width: 45, decoration: BoxDecoration(color: primaryDark.withOpacity(0.05), borderRadius: BorderRadius.circular(12)), child: Icon(Icons.receipt_long_rounded, color: primaryDark, size: 18)),
-          const SizedBox(width: 15),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(data.listingTitle ?? "", style: GoogleFonts.montserrat(fontWeight: FontWeight.w800, fontSize: 13, color: primaryDark)),
-            Text("${onlyDate} • ${data.paymentType=="0" ? "Offline" : "Online"}", style: GoogleFonts.montserrat(fontSize: 10, color: Colors.blueGrey[300], fontWeight: FontWeight.w600)),
-          ])),
-          Text("₹ ${data.total}", style: GoogleFonts.montserrat(fontWeight: FontWeight.w900, color: primaryDark, fontSize: 14)),
+          Icon(icon, size: 20, color: primaryDark.withOpacity(0.7)),
+          const SizedBox(width: 10),
+          Text(
+            title,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: primaryDark,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _rewardCard(Rewards data) {
+    return Container(
+      width: 280,
+      margin: const EdgeInsets.only(right: 15, bottom: 10),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [primaryDark, const Color(0xFF1E293B)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(color: primaryDark.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 5)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            data.rewardsListings?.listingTitle ?? "Premium Listing",
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+          const Spacer(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _rewardStat("Total", data.totalPoints.toString()),
+              _rewardStat("Redeemed", data.redeemedPoints.toString()),
+              _rewardStat("Available", data.actualPoints.toString(), highlight: true),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildModernBookingCard(BuildContext context, BookingHistory data) {
-    bool isPending = data.status == 0;
-    Color statusColor = isPending ? const Color(0xFFF59E0B) : const Color(0xFF10B981);
+  Widget _rewardStat(String label, String val, {bool highlight = false}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: GoogleFonts.plusJakartaSans(color: Colors.white60, fontSize: 10)),
+        const SizedBox(height: 4),
+        Text(
+          val,
+          style: GoogleFonts.plusJakartaSans(
+            color: highlight ? accentCyan : Colors.white,
+            fontWeight: FontWeight.w800,
+            fontSize: 16,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _enquiryCard(Enquiries data) {
+    String formattedDate = "N/A";
+    if (data.createdAt != null) {
+      try {
+        DateTime dt = DateTime.parse(data.createdAt!);
+        formattedDate = DateFormat('dd MMM, yyyy').format(dt);
+      } catch (e) {
+        formattedDate = data.createdAt!;
+      }
+    }
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 15, left: 15, right: 15),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(25),
-          boxShadow: [
-            BoxShadow(
-                color: primaryDark.withOpacity(0.05),
-                blurRadius: 20,
-                offset: const Offset(0, 10))
-          ]),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(18),
+          Row(
+            children: [
+              CircleAvatar(
+                  backgroundColor: Colors.black.withOpacity(0.05),
+                  radius: 18,
+                  child: const Icon(Icons.person_outline, size: 18, color: Colors.black)
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  data.enquiryListing?.listingTitle ?? "General Enquiry",
+                  style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: primaryDark
+                  ),
+                ),
+              ),
+
+              Text(
+                formattedDate,
+                style: GoogleFonts.plusJakartaSans(
+                    fontSize: 10,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w600
+                ),
+              ),
+            ],
+          ),
+          const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: Divider(height: 1, thickness: 0.5)
+          ),
+          const SizedBox(height: 4),
+          Text(
+            "Enquiry : ${data.enquiry ?? "No enquiry message found."}",
+            style: GoogleFonts.plusJakartaSans(
+                fontSize: 12,
+                color: Colors.blueGrey,
+                height: 1.5,
+                fontWeight: FontWeight.w500
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
+  Widget _billingCard(RecentBilling data) {
+    String date = "N/A";
+    try {
+      date = DateFormat('dd MMM, yyyy').format(DateTime.parse(data.createdAt!));
+    } catch (_) {}
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
+      child: Row(
+        children: [
+
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(14)
+            ),
+            child: const Icon(Icons.receipt_long_rounded, color: Colors.green, size: 22),
+          ),
+          const SizedBox(width: 15),
+
+
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text(
+                    data.listingTitle ?? "Service Payment",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 14)
+                ),
+                const SizedBox(height: 4),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                        child: Text(data.bookingListing?.listingTitle ?? "Booking",
-                            style: GoogleFonts.montserrat(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 14,
-                                color: primaryDark))),
+                    Text(date, style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey)),
+                    const SizedBox(width: 8),
                     Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                            color: statusColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8)),
-                        child: Text(isPending ? "Pending" : "Complete",
-                            style: GoogleFonts.montserrat(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w900,
-                                color: statusColor))),
+                      width: 4,
+                      height: 4,
+                      decoration: const BoxDecoration(color: Colors.grey, shape: BoxShape.circle),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                        data.paymentType == "0" ? "Offline" : "Online",
+                        style: GoogleFonts.plusJakartaSans(
+                            fontSize: 11,
+                            color: data.paymentType == "0" ? Colors.orange : Colors.blue,
+                            fontWeight: FontWeight.w600
+                        )
+                    ),
                   ],
                 ),
-                const SizedBox(height: 12),
-                _rowInfo(Icons.person_outline, "Name: ${data.name ?? ""}"),
-                _rowInfo(Icons.calendar_today_outlined, "Date: ${data.bookingDate ?? ""}"),
-                _rowInfo(Icons.access_time_rounded, "Time: ${data.startTime ?? ""}"),
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-            decoration: BoxDecoration(
-                color: primaryDark.withOpacity(0.03),
-                borderRadius: const BorderRadius.vertical(bottom: Radius.circular(25))),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Total Amount",
-                        style: GoogleFonts.montserrat(
-                            fontSize: 10,
-                            color: Colors.blueGrey[300],
-                            fontWeight: FontWeight.w700)),
-                    Text("₹ ${data.totalAmount ?? "0"}",
-                        style: GoogleFonts.montserrat(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 15,
-                            color: primaryDark)),
-                  ],
+
+          // --- TOTAL AMOUNT ---
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                "₹${data.total ?? "0"}",
+                style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16,
+                    color: Colors.black
                 ),
-                // --- View Details Button ---
-                ElevatedButton(
-                  onPressed: () => _showBookingDetailsDialog(context, data),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryDark,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
-                  ),
-                  child: Text("View Details",
-                      style: GoogleFonts.montserrat(fontSize: 11, fontWeight: FontWeight.bold)),
-                ),
-              ],
-            ),
-          )
+              ),
+            ],
+          ),
         ],
+      ),
+    );
+  }
+
+
+  Widget _bookingCard(BookingHistory data) {
+    bool isPending = data.status == 0;
+    String bookingDate = "N/A";
+    try {
+      bookingDate = DateFormat('dd MMM, yyyy').format(DateTime.parse(data.bookingDate!));
+    } catch (_) {}
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: primaryDark.withOpacity(0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(30),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [primaryDark, primaryDark.withOpacity(0.85)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: const Icon(Icons.confirmation_number_outlined, color: Colors.white, size: 22),
+                  ),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          data.bookingListing?.listingTitle ?? "Service Booking",
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                        Text(
+                          "ID: #${data.id ?? "000"}",
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.white70,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _statusBadge(isPending),
+                ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      _infoChip(Icons.person_rounded, data.name ?? "User"),
+                      const SizedBox(width: 10),
+                      _infoChip(Icons.phone_android_rounded, data.phone ?? "N/A"),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.black.withOpacity(0.03)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _gridItem("DATE", bookingDate, Icons.calendar_today_rounded),
+                        _gridItem("START", data.startTime ?? "N/A", Icons.access_time_filled_rounded),
+                        _gridItem("END", data.endTime ?? "N/A", Icons.history_toggle_off_rounded),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("TOTAL AMOUNT",
+                              style: GoogleFonts.plusJakartaSans(fontSize: 9, color: Colors.grey, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                          Text("₹${data.totalAmount ?? "0"}",
+                              style: GoogleFonts.plusJakartaSans(fontSize: 20, fontWeight: FontWeight.w900, color: primaryDark)),
+                        ],
+                      ),
+                      _viewButton(data),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// ---------------- SUB-WIDGETS FOR NEW DESIGN ----------------
+
+  Widget _statusBadge(bool isPending) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: isPending ? Colors.orange.withOpacity(0.2) : accentCyan.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: isPending ? Colors.orange : accentCyan, width: 0.5),
+      ),
+      child: Text(
+        isPending ? "PENDING" : "CONFIRMED",
+        style: GoogleFonts.plusJakartaSans(
+          color: isPending ? Colors.orange : accentCyan,
+          fontWeight: FontWeight.bold,
+          fontSize: 9,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _infoChip(IconData icon, String label) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.grey.withOpacity(0.1)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 14, color: primaryDark.withOpacity(0.5)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600, color: primaryDark),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _gridItem(String title, String value, IconData icon) {
+    return Column(
+      children: [
+        Icon(icon, size: 16, color: primaryDark.withOpacity(0.3)),
+        const SizedBox(height: 6),
+        Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 8, color: Colors.grey, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 2),
+        Text(value, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.bold, color: primaryDark)),
+      ],
+    );
+  }
+
+  Widget _viewButton(BookingHistory data) {
+    return GestureDetector(
+      onTap: () {
+        _showBookingDetailsDialog(context, data);
+      },
+      child: Container(
+        height: 48,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(
+          color: primaryDark,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: primaryDark.withOpacity(0.3),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Row(
+            children: [
+              const Icon(Icons.arrow_outward_rounded,
+                  color: Colors.white, size: 18),
+              const SizedBox(width: 8),
+              Text(
+                "VIEW",
+                style: GoogleFonts.plusJakartaSans(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -443,7 +573,6 @@ class _UserdashboardscreenState extends State<Userdashboardscreen> {
     });
     double totalAmount = 0.0;
     data.bookingService?.forEach((service) {
-      // String ne double ma convert kari ne plus karo
       totalAmount += double.tryParse(service.servicePrice.toString()) ?? 0.0;
     });
 
@@ -457,7 +586,6 @@ class _UserdashboardscreenState extends State<Userdashboardscreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // HEADER
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 10, 10),
                 child: Row(
@@ -587,69 +715,46 @@ class _UserdashboardscreenState extends State<Userdashboardscreen> {
             value,
             textAlign: TextAlign.end,
             style: GoogleFonts.montserrat(fontSize: 12, fontWeight: FontWeight.w700, color: primaryDark),
-            overflow: TextOverflow.visible, // Jo value moti hoy to niche ni line ma jase
+            overflow: TextOverflow.visible,
           ),
         ),
       ],
     );
   }
 
-  Widget _rowInfo(IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        children: [
-          Icon(icon, size: 13, color: Colors.blueGrey[200]),
-          const SizedBox(width: 10),
-          Expanded(child: Text(text, style: GoogleFonts.montserrat(fontSize: 10, color: Colors.blueGrey[400], fontWeight: FontWeight.w600))),
-        ],
-      ),
-    );
-  }
-
   Future<void> callUserDashboard() async {
-    isDataAvailable.value=false;
-    isApiComplete.value=false;
+    isApiComplete.value = false;
     rewardListingData.clear();
-   enquiryData.clear();
-   billingData.clear();
-   bookingData.clear();
+    enquiryData.clear();
+    billingData.clear();
+    bookingData.clear();
     _callUserDashboard();
   }
 
   Future<void> _callUserDashboard() async {
-    MyApplication.checkInternet().then((internet) async {
-        if(internet){
-          try{
-            ResponseUserDashboard? response= await ApiCalls.callUserDashboard(RequestUserDashboard(
-              userId: AppPrefs.userId ?? ""
-            ));
-            if(response != null){
-              if(response.result!.isNotEmpty && response.result != null &&
-              response.result!.toLowerCase().contains("pass")){
-                rewardListingData.addAll(response.data!.rewards!);
-                enquiryData.addAll(response.data!.enquiries!);
-                billingData.addAll(response.data!.recentBilling!);
-                bookingData.addAll(response.data!.bookingHistory!);
-                isDataAvailable.value=true;
-                setState(() {});
-              }
-            }
-          }on Exception catch(e){
-            isDataAvailable.value=false;
-            log("$e");
-          }catch(e){
-            isDataAvailable.value=false;
-            log("$e");
-          }finally {
-            isApiComplete.value=true;
-          }
-        }else{
-          SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+    bool internet = await MyApplication.checkInternet();
+    if (internet) {
+      try {
+        ResponseUserDashboard? response = await ApiCalls.callUserDashboard(
+          RequestUserDashboard(userId: AppPrefs.userId ?? ""),
+        );
+
+        if (response != null && response.result!.toLowerCase().contains("pass")) {
+          setState(() {
+            rewardListingData.addAll(response.data!.rewards!);
+            enquiryData.addAll(response.data!.enquiries!);
+            billingData.addAll(response.data!.recentBilling!);
+            bookingData.addAll(response.data!.bookingHistory!);
+          });
         }
-    },);
+      } catch (e) {
+        log("Dashboard Error: $e");
+      } finally {
+        isApiComplete.value = true;
+      }
+    } else {
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      isApiComplete.value = true;
+    }
   }
-
-
-
 }

@@ -11,15 +11,15 @@ class ResponseBlogsData {
     if (json['data'] != null) {
       data = <BlogsData>[];
       json['data'].forEach((v) {
-        data!.add(new BlogsData.fromJson(v));
+        data!.add(BlogsData.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['result'] = result;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -37,15 +37,16 @@ class BlogsData {
   String? createdAt;
   String? updatedAt;
 
-  BlogsData(
-      {this.id,
-        this.blogTitle,
-        this.slug,
-        this.blogDesc,
-        this.blogImage,
-        this.status,
-        this.createdAt,
-        this.updatedAt});
+  BlogsData({
+    this.id,
+    this.blogTitle,
+    this.slug,
+    this.blogDesc,
+    this.blogImage,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   BlogsData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -59,15 +60,15 @@ class BlogsData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['blog_title'] = this.blogTitle;
-    data['slug'] = this.slug;
-    data['blog_desc'] = this.blogDesc;
-    data['blog_image'] = this.blogImage;
-    data['status'] = this.status;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['blog_title'] = blogTitle;
+    data['slug'] = slug;
+    data['blog_desc'] = blogDesc;
+    data['blog_image'] = blogImage;
+    data['status'] = status;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }

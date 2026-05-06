@@ -8,13 +8,13 @@ class ResponseCompanyLogo {
   ResponseCompanyLogo.fromJson(Map<String, dynamic> json) {
     result = json['result'];
     message = json['message'];
-    data = json['data'] != null ? new CompanyLogo.fromJson(json['data']) : null;
+    data = json['data'] != null ? CompanyLogo.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['result'] = result;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
@@ -34,9 +34,9 @@ class CompanyLogo {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['site_logo'] = this.siteLogo;
-    data['logo_small'] = this.logoSmall;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['site_logo'] = siteLogo;
+    data['logo_small'] = logoSmall;
     return data;
   }
 }

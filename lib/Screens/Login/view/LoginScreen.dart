@@ -26,10 +26,10 @@ class ModernLoginScreen extends StatefulWidget {
 }
 
 class _ModernLoginScreenState extends State<ModernLoginScreen> {
-  String _selectedRole = 'user';
+  final String _selectedRole = 'user';
   bool _rememberMe = false;
   bool _obscureText = true;
-  bool _isLoading = false; // <--- Loader mate variable
+  bool _isLoading = false;
   final TextEditingController _mobileController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -53,7 +53,10 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
               child: Container(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 30),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 25,
+                  vertical: 30,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -77,7 +80,11 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
   Widget _buildLogoSection() {
     return Column(
       children: [
-        const Icon(Icons.layers_rounded, size: 40, color: ModernLoginScreen.primaryCyan),
+        const Icon(
+          Icons.layers_rounded,
+          size: 40,
+          color: ModernLoginScreen.primaryCyan,
+        ),
         const SizedBox(height: 10),
         Text(
           "Gotilo",
@@ -200,7 +207,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
               ),
             ],
           ),
-        )
+        ),
       ],
     );
   }
@@ -218,7 +225,11 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
               const SizedBox(width: 15),
               const Text("🇮🇳", style: TextStyle(fontSize: 18)),
               const SizedBox(width: 10),
-              Container(height: 20, width: 1, color: Colors.grey.withOpacity(0.3)),
+              Container(
+                height: 20,
+                width: 1,
+                color: Colors.grey.withOpacity(0.3),
+              ),
               const SizedBox(width: 10),
             ],
           ),
@@ -229,10 +240,16 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
           controller: _passwordController,
           isPassword: true,
           obscureText: _obscureText,
-          prefixIcon: Icon(Icons.lock_outline_rounded, color: Colors.grey[400], size: 20),
+          prefixIcon: Icon(
+            Icons.lock_outline_rounded,
+            color: Colors.grey[400],
+            size: 20,
+          ),
           suffixIcon: IconButton(
             icon: Icon(
-              _obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+              _obscureText
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
               color: Colors.grey[500],
               size: 20,
             ),
@@ -262,14 +279,23 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
         controller: controller,
         obscureText: isPassword && obscureText,
         keyboardType: keyboardType,
-        style: GoogleFonts.montserrat(color: ModernLoginScreen.textDark, fontSize: 14),
+        style: GoogleFonts.montserrat(
+          color: ModernLoginScreen.textDark,
+          fontSize: 14,
+        ),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: GoogleFonts.montserrat(color: Colors.grey[400], fontSize: 13),
+          hintStyle: GoogleFonts.montserrat(
+            color: Colors.grey[400],
+            fontSize: 13,
+          ),
           prefixIcon: prefixIcon,
           suffixIcon: suffixIcon,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 15),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 18,
+            horizontal: 15,
+          ),
         ),
       ),
     );
@@ -282,11 +308,14 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
         Row(
           children: [
             SizedBox(
-              height: 24, width: 24,
+              height: 24,
+              width: 24,
               child: Checkbox(
                 value: _rememberMe,
                 activeColor: ModernLoginScreen.primaryCyan,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
                 side: BorderSide(color: Colors.grey.withOpacity(0.5)),
                 onChanged: (val) => setState(() => _rememberMe = val!),
               ),
@@ -294,7 +323,10 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
             const SizedBox(width: 8),
             Text(
               "Remember Me",
-              style: GoogleFonts.montserrat(fontSize: 11, color: Colors.grey[600]),
+              style: GoogleFonts.montserrat(
+                fontSize: 11,
+                color: Colors.grey[600],
+              ),
             ),
           ],
         ),
@@ -333,35 +365,50 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
         ],
       ),
       child: ElevatedButton(
-        onPressed: _isLoading ? null : () { // Loading hoy tyare button disable
-          if(_mobileController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
-            _callLogin();
-          } else if(_mobileController.text.isEmpty){
-            SharedWidgets.showTopSnackBar(context, message: "Please Enter Mobile Number");
-          } else if(_passwordController.text.isEmpty){
-            SharedWidgets.showTopSnackBar(context, message: "Please Enter Password");
-          }
-        },
+        onPressed: _isLoading
+            ? null
+            : () {
+                // Loading hoy tyare button disable
+                if (_mobileController.text.isNotEmpty &&
+                    _passwordController.text.isNotEmpty) {
+                  _callLogin();
+                } else if (_mobileController.text.isEmpty) {
+                  SharedWidgets.showTopSnackBar(
+                    context,
+                    message: "Please Enter Mobile Number",
+                  );
+                } else if (_passwordController.text.isEmpty) {
+                  SharedWidgets.showTopSnackBar(
+                    context,
+                    message: "Please Enter Password",
+                  );
+                }
+              },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
         ),
         child: _isLoading
             ? const SizedBox(
-          height: 22,
-          width: 22,
-          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
-        )
+                height: 22,
+                width: 22,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2.5,
+                ),
+              )
             : Text(
-          "Sign In",
-          style: GoogleFonts.montserrat(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            letterSpacing: 1,
-          ),
-        ),
+                "Sign In",
+                style: GoogleFonts.montserrat(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 1,
+                ),
+              ),
       ),
     );
   }
@@ -374,7 +421,11 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Text(
             "Or sign in with",
-            style: GoogleFonts.montserrat(fontSize: 10, color: Colors.grey[500], fontWeight: FontWeight.w600),
+            style: GoogleFonts.montserrat(
+              fontSize: 10,
+              color: Colors.grey[500],
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
         Expanded(child: Divider(color: Colors.grey.withOpacity(0.2))),
@@ -413,42 +464,51 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
     );
   }
 
-  // --- API Call Logic ---
+
   Future<void> _callLogin() async {
     var deviceTokenFuture = PushNotificationService.getSavedToken();
 
-    // Check Internet
     bool internet = await MyApplication.checkInternet();
 
     if (internet) {
       setState(() {
-        _isLoading = true; // Loader chalu karo
+        _isLoading = true;
       });
 
       try {
         String? token = await deviceTokenFuture;
-        ResponseLogin? response = await ApiCalls.callLogin(RequestLogin(
+        ResponseLogin? response = await ApiCalls.callLogin(
+          RequestLogin(
             deviceToken: token,
             password: _passwordController.text,
             phone: _mobileController.text,
-            role: "user"
-        ));
+            role: "user",
+          ),
+        );
 
         if (response != null) {
-          if (response.result != null && response.result!.toLowerCase().contains("pass")) {
-
+          if (response.result != null &&
+              response.result!.toLowerCase().contains("pass")) {
             AppPrefs.setUserId(response.data!.userId!);
-
             if (context.mounted) {
-              SharedWidgets.showTopSnackBar(context, message: response.message!);
+              SharedWidgets.showTopSnackBar(
+                context,
+                message: response.message!,
+              );
             }
 
-            if (response.data!.userId != null && response.data!.userId!.isNotEmpty) {
-              Get.offAll(() => const Userdashboardscreen()); // offAll use karo jethi back na avai
+            if (response.data!.userId != null &&
+                response.data!.userId!.isNotEmpty) {
+              Get.offAll(
+                () => const Userdashboardscreen(),
+              );
             }
           } else {
             if (context.mounted) {
-              SharedWidgets.showTopSnackBar(context, message: response.message ?? "Login Failed");
+              SharedWidgets.showTopSnackBar(
+                context,
+                message: response.message ?? "Login Failed",
+              );
             }
           }
         }
@@ -457,7 +517,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
       } finally {
         if (mounted) {
           setState(() {
-            _isLoading = false; // Loader bandh karo (Success hoy ke Error)
+            _isLoading = false;
           });
         }
       }

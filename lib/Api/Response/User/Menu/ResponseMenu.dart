@@ -11,15 +11,15 @@ class ResponseMenu {
     if (json['data'] != null) {
       data = <Menu>[];
       json['data'].forEach((v) {
-        data!.add(new Menu.fromJson(v));
+        data!.add(Menu.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['result'] = this.result;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['result'] = result;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -37,15 +37,16 @@ class Menu {
   String? createdAt;
   String? updatedAt;
 
-  Menu(
-      {this.id,
-        this.menuName,
-        this.routeName,
-        this.icon,
-        this.position,
-        this.status,
-        this.createdAt,
-        this.updatedAt});
+  Menu({
+    this.id,
+    this.menuName,
+    this.routeName,
+    this.icon,
+    this.position,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Menu.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -59,15 +60,15 @@ class Menu {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['menu_name'] = this.menuName;
-    data['route_name'] = this.routeName;
-    data['icon'] = this.icon;
-    data['position'] = this.position;
-    data['status'] = this.status;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['menu_name'] = menuName;
+    data['route_name'] = routeName;
+    data['icon'] = icon;
+    data['position'] = position;
+    data['status'] = status;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
     return data;
   }
 }

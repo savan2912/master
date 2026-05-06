@@ -6,7 +6,6 @@ import '../AboutUs/view/AboutUsScreen.dart';
 import '../Blog/view/BlogScreen.dart';
 import '../ContactUs/view/ContactUsScreen.dart';
 import '../Home/view/HomeScreen.dart';
-import '../Login/view/LoginScreen.dart';
 import '../PrisePlan/view/PrisePlanScreen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -31,9 +30,9 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const AboutUsScreen(),
-     ContactUsScreen(),
+    ContactUsScreen(),
     const PrisePlanScreen(),
-    const BlogScreen()
+    const BlogScreen(),
   ];
 
   @override
@@ -46,13 +45,9 @@ class _MainScreenState extends State<MainScreen> {
         switchInCurve: Curves.easeInOutCubic,
         switchOutCurve: Curves.easeInOutCubic,
 
-        child: Container(
-          key: ValueKey(navIndex),
-          child: _screens[navIndex],
-        ),
+        child: Container(key: ValueKey(navIndex), child: _screens[navIndex]),
 
         transitionBuilder: (child, animation) {
-
           final beginOffset = isForward
               ? const Offset(1, 0)
               : const Offset(-1, 0);
@@ -74,23 +69,13 @@ class _MainScreenState extends State<MainScreen> {
           final scale = Tween<double>(
             begin: 0.96,
             end: 1.0,
-          ).animate(
-            CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOut,
-            ),
-          );
+          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut));
 
           return SlideTransition(
-            position: child.key == ValueKey(navIndex)
-                ? slideIn
-                : slideOut,
+            position: child.key == ValueKey(navIndex) ? slideIn : slideOut,
             child: FadeTransition(
               opacity: animation,
-              child: ScaleTransition(
-                scale: scale,
-                child: child,
-              ),
+              child: ScaleTransition(scale: scale, child: child),
             ),
           );
         },
@@ -99,15 +84,13 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: SharedWidgets.customCurvedBottomNavBar(
         gradient: const LinearGradient(
           colors: [
-            AppColors.gradientStart,  AppColors.gradientEnd
+            AppColors.gradientStart, AppColors.gradientEnd,
             // AppColors.gradientStart, AppColors.gradientMid, AppColors.gradientEnd
           ],
         ),
         currentIndex: navIndex,
         svgPaths: _svgIcons,
-        labels: [
-          "Home","About","Contact","Prise","Blog"
-        ],
+        labels: ["Home", "About", "Contact", "Prise", "Blog"],
         onTap: (index) {
           setState(() {
             previousIndex = navIndex;

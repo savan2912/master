@@ -5,7 +5,6 @@ import '../../../Api/ApiCalls.dart';
 import '../../../Api/Response/AboutUs/ResponseAboutUs.dart';
 import '../../../MyApplication/MyApplication.dart';
 
-
 class AboutUsScreen extends StatefulWidget {
   const AboutUsScreen({super.key});
 
@@ -71,64 +70,72 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
           : aboutData == null
           ? const Center(child: Text("Data not found!"))
           : CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          // 1. App Bar
-          SliverAppBar(
-            pinned: true,
-            expandedHeight: 80,
-            backgroundColor: appBg,
-            elevation: 0,
-            automaticallyImplyLeading: false,
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: Text(
-                aboutData?.aboutTitle ?? "About Us",
-                style: GoogleFonts.plusJakartaSans(
-                    color: textDark, fontWeight: FontWeight.w800, fontSize: 18),
-              ),
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                // 1. App Bar
+                SliverAppBar(
+                  pinned: true,
+                  expandedHeight: 80,
+                  backgroundColor: appBg,
+                  elevation: 0,
+                  automaticallyImplyLeading: false,
+                  flexibleSpace: FlexibleSpaceBar(
+                    centerTitle: true,
+                    title: Text(
+                      aboutData?.aboutTitle ?? "About Us",
+                      style: GoogleFonts.plusJakartaSans(
+                        color: textDark,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ),
+
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10),
+
+                        // 2. Hero Image Section
+                        _buildPremiumHero(),
+
+                        const SizedBox(height: 40),
+
+                        // 3. Stats Grid
+                        if (aboutData?.stats != null)
+                          _buildStatsSection(aboutData!.stats!),
+
+                        const SizedBox(height: 40),
+
+                        // 4. Feature Card (Why Choose Us)
+                        _buildWhyChooseCard(),
+
+                        const SizedBox(height: 40),
+
+                        // 5. Timeline Section (How It Works)
+                        if (aboutData?.howItWorks != null)
+                          _buildTimelineSection(
+                            aboutData!.howItWorksTitle,
+                            aboutData!.howItWorks!,
+                          ),
+
+                        const SizedBox(height: 40),
+
+                        // 6. FAQ Section
+                        if (aboutData?.faq != null)
+                          _buildFaqSection(aboutData!.faq!),
+
+                        const SizedBox(height: 100),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 10),
-
-                  // 2. Hero Image Section
-                  _buildPremiumHero(),
-
-                  const SizedBox(height: 40),
-
-                  // 3. Stats Grid
-                  if (aboutData?.stats != null) _buildStatsSection(aboutData!.stats!),
-
-                  const SizedBox(height: 40),
-
-                  // 4. Feature Card (Why Choose Us)
-                  _buildWhyChooseCard(),
-
-                  const SizedBox(height: 40),
-
-                  // 5. Timeline Section (How It Works)
-                  if (aboutData?.howItWorks != null)
-                    _buildTimelineSection(aboutData!.howItWorksTitle, aboutData!.howItWorks!),
-
-                  const SizedBox(height: 40),
-
-                  // 6. FAQ Section
-                  if (aboutData?.faq != null) _buildFaqSection(aboutData!.faq!),
-
-                  const SizedBox(height: 100),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -157,7 +164,11 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
             Text(
               "ABOUT OUR COMPANY",
               style: GoogleFonts.plusJakartaSans(
-                  fontSize: 11, fontWeight: FontWeight.w900, color: primaryCyan, letterSpacing: 1.5),
+                fontSize: 11,
+                fontWeight: FontWeight.w900,
+                color: primaryCyan,
+                letterSpacing: 1.5,
+              ),
             ),
           ],
         ),
@@ -165,18 +176,26 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
         Text(
           aboutData?.aboutSubtitle ?? "",
           style: GoogleFonts.plusJakartaSans(
-              fontSize: 26, fontWeight: FontWeight.w900, color: textDark, height: 1.2),
+            fontSize: 26,
+            fontWeight: FontWeight.w900,
+            color: textDark,
+            height: 1.2,
+          ),
         ),
         const SizedBox(height: 15),
         Text(
           cleanHtml(aboutData?.aboutContent),
-          style: GoogleFonts.plusJakartaSans(color: subtleGrey, fontSize: 14, height: 1.6),
+          style: GoogleFonts.plusJakartaSans(
+            color: subtleGrey,
+            fontSize: 14,
+            height: 1.6,
+          ),
         ),
       ],
     );
   }
 
-// --- Stats Section (Fixed Overflow) ---
+  // --- Stats Section (Fixed Overflow) ---
   Widget _buildStatsSection(List<Stats> stats) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 10),
@@ -185,16 +204,17 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
         borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.02),
-              blurRadius: 20,
-              offset: const Offset(0, 10)
-          )
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
         ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: stats.map((s) {
-          return Expanded( // Aa Expanded add karyu jethi content width ma samai jay
+          return Expanded(
+            // Aa Expanded add karyu jethi content width ma samai jay
             child: _statTile(s.count ?? "0", s.label ?? ""),
           );
         }).toList(),
@@ -209,24 +229,25 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
         const Icon(Icons.stars_rounded, color: primaryCyan, size: 24),
         const SizedBox(height: 8),
         Text(
-            count,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.plusJakartaSans(
-                fontWeight: FontWeight.w800,
-                fontSize: 14, // Thodi size nani kari jethi nanu screen ma overflow na thay
-                color: textDark
-            )
+          count,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w800,
+            fontSize:
+                14, // Thodi size nani kari jethi nanu screen ma overflow na thay
+            color: textDark,
+          ),
         ),
         Text(
-            label,
-            textAlign: TextAlign.center,
-            maxLines: 1, // Label ek j line ma rahe
-            overflow: TextOverflow.ellipsis, // Jo motu hoy to ... thai jay
-            style: GoogleFonts.plusJakartaSans(
-                fontSize: 10,
-                color: subtleGrey,
-                fontWeight: FontWeight.w600
-            )
+          label,
+          textAlign: TextAlign.center,
+          maxLines: 1, // Label ek j line ma rahe
+          overflow: TextOverflow.ellipsis, // Jo motu hoy to ... thai jay
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 10,
+            color: subtleGrey,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ],
     );
@@ -237,7 +258,9 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [primaryCyan, Color(0xFF00838F)]),
+        gradient: const LinearGradient(
+          colors: [primaryCyan, Color(0xFF00838F)],
+        ),
         borderRadius: BorderRadius.circular(30),
       ),
       child: Column(
@@ -245,12 +268,22 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
         children: [
           const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 30),
           const SizedBox(height: 15),
-          Text(aboutData?.whyChooseTitle ?? "Why Choose Us",
-              style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 20)),
+          Text(
+            aboutData?.whyChooseTitle ?? "Why Choose Us",
+            style: GoogleFonts.plusJakartaSans(
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+              fontSize: 20,
+            ),
+          ),
           const SizedBox(height: 10),
           Text(
             aboutData?.whyChooseContent ?? "",
-            style: GoogleFonts.plusJakartaSans(color: Colors.white.withOpacity(0.8), fontSize: 13, height: 1.5),
+            style: GoogleFonts.plusJakartaSans(
+              color: Colors.white.withOpacity(0.8),
+              fontSize: 13,
+              height: 1.5,
+            ),
           ),
         ],
       ),
@@ -261,18 +294,26 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title?.toUpperCase() ?? "HOW IT WORKS",
-            style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w900, color: primaryCyan, letterSpacing: 2)),
+        Text(
+          title?.toUpperCase() ?? "HOW IT WORKS",
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 12,
+            fontWeight: FontWeight.w900,
+            color: primaryCyan,
+            letterSpacing: 2,
+          ),
+        ),
         const SizedBox(height: 25),
         ...steps.asMap().entries.map((entry) {
           int idx = entry.key;
           var step = entry.value;
           return _timelineStep(
-              step.stepNo ?? "0${idx + 1}",
-              step.title ?? "",
-              step.description ?? "",
-              idx != steps.length - 1);
-        }).toList(),
+            step.stepNo ?? "0${idx + 1}",
+            step.title ?? "",
+            step.description ?? "",
+            idx != steps.length - 1,
+          );
+        }),
       ],
     );
   }
@@ -284,12 +325,24 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
           Column(
             children: [
               Container(
-                width: 32, height: 32,
-                decoration: const BoxDecoration(color: textDark, shape: BoxShape.circle),
+                width: 32,
+                height: 32,
+                decoration: const BoxDecoration(
+                  color: textDark,
+                  shape: BoxShape.circle,
+                ),
                 alignment: Alignment.center,
-                child: Text(num, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                child: Text(
+                  num,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-              if (showLine) Expanded(child: Container(width: 2, color: Colors.grey[200])),
+              if (showLine)
+                Expanded(child: Container(width: 2, color: Colors.grey[200])),
             ],
           ),
           const SizedBox(width: 15),
@@ -297,13 +350,26 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 16, color: textDark)),
+                Text(
+                  title,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    color: textDark,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(desc, style: GoogleFonts.plusJakartaSans(fontSize: 13, color: subtleGrey)),
+                Text(
+                  desc,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 13,
+                    color: subtleGrey,
+                  ),
+                ),
                 const SizedBox(height: 25),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -313,9 +379,16 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("FAQs", style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w800, color: textDark)),
+        Text(
+          "FAQs",
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: textDark,
+          ),
+        ),
         const SizedBox(height: 20),
-        ...faqs.map((f) => _faqItem(f.question ?? "", f.answer ?? "")).toList(),
+        ...faqs.map((f) => _faqItem(f.question ?? "", f.answer ?? "")),
       ],
     );
   }
@@ -331,12 +404,26 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
       child: ExpansionTile(
         shape: const Border(),
         tilePadding: const EdgeInsets.symmetric(horizontal: 15),
-        title: Text(q, style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w700, color: textDark)),
+        title: Text(
+          q,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: textDark,
+          ),
+        ),
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-            child: Text(a, style: GoogleFonts.plusJakartaSans(fontSize: 13, color: subtleGrey, height: 1.5)),
-          )
+            child: Text(
+              a,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 13,
+                color: subtleGrey,
+                height: 1.5,
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -8,7 +8,7 @@ class RequestSubCategoryList {
     this.search,
     this.counter,
     this.subCategoryId,
-    this.cityID
+    this.cityID,
   });
 
   RequestSubCategoryList.fromJson(Map<String, dynamic> json) {
@@ -19,11 +19,11 @@ class RequestSubCategoryList {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['search'] = this.search;
-    data['counter'] = this.counter;
-    data['city_id'] = this.cityID;
-    data['subcategory_id'] = this.subCategoryId;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['search'] = search;
+    data['counter'] = counter;
+    data['city_id'] = cityID;
+    data['subcategory_id'] = subCategoryId;
     return data;
   }
 }
