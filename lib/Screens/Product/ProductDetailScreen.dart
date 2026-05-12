@@ -39,7 +39,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: "Product Information",
         showBackButton: true,
         showAction: false,
@@ -53,7 +53,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- Image & Title Section ---
+
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -112,7 +112,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             ),
             const SizedBox(height: 25),
 
-            // --- Category ---
             RichText(
               text: TextSpan(
                 text: 'Category: ',
@@ -127,7 +126,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             ),
             const SizedBox(height: 20),
 
-            // --- Description (HTML Supported) ---
             Text(
               "Description:",
               style: GoogleFonts.montserrat(fontSize: 16, fontWeight: FontWeight.bold),

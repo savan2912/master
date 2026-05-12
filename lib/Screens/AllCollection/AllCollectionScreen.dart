@@ -26,14 +26,13 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
   bool isApiCalling = false;
   List<AllCollectionData> categories = [];
 
-  /// PAGINATION
+
   final ScrollController _scrollController = ScrollController();
   int counter = 0;
   final int limit = 10;
   bool isLoadingMore = false;
   bool hasMoreData = true;
 
-  /// STATIC COLOR LIST
   final List<Color> colorList = [
     const Color(0xFFFF6B6B),
     const Color(0xFF4ECDC4),
@@ -83,7 +82,6 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
     if (reset) {
       counter = 0;
       hasMoreData = true;
-      // Search ke fresh load vakhte loader centre ma dekhay te mate
       isApiComplete.value = false;
       categories.clear();
       if (mounted) setState(() {});
@@ -92,7 +90,6 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
     try {
       isApiCalling = true;
 
-      // Pagination loader fakt tyare j jyare counter > 0 hoy
       if (counter != 0) {
         setState(() => isLoadingMore = true);
       }
@@ -119,14 +116,12 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
 
         List<AllCollectionData> newData = response.data!;
 
-        // Data add karva duplicate check sathe
         for (var item in newData) {
           if (!categories.any((e) => e.id == item.id)) {
             categories.add(item);
           }
         }
 
-        // Check if more data exists
         hasMoreData = newData.length >= limit;
         isDataAvailable.value = categories.isNotEmpty;
       } else {
@@ -155,7 +150,6 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
           ValueListenableBuilder(
             valueListenable: isApiComplete,
             builder: (context, apiDone, child) {
-              // Jyare API chalu hoy ane data khali hoy tyare center loader
               if (!apiDone && categories.isEmpty) {
                 return const SliverFillRemaining(
                   child: Center(child: CircularProgressIndicator(color: Colors.black)),
@@ -193,8 +187,6 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
                               return _buildLuxuryCompactCard(cat, isEven, color);
                             },
                           ),
-
-                          // Pagination Loader at Bottom
                           if (isLoadingMore && hasMoreData)
                             const Padding(
                               padding: EdgeInsets.all(20),
@@ -290,7 +282,6 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
                 _debounce = Timer(const Duration(milliseconds: 600), () {
                   if (value.trim() != lastSearchText) {
                     lastSearchText = value.trim();
-                    // Search type karta j loader centre ma lavi deshe
                     callAllCollection(reset: true);
                   }
                 });

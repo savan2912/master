@@ -25,18 +25,21 @@ class ResponseLogin {
 class Data {
   String? userId;
   String? role;
+  int? isVerified;
 
-  Data({this.userId, this.role});
+  Data({this.userId, this.role,this.isVerified});
 
   Data.fromJson(Map<String, dynamic> json) {
     userId = json['user_id'];
     role = json['role'];
+    isVerified = json['is_phone_verified'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['user_id'] = userId;
     data['role'] = role;
+    data['is_phone_verified'] = isVerified;
     return data;
   }
 }

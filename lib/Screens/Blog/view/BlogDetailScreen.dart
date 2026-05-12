@@ -7,7 +7,7 @@ import 'package:gotilo_new/Api/Response/Blog/ResponseBlogDetail.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/MyApplication/MyApplication.dart';
 import 'package:intl/intl.dart';
-import 'package:shimmer/shimmer.dart'; // <--- Shimmer import
+import 'package:shimmer/shimmer.dart';
 
 class BlogDetailScreen extends StatefulWidget {
   final int? blogid;
@@ -41,7 +41,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
         valueListenable: isApiAvailable,
         builder: (context, apiDone, child) {
           if (!apiDone) {
-            return _buildMainShimmer(); // Aakha page mate initial shimmer
+            return _buildMainShimmer();
           }
 
           return ValueListenableBuilder(
@@ -56,7 +56,6 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
               return CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
-                  // --- Cinematic Header ---
                   SliverAppBar(
                     expandedHeight: 400,
                     pinned: true,
@@ -98,7 +97,6 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                               );
                             },
                           ),
-                          // Dark Gradient Overlay
                           Container(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
@@ -116,7 +114,6 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                     ),
                   ),
 
-                  // --- Body Content ---
                   SliverToBoxAdapter(
                     child: Container(
                       transform: Matrix4.translationValues(0, -30, 0),
@@ -224,7 +221,6 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
     );
   }
 
-  // Aakha page mate placeholder loader
   Widget _buildMainShimmer() {
     return Shimmer.fromColors(
       baseColor: Colors.grey[300]!,
@@ -263,7 +259,6 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
 
           blogData = response.data!;
 
-          // Date Formatting
           if (blogData?.createdAt != null) {
             DateTime dt = DateTime.parse(blogData!.createdAt!);
             formattedDate = DateFormat('dd MMM, yyyy').format(dt);
@@ -279,7 +274,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
       }
     } else {
       SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
-      isApiAvailable.value = true; // Loading stop karva mate
+      isApiAvailable.value = true;
     }
   }
 }

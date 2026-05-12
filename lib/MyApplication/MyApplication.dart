@@ -88,7 +88,7 @@ class MyApplication {
     if (internet) {
       try {
         ResponseLogout? response = await ApiCalls.callLogout(RequestLogout(
-            userId: int.parse(AppPrefs.userId)
+            userId: AppPrefs.userId == "" ? 0 :int.parse(AppPrefs.userId)
         ));
 
         if (response != null) {

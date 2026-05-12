@@ -20,7 +20,7 @@ class _PrisePlanScreenState extends State<PrisePlanScreen> {
   @override
   void initState() {
     super.initState();
-    _callPrisePlan(); // Screen load thaye tyare API call thase
+    _callPrisePlan();
   }
 
   @override
@@ -52,7 +52,6 @@ class _PrisePlanScreenState extends State<PrisePlanScreen> {
               _buildPlanHeader(),
               const SizedBox(height: 50),
 
-              // Horizontal Scroll for Pricing Cards
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -196,7 +195,6 @@ class _PrisePlanScreenState extends State<PrisePlanScreen> {
                   const SizedBox(height: 20),
                   const Divider(thickness: 0.5),
                   const SizedBox(height: 20),
-                  // Render Features Dynamically
                   ...features.map((f) => Padding(
                     padding: const EdgeInsets.only(bottom: 18),
                     child: Row(

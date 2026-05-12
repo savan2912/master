@@ -2,6 +2,8 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
@@ -9,7 +11,12 @@ import 'package:gotilo_new/Api/Request/AllDeals/RequestAllDeals.dart';
 import 'package:gotilo_new/Api/Response/AllDeals/ResponseAllDeals.dart';
 import 'package:gotilo_new/Constant/Constants.dart';
 import '../../Api/ApiCalls.dart';
+import '../../Api/Request/CrackDeal/RequestCrackDeal.dart';
+import '../../Api/Response/CrackDeal/ResponseCrackDeal.dart';
+import '../../Constant/AppPref.dart';
+import '../../CustomeWidgets/SharedWidgets.dart';
 import '../../MyApplication/MyApplication.dart';
+import '../User/Deals/DealsScreen.dart';
 
 class DealsScreen extends StatefulWidget {
   const DealsScreen({super.key});
@@ -227,6 +234,7 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
       name: deal.dealName ?? "",
       desc: deal.dealDesc ?? "",
       date: deal.endDate ?? "",
+        id: deal.id.toString()
     );
   }
 
@@ -236,10 +244,11 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
       name: deal.dealName ?? "",
       desc: deal.dealDesc ?? "",
       date: deal.endDate ?? "",
+      id: deal.id.toString() ?? ""
     );
   }
 
-  Widget _baseDealCard({required String imageUrl, required String name, required String desc, required String date}) {
+  Widget _baseDealCard({required String imageUrl, required String name, required String desc, required String date,required String id}) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
       decoration: BoxDecoration(
@@ -292,7 +301,7 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
                   ],
                 ),
                 const SizedBox(height: 25),
-                _buildCrackButton(),
+                _buildCrackButton(dealId: id),
               ],
             ),
           ),
@@ -301,18 +310,27 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildCrackButton() {
-    return Container(
-      width: double.infinity, height: 58,
-      decoration: BoxDecoration(color: const Color(0xFF1A1A1A), borderRadius: BorderRadius.circular(20)),
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("CRACK THE DEAL", style: GoogleFonts.montserrat(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 1.5)),
-            const SizedBox(width: 10),
-            const Icon(Icons.local_fire_department_rounded, color: Colors.orangeAccent, size: 20),
-          ],
+  Widget _buildCrackButton({String? dealId=""}) {
+    return GestureDetector(
+      onTap: () {
+        if(AppPrefs.userId != ""){
+          _callCrackDeal(dealId:dealId);
+        }else{
+          SharedWidgets.showTopSnackBar(context, message: "Login First");
+        }
+      },
+      child: Container(
+        width: double.infinity, height: 58,
+        decoration: BoxDecoration(color: const Color(0xFF1A1A1A), borderRadius: BorderRadius.circular(20)),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("CRACK THE DEAL", style: GoogleFonts.montserrat(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 1.5)),
+              const SizedBox(width: 10),
+              const Icon(Icons.local_fire_department_rounded, color: Colors.orangeAccent, size: 20),
+            ],
+          ),
         ),
       ),
     );
@@ -378,6 +396,35 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
       isSearching.value = false;
       isLoadingMore.value = false;
       if (mounted) setState(() {});
+    }
+  }
+
+  Future<void> _callCrackDeal({String? dealId=""}) async {
+    try {
+      bool internet = await MyApplication.checkInternet();
+      if(internet)
+      {
+        ResponseCrackDeal? response = await ApiCalls.callCrackDeal(RequestCrackDeal(
+            userId: AppPrefs.userId,
+            dealId: dealId
+        ));
+        if (response != null &&
+            response.result != null &&
+            response.result!.isNotEmpty &&
+            response.result!.toLowerCase().contains("pass")) {
+          Get.to(()=> const UserDealsScreen());
+          SharedWidgets.showTopSnackBar(context, message: response.message!);
+        } else {
+          SharedWidgets.showTopSnackBar(context, message: response!.message!);
+        }
+      }
+
+    } catch (e) {
+      log("HomeBanner Error: $e");
+    } finally {
+      if (mounted) {
+        setState(() {});
+      }
     }
   }
 }

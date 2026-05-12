@@ -13,7 +13,6 @@ class AboutUsScreen extends StatefulWidget {
 }
 
 class _AboutUsScreenState extends State<AboutUsScreen> {
-  // Color Theme
   static const Color appBg = Color(0xFFF8FAFC);
   static const Color textDark = Color(0xFF0F172A);
   static const Color primaryCyan = Color(0xFF00ACC1);
@@ -28,9 +27,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     callAboutUs();
   }
 
-  // --- API Call Implementation ---
   Future<void> callAboutUs() async {
-    // Tmara logic mujab internet check
     MyApplication.checkInternet().then((value) async {
       if (value) {
         try {
@@ -42,7 +39,6 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
             });
           } else {
             setState(() => isLoading = false);
-            // Handle error message if needed
           }
         } catch (e) {
           setState(() => isLoading = false);
@@ -50,12 +46,10 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
         }
       } else {
         setState(() => isLoading = false);
-        // Show no internet toast/snackbar here
       }
     });
   }
 
-  // HTML Tags remove karva mate (Since API has <br> and <ul>)
   String cleanHtml(String? html) {
     if (html == null) return "";
     return html.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' ').trim();
@@ -72,7 +66,6 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
           : CustomScrollView(
               physics: const BouncingScrollPhysics(),
               slivers: [
-                // 1. App Bar
                 SliverAppBar(
                   pinned: true,
                   expandedHeight: 80,
@@ -100,23 +93,20 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                       children: [
                         const SizedBox(height: 10),
 
-                        // 2. Hero Image Section
+
                         _buildPremiumHero(),
 
                         const SizedBox(height: 40),
 
-                        // 3. Stats Grid
                         if (aboutData?.stats != null)
                           _buildStatsSection(aboutData!.stats!),
 
                         const SizedBox(height: 40),
 
-                        // 4. Feature Card (Why Choose Us)
                         _buildWhyChooseCard(),
 
                         const SizedBox(height: 40),
 
-                        // 5. Timeline Section (How It Works)
                         if (aboutData?.howItWorks != null)
                           _buildTimelineSection(
                             aboutData!.howItWorksTitle,
@@ -125,7 +115,6 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
 
                         const SizedBox(height: 40),
 
-                        // 6. FAQ Section
                         if (aboutData?.faq != null)
                           _buildFaqSection(aboutData!.faq!),
 
@@ -138,8 +127,6 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
             ),
     );
   }
-
-  // --- UI Components (Dynamic) ---
 
   Widget _buildPremiumHero() {
     return Column(
@@ -195,7 +182,6 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     );
   }
 
-  // --- Stats Section (Fixed Overflow) ---
   Widget _buildStatsSection(List<Stats> stats) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 10),
@@ -214,7 +200,6 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: stats.map((s) {
           return Expanded(
-            // Aa Expanded add karyu jethi content width ma samai jay
             child: _statTile(s.count ?? "0", s.label ?? ""),
           );
         }).toList(),
@@ -234,15 +219,15 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
           style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.w800,
             fontSize:
-                14, // Thodi size nani kari jethi nanu screen ma overflow na thay
+                14,
             color: textDark,
           ),
         ),
         Text(
           label,
           textAlign: TextAlign.center,
-          maxLines: 1, // Label ek j line ma rahe
-          overflow: TextOverflow.ellipsis, // Jo motu hoy to ... thai jay
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: GoogleFonts.plusJakartaSans(
             fontSize: 10,
             color: subtleGrey,

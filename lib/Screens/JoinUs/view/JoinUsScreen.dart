@@ -26,7 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscureText1 = true;
   bool _obscureText2 = true;
   bool _agreedToTerms = false;
-  bool _isLoading = false; // <--- Loader state added
+  bool _isLoading = false;
 
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -402,37 +402,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   }
                   _callRegisters();
                 } else {
-                  // Validation checks
                   if (_firstNameController.text.isEmpty) {
                     SharedWidgets.showTopSnackBar(
                       context,
                       message: "Enter First Name",
                     );
                   } else if (_lastNameController.text.isEmpty)
-                    SharedWidgets.showTopSnackBar(
-                      context,
-                      message: "Enter Last Name",
-                    );
-                  else if (_emailController.text.isEmpty)
+                    {
+                      SharedWidgets.showTopSnackBar(
+                        context,
+                        message: "Enter Last Name",
+                      );
+                    }
+
+                  else if (_emailController.text.isEmpty) {
                     SharedWidgets.showTopSnackBar(
                       context,
                       message: "Enter Email",
                     );
-                  else if (_mobileController.text.isEmpty)
+                  } else if (_mobileController.text.isEmpty) {
                     SharedWidgets.showTopSnackBar(
                       context,
                       message: "Enter Mobile Number",
                     );
-                  else if (_passwordController.text.isEmpty)
+                  } else if (_passwordController.text.isEmpty) {
                     SharedWidgets.showTopSnackBar(
                       context,
                       message: "Enter Password",
                     );
-                  else if (_confirmPasswordController.text.isEmpty)
+                  } else if (_confirmPasswordController.text.isEmpty) {
                     SharedWidgets.showTopSnackBar(
                       context,
                       message: "Enter Confirm Password",
                     );
+                  }
                 }
               },
         style: ElevatedButton.styleFrom(
@@ -514,7 +517,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  // --- Registration Logic ---
   Future<void> _callRegisters() async {
     bool internet = await MyApplication.checkInternet();
 
@@ -538,7 +540,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (response != null) {
           if (response.result != null &&
               response.result!.toLowerCase().contains("pass")) {
-            // Success: Clear fields
             _passwordController.clear();
             _mobileController.clear();
             _confirmPasswordController.clear();

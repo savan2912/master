@@ -46,29 +46,37 @@ class Data {
     vendorDetails = json['vendorDetails'] != null
         ? VendorDetails.fromJson(json['vendorDetails'])
         : null;
-    if (json['detailImages'] != null) {
-      detailImages = <DetailImages>[];
-      json['detailImages'].forEach((v) {
-        detailImages!.add(DetailImages.fromJson(v));
-      });
+
+    if (json['detailImages'] != null && json['detailImages'] is List) {
+      detailImages = (json['detailImages'] as List)
+          .map((v) => DetailImages.fromJson(v))
+          .toList();
+    } else {
+      detailImages = [];
     }
-    if (json['lisitngdeals'] != null) {
-      lisitngdeals = <Lisitngdeals>[];
-      json['lisitngdeals'].forEach((v) {
-        lisitngdeals!.add(Lisitngdeals.fromJson(v));
-      });
+
+    if (json['lisitngdeals'] != null && json['lisitngdeals'] is List) {
+      lisitngdeals = (json['lisitngdeals'] as List)
+          .map((v) => Lisitngdeals.fromJson(v))
+          .toList();
+    } else {
+      lisitngdeals = [];
     }
-    if (json['keywords'] != null) {
-      keywords = <Keywords>[];
-      json['keywords'].forEach((v) {
-        keywords!.add(Keywords.fromJson(v));
-      });
+
+    if (json['keywords'] != null && json['keywords'] is List) {
+      keywords = (json['keywords'] as List)
+          .map((v) => Keywords.fromJson(v))
+          .toList();
+    } else {
+      keywords = [];
     }
-    if (json['amenities'] != null) {
-      amenities = <Amenities>[];
-      json['amenities'].forEach((v) {
-        amenities!.add(Amenities.fromJson(v));
-      });
+
+    if (json['amenities'] != null && json['amenities'] is List) {
+      amenities = (json['amenities'] as List)
+          .map((v) => Amenities.fromJson(v))
+          .toList();
+    } else {
+      amenities = [];
     }
   }
 
@@ -250,12 +258,13 @@ class ListDetail {
     metaKeywords = json['meta_keywords'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    if (json['deals'] != null) {
-      deals = <Deals>[];
-      json['deals'].forEach((v) {
-        deals!.add(Deals.fromJson(v));
-      });
+
+    if (json['deals'] != null && json['deals'] is List) {
+      deals = (json['deals'] as List).map((v) => Deals.fromJson(v)).toList();
+    } else {
+      deals = [];
     }
+
     category = json['category'] != null
         ? Category.fromJson(json['category'])
         : null;

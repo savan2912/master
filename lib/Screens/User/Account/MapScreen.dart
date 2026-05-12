@@ -27,18 +27,12 @@ class _MapScreenState extends State<MapScreen> {
     _init();
   }
 
-  // =========================
-  // INIT
-  // =========================
   Future<void> _init() async {
     await _getCurrentLocation();
     _setMarker(_selectedLatLng);
     await _getAddress(_selectedLatLng);
   }
 
-  // =========================
-  // CURRENT LOCATION
-  // =========================
   Future<void> _getCurrentLocation() async {
     try {
       LocationPermission permission = await Geolocator.requestPermission();
@@ -56,9 +50,6 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  // =========================
-  // MARKER
-  // =========================
   void _setMarker(LatLng latLng) {
     _markers = {
       Marker(
@@ -69,9 +60,6 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {});
   }
 
-  // =========================
-  // REVERSE GEOCODE (FREE)
-  // =========================
   Future<void> _getAddress(LatLng latLng) async {
     setState(() => isLoading = true);
 
@@ -98,9 +86,6 @@ class _MapScreenState extends State<MapScreen> {
     setState(() => isLoading = false);
   }
 
-  // =========================
-  // MAP TAP
-  // =========================
   void _onTap(LatLng latLng) async {
     _selectedLatLng = latLng;
     _setMarker(latLng);
@@ -111,9 +96,6 @@ class _MapScreenState extends State<MapScreen> {
     await _getAddress(latLng);
   }
 
-  // =========================
-  // RETURN DATA
-  // =========================
   void _confirmSelection() {
     Navigator.pop(context, {
       "lat": _selectedLatLng.latitude,
@@ -122,9 +104,6 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  // =========================
-  // UI
-  // =========================
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -151,8 +130,7 @@ class _MapScreenState extends State<MapScreen> {
         ),
         body: Stack(
           children: [
-            // MAP
-            GoogleMap(
+         GoogleMap(
               initialCameraPosition: CameraPosition(
                 target: _selectedLatLng,
                 zoom: 15,
@@ -164,7 +142,6 @@ class _MapScreenState extends State<MapScreen> {
               myLocationButtonEnabled: true,
             ),
 
-            // 📍 ADDRESS CARD
             Positioned(
               bottom: 20,
               left: 15,

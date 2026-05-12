@@ -6,11 +6,14 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gotilo_new/Api/Request/CrackDeal/RequestCrackDeal.dart';
 import 'package:gotilo_new/Api/Response/City/ResponseCity.dart';
+import 'package:gotilo_new/Api/Response/CrackDeal/ResponseCrackDeal.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/Screens/AllListing/AllListingDetailScreen.dart';
 import 'package:gotilo_new/Screens/Search/SearchScreen.dart';
 import 'package:gotilo_new/Screens/User/Dashboard/UserDashboardScreen.dart';
+import 'package:gotilo_new/Screens/User/Deals/DealsScreen.dart';
 import 'package:shimmer/shimmer.dart';
 import '../Api/ApiCalls.dart';
 import '../Api/Response/Home/ResponseHome.dart';
@@ -1072,10 +1075,15 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                         ),
                         child: ElevatedButton(
                           onPressed: () {
-                            SharedWidgets.showTopSnackBar(
-                              context,
-                              message: "Login First",
-                            );
+                            if(AppPrefs.userId != ""){
+                              _callCrackDeal(dealId: deal.id.toString());
+                            }else{
+                              SharedWidgets.showTopSnackBar(
+                                context,
+                                message: "Login First",
+                              );
+                            }
+
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
@@ -1378,6 +1386,40 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
       }
     }
   }
+
+
+  Future<void> _callCrackDeal({String? dealId=""}) async {
+    try {
+      bool internet = await MyApplication.checkInternet();
+      if(internet)
+        {
+          ResponseCrackDeal? response = await ApiCalls.callCrackDeal(RequestCrackDeal(
+            userId: AppPrefs.userId,
+            dealId: dealId
+          ));
+          if (response != null &&
+              response.result != null &&
+              response.result!.isNotEmpty &&
+              response.result!.toLowerCase().contains("pass")) {
+                Get.to(()=> const UserDealsScreen());
+                SharedWidgets.showTopSnackBar(context, message: response.message!);
+              } else {
+               SharedWidgets.showTopSnackBar(context, message: response!.message!);
+          }
+        }
+
+    } catch (e) {
+      log("HomeBanner Error: $e");
+      allCities.clear();
+    } finally {
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
+
+
+
 }
 // W/WindowOnBackDispatcher(16564): OnBackInvokedCallback is not enabled for the application.
 // W/WindowOnBackDispatcher(16564): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.

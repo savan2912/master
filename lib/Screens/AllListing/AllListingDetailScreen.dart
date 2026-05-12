@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:ui';
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -8,22 +9,35 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Api/Request/Cart/RequestAddCart.dart';
 import 'package:gotilo_new/Api/Request/Enquiry/RequestAddEnquiry.dart';
+import 'package:gotilo_new/Api/Request/Fav/RequestAddFav.dart';
+import 'package:gotilo_new/Api/Request/Review/RequestAddReview.dart';
+import 'package:gotilo_new/Api/Request/Review/RequestReview.dart';
+import 'package:gotilo_new/Api/Request/Share/RequestShare.dart';
 import 'package:gotilo_new/Api/Request/SubCategoryList/RequestSubCategoryListDetails.dart';
 import 'package:gotilo_new/Api/Request/SubCategoryList/RequestSubCategoryProductList.dart';
 import 'package:gotilo_new/Api/Response/Cart/ResponseAddCart.dart';
 import 'package:gotilo_new/Api/Response/Enquiry/ResponseAddEnquiry.dart';
+import 'package:gotilo_new/Api/Response/Fav/ResponseAddFav.dart';
+import 'package:gotilo_new/Api/Response/Review/ResponseAddReview.dart';
+import 'package:gotilo_new/Api/Response/Review/ResponseReview.dart';
+import 'package:gotilo_new/Api/Response/Share/ResponseShare.dart';
 import 'package:gotilo_new/Api/Response/SubCategoryList/ResponseSubCategoryProductList.dart';
 import 'package:gotilo_new/Api/Response/SubCategoryList/ResponseSubcategoryListDetails.dart';
 import 'package:gotilo_new/Constant/AppPref.dart';
+import 'package:gotilo_new/Constant/Constants.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/Screens/Product/ProductDetailScreen.dart';
 import 'package:marquee/marquee.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../Api/ApiCalls.dart';
+import '../../Api/Request/CrackDeal/RequestCrackDeal.dart';
+import '../../Api/Response/CrackDeal/ResponseCrackDeal.dart';
 import '../../MyApplication/MyApplication.dart';
+import '../User/Deals/DealsScreen.dart';
 import '../cart/CartScreen.dart';
 
-// --- GLOBAL COLORS ---
+
 const Color primaryColor = Color(0xFFF012BE);
 const Color darkBlue = Color(0xFF1B2E3F);
 
@@ -57,17 +71,26 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
   final TextEditingController _searchController = TextEditingController();
 
   ListDetail? listDetail;
+  int? isFav;
   final List<DetailImages> _bannerImages = [];
   List<Amenities> amenities = [];
   List<SubCategoryProductList> products = [];
   Vendor? vendor;
 
+  List<ReviewData> reviewData=[];
+  String? shareUrl;
+  var allReview;
+  double _currentRating = 0;
   TextEditingController searchController = TextEditingController();
   final TextEditingController _fNameController = TextEditingController();
   final TextEditingController _lNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _numberController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
+
+
+  final TextEditingController _reviewTitle = TextEditingController();
+  final TextEditingController _review = TextEditingController();
 
 
   Timer? _debouncer;
@@ -91,9 +114,9 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
         });
       }
     });
-
+    callReview();
+    callShare();
     callSubCategoryListDetails();
-    // callSubCategoryProductList();
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _startMarquee());
   }
@@ -216,13 +239,29 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                             if (!_isSearching) ...[
                               if (_tabController.index == 1) ...[
                                 _buildHeaderButton(Icons.add_shopping_cart, () {
-                                  Get.to(() => const CartScreen());
+                                  if(AppPrefs.userId != ""){
+                                    Get.to(() =>  CartScreen(listingId: widget.listId,));
+                                  }else{
+                                    SharedWidgets.showTopSnackBar(context, message: "Please Login First");
+                                  }
+
                                 }),
                               ] else ...[
-                                _buildHeaderButton(Icons.share_outlined, () {}),
+                                _buildHeaderButton(Icons.share_outlined, () {
+                                  if(shareUrl != null && shareUrl != "") {
+                                    _showCustomShareSheet(context,shareUrl!);
+                                  }
+                                }),
                                 _buildHeaderButton(
-                                  Icons.favorite_border,
-                                  () {},
+                                  isFav == 1 ? Icons.favorite_outlined : Icons.favorite_border,
+                                  () {
+                                    if(AppPrefs.userId != ""){
+                                      callAddFav();
+                                    }else{
+                                      SharedWidgets.showTopSnackBar(context, message: "Please Login First");
+                                    }
+
+                                  },
                                 ),
                               ],
                             ],
@@ -280,23 +319,24 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                                         MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          _buildCategoryBadge("PREMIUM CAFE"),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            "${listDetail!.listingTitle}",
-                                            style: const TextStyle(
-                                              color: darkBlue,
-                                              fontSize: 26,
-                                              fontWeight: FontWeight.bold,
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            _buildCategoryBadge("PREMIUM CAFE"),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              "${listDetail!.listingTitle}",
+                                              style: const TextStyle(
+                                                color: darkBlue,
+                                                fontSize: 26,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
-                                      // _buildViewAllButton(),
                                     ],
                                   ),
                                 ),
@@ -360,7 +400,6 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                           ),
                         ),
 
-                        // 3. TabBar (Overview / Products)
                         SliverPersistentHeader(
                           pinned: true,
                           delegate: _SliverAppBarDelegate(
@@ -380,7 +419,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                                   controller: _tabController,
                                   onTap: (index) => setState(
                                     () {},
-                                  ), // Refresh logic on tab tap
+                                  ),
                                   indicatorSize: TabBarIndicatorSize.tab,
                                   dividerColor: Colors.transparent,
                                   indicator: BoxDecoration(
@@ -418,7 +457,67 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
           );
         },
       ),
-      // bottomNavigationBar: _buildActionBottomBar(),
+
+    );
+  }
+
+  Future<void> _launchURL(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
+  void _showCustomShareSheet(BuildContext context, String url) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text("Share via", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _shareIcon(CupertinoIcons.phone, "WhatsApp", Colors.green, () {
+                    Share.share(url);
+                    Navigator.pop(context);
+                  }),
+                  _shareIcon(Icons.camera_alt_outlined, "Instagram", Colors.pink, () {
+                    Share.share(url);
+                    Navigator.pop(context);
+                  }),
+                  _shareIcon(Icons.facebook, "Facebook", Colors.blue, () {
+                    Share.share(url);
+                    Navigator.pop(context);
+                  }),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+
+  Widget _shareIcon(IconData icon, String label, Color color, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          CircleAvatar(backgroundColor: color, child: Icon(icon, color: Colors.white)),
+          const SizedBox(height: 5),
+          Text(label, style: const TextStyle(fontSize: 12)),
+        ],
+      ),
     );
   }
 
@@ -449,7 +548,6 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
   Widget _circleNavButton(IconData icon, VoidCallback onTap) {
     return GestureDetector(
       onTap: () {
-        // Check if the state is still in the tree
         if (!mounted) return;
         onTap();
       },
@@ -484,17 +582,22 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildInfoRow(),
+            if(myDealsList.isNotEmpty)
             const SizedBox(height: 35),
+            if(myDealsList.isNotEmpty)
             _sectionHeader("Exclusive Deals"),
             const SizedBox(height: 15),
+            if(myDealsList.isNotEmpty)
             _buildMyDealsList(myDealsList),
-
+            if(amenities.isNotEmpty)
             const SizedBox(height: 40),
+            if(amenities.isNotEmpty)
             _sectionHeader("Amenities"),
             const SizedBox(height: 15),
+            if(amenities.isNotEmpty)
             _buildAmenitiesGrid(),
-
             const SizedBox(height: 40),
+            if(vendor != null)
             _sectionHeader("Business Owner"),
             const SizedBox(height: 15),
             _buildVendorCard(),
@@ -503,21 +606,26 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
             _sectionHeader("About Business"),
             const SizedBox(height: 12),
             Text(
-              "${listDetail!.description}",
+              "${listDetail?.description}",
               style: TextStyle(
                 color: Colors.grey[600],
                 height: 1.6,
                 fontSize: 15,
               ),
             ),
-
+            if(listDetail?.address != "" && listDetail?.address != null)
             const SizedBox(height: 40),
+            if(listDetail?.address != "" && listDetail?.address != null)
             _sectionHeader("Location"),
+            if(listDetail?.address != "" && listDetail?.address != null)
             const SizedBox(height: 12),
+            if(listDetail?.address != "" && listDetail?.address != null)
             _buildDetailCard(
               Icons.location_on_rounded,
-              "${listDetail!.address}",
+              "${listDetail?.address}",
             ),
+            const SizedBox(height: 12),
+            review(context),
             const SizedBox(height: 120),
           ],
         ),
@@ -525,7 +633,6 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
     );
   }
 
-  // --- AMENITIES GRID ---
   Widget _buildAmenitiesGrid() {
     return GridView.builder(
       shrinkWrap: true,
@@ -569,8 +676,6 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                       maxLines: 1,
                       textDirection: TextDirection.ltr,
                     )..layout(maxWidth: constraints.maxWidth);
-
-                    /// If text overflow થાય → marquee
                     if (textPainter.didExceedMaxLines) {
                       return Marquee(
                         text: name,
@@ -588,8 +693,6 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                         decelerationDuration: const Duration(milliseconds: 500),
                       );
                     }
-
-                    /// Normal text
                     return Text(
                       name,
                       textAlign: TextAlign.center,
@@ -610,21 +713,22 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
     );
   }
 
-  // --- MAIN DEALS SECTION (LIST MATE) ---
   Widget _buildMyDealsList(List<Lisitngdeals> dealsList) {
-    if (dealsList.isEmpty) return const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+
       children: [
+
         SizedBox(
-          height: 220, // Card height set kari chhe
+          height: 220,
           child: ListView.builder(
             itemCount: dealsList.length,
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.only(left: 20, right: 10),
             itemBuilder: (context, index) {
+
               return _buildModernDealCard(dealsList[index]);
             },
           ),
@@ -633,12 +737,13 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
     );
   }
 
-  // --- INDIVIDUAL DEAL CARD DESIGN ---
   Widget _buildModernDealCard(Lisitngdeals dealData) {
     String title = dealData.dealName ?? "Special Offer";
     String desc = dealData.dealDesc ?? "No description available";
     String startDate = dealData.startDate ?? "";
     String endDate = dealData.endDate ?? "";
+
+    print("title :- $title");
 
     return Container(
       width: 310,
@@ -726,7 +831,6 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
 
                 const SizedBox(height: 6),
 
-                // Deal Description
                 Text(
                   desc,
                   maxLines: 2,
@@ -741,7 +845,6 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
 
                 const Spacer(),
 
-                // Bottom Row with Start Date & Button
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -762,29 +865,34 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                         ),
                       ],
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.white.withOpacity(0.2),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+                    GestureDetector(
+                      onTap: () {
+                        _callCrackDeal(dealId:dealData.id.toString() );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.white.withOpacity(0.2),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          "REDEEM",
+                          style: GoogleFonts.montserrat(
+                            color: const Color(0xFF0D1B1E),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5,
                           ),
-                        ],
-                      ),
-                      child: Text(
-                        "REDEEM",
-                        style: GoogleFonts.montserrat(
-                          color: const Color(0xFF0D1B1E),
-                          fontSize: 10,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 0.5,
                         ),
                       ),
                     ),
@@ -798,231 +906,9 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
     );
   }
 
-  /*  Widget _dealOption(int index, String title, IconData icon) {
-    bool isSelected = _selectedDealIndex == index;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => setState(() => _selectedDealIndex = index),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          decoration: BoxDecoration(
-            color: isSelected ? darkBlue : Colors.transparent,
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: isSelected ? [BoxShadow(color: darkBlue.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5))] : [],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: isSelected ? Colors.white : const Color(0xFF64748B), size: 18),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: TextStyle(
-                  color: isSelected ? Colors.white : const Color(0xFF64748B),
-                  fontWeight: FontWeight.w900,
-                  fontSize: 11,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }*/
-
-  // --- DYNAMIC DEAL CARD ---
-  Widget _buildActiveDealCard(Map<String, dynamic> dealData) {
-    // API Data mapping
-    String title = dealData['deal_name'] ?? "Special Offer";
-    String desc = dealData['deal_desc'] ?? "No description available";
-    String startDate = dealData['start_date'] ?? "";
-    String endDate = dealData['end_date'] ?? "";
-
-    // Extracting discount percentage from title if possible
-    String discount = title.contains("%")
-        ? title.split("off")[0].trim()
-        : "OFFER";
-
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF0D1B1E).withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(30),
-        child: Stack(
-          children: [
-            // Background Design Element (Optional Circle)
-            Positioned(
-              right: -20,
-              top: -20,
-              child: CircleAvatar(
-                radius: 50,
-                backgroundColor: const Color(0xFF6C63FF).withOpacity(0.05),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(22),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Top Row: Badge & Dates
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFF4081),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          "ACTIVE DEAL",
-                          style: GoogleFonts.montserrat(
-                            color: Colors.white,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1,
-                          ),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.calendar_month_outlined,
-                            size: 14,
-                            color: Colors.grey,
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            "$startDate  to  $endDate",
-                            style: GoogleFonts.montserrat(
-                              color: Colors.grey[600],
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Deal Title with Big Discount Look
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              title,
-                              style: GoogleFonts.montserrat(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w900,
-                                color: const Color(0xFF0D1B1E),
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              desc,
-                              style: GoogleFonts.montserrat(
-                                color: Colors.grey[600],
-                                fontSize: 13,
-                                height: 1.4,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  // Bottom Section: Dotted Divider & Button
-                  Row(
-                    children: List.generate(
-                      20,
-                      (index) => Expanded(
-                        child: Container(
-                          color: index % 2 == 0
-                              ? Colors.transparent
-                              : Colors.grey.withOpacity(0.3),
-                          height: 1,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  SizedBox(
-                    width: double.infinity,
-                    height: 55,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Action here
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0D1B1E),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "REDEEM THIS DEAL",
-                            style: GoogleFonts.montserrat(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w800,
-                              fontSize: 13,
-                              letterSpacing: 1,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          const Icon(
-                            Icons.arrow_forward_rounded,
-                            color: Colors.white,
-                            size: 18,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // --- VENDOR CARD ---
   Widget _buildVendorCard() {
-    String ownerPhone = "${vendor!.phone}";
-    String ownerEmail = "${vendor!.email}";
+    String ownerPhone = "${vendor?.phone}";
+    String ownerEmail = "${vendor?.email}";
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -1049,7 +935,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "${vendor!.name ?? listDetail!.listingTitle}",
+                      "${vendor?.name ?? listDetail?.listingTitle}",
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 17,
@@ -1085,6 +971,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                 color: darkBlue.withOpacity(0.4),
               ),
               const SizedBox(width: 10),
+              if(ownerEmail != "")
               Text(
                 ownerEmail,
                 style: TextStyle(
@@ -1103,18 +990,15 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
   Widget _buildProductsContent() {
     return Column(
       children: [
-        /// 🔍 SEARCH BAR
         _buildModernSearchBar(),
 
         Expanded(
           child: NotificationListener<ScrollNotification>(
             onNotification: (ScrollNotification scrollInfo) {
-              // FIX: Upside scroll check & Length check
-              // logic: pixels >= maxScrollExtent (bottom) AND items 10 na multiple ma hoy toh j
               if (!isLoadMore &&
                   scrollInfo.metrics.pixels >=
                       scrollInfo.metrics.maxScrollExtent &&
-                  scrollInfo.metrics.pixels > 0 && // Upside loader block
+                  scrollInfo.metrics.pixels > 0 &&
                   products.length >= 10 &&
                   products.length % 10 == 0) {
                 _callSubCategoryProductList(isPagination: true);
@@ -1150,7 +1034,6 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
           ),
         ),
 
-        /// 🔄 BOTTOM LOADER (Only on pagination)
         if (isLoadMore && products.isNotEmpty)
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 10),
@@ -1161,7 +1044,6 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
   }
 
   Widget _buildProductCard(SubCategoryProductList product) {
-    /// 1. DATA EXTRACTION
     final String name = (product.name ?? "").trim().isEmpty
         ? "No Name"
         : product.name!;
@@ -1172,12 +1054,15 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
 
     final double price = (product.unitPrice ?? 0).toDouble();
     final double finalPrice = (product.discountedPrice ?? price).toDouble();
-    final double discount =
-        double.tryParse(product.discount?.toString() ?? "0") ?? 0;
+
+    final double discount = double.tryParse(product.discount?.toString() ?? "0") ?? 0;
 
     return GestureDetector(
       onTap: () {
-        Get.to(()=> ProductDetailScreen(productId: product.id.toString(),listId: widget.listId!,));
+        Get.to(() => ProductDetailScreen(
+          productId: product.id.toString(),
+          listId: widget.listId!,
+        ));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -1195,29 +1080,26 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
           borderRadius: BorderRadius.circular(24),
           child: Column(
             children: [
-              /// 🖼️ IMAGE SECTION
               Expanded(
                 flex: 11,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    // Product Image
                     imageUrl.isNotEmpty
                         ? Image.network(
-                            imageUrl,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                                  color: Colors.grey[100],
-                                  child: const Icon(Icons.broken_image),
-                                ),
-                          )
-                        : Container(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          Container(
                             color: Colors.grey[100],
-                            child: const Icon(Icons.image),
+                            child: const Icon(Icons.broken_image),
                           ),
-      
-                    // Discount Badge (Top Right)
+                    )
+                        : Container(
+                      color: Colors.grey[100],
+                      child: const Icon(Icons.image),
+                    ),
+
                     if (discount > 0)
                       Positioned(
                         top: 10,
@@ -1232,7 +1114,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
-                            "${discount.toInt()}% OFF",
+                            "${discount % 1 == 0 ? discount.toInt() : discount.toStringAsFixed(1)}% OFF",
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 10,
@@ -1244,8 +1126,6 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                   ],
                 ),
               ),
-      
-              /// 📝 DETAILS SECTION
               Expanded(
                 flex: 9,
                 child: Padding(
@@ -1253,7 +1133,6 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Product Name
                       Text(
                         name,
                         maxLines: 2,
@@ -1266,17 +1145,16 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                         ),
                       ),
                       const SizedBox(height: 4),
-      
+
                       Text(
                         slug,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(color: Colors.grey[400], fontSize: 10),
                       ),
-      
+
                       const Spacer(),
-      
-      
+
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
@@ -1286,7 +1164,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                               children: [
                                 if (discount > 0)
                                   Text(
-                                    "₹${price.toInt()}",
+                                    "₹${price.toStringAsFixed(2)}",
                                     style: TextStyle(
                                       decoration: TextDecoration.lineThrough,
                                       color: Colors.grey[400],
@@ -1294,7 +1172,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                                     ),
                                   ),
                                 Text(
-                                  "₹${finalPrice.toInt()}",
+                                  "₹${finalPrice.toStringAsFixed(2)}",
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w900,
                                     fontSize: 18,
@@ -1304,16 +1182,21 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                               ],
                             ),
                           ),
-      
-                          // Add Button
-                          _buildAddButton(onTap: () {
-                            callAddCart(
-                                  name: product.name,
-                                  price: product.unitPrice,
-                                  productid: product.id,
-                                  qty: 1
-                              );
-                          },),
+
+                          _buildAddButton(
+                            onTap: () {
+                              if (AppPrefs.userId != "") {
+                                callAddCart(
+                                    name: product.name,
+                                    price: product.unitPrice,
+                                    productid: product.id,
+                                    qty: 1);
+                              } else {
+                                SharedWidgets.showTopSnackBar(context,
+                                    message: "Please Login First");
+                              }
+                            },
+                          ),
                         ],
                       ),
                     ],
@@ -1388,26 +1271,6 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
     );
   }
 
-  // Helper for Discount Badge
-  Widget _buildDiscountBadge(int percentage) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        "$percentage% OFF",
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 9,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  // --- MODAL & FORM ---
   void _showEnquiryModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -1515,8 +1378,6 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
       ),
     );
   }
-
-  // --- SHARED UI HELPER METHODS ---
   Widget _buildTextField(String label, String hint,TextEditingController controller, {int maxLines = 1}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 18),
@@ -1597,24 +1458,26 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
   Widget _buildInfoRow() {
     return Row(
       children: [
+        if(listDetail?.rating != "" && listDetail?.rating != null && listDetail?.rating != "0.0")
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: _buildMiniStat(
             Icons.star_rounded,
-            "${listDetail!.rating}",
+            "${listDetail?.rating ?? 0}",
             "Rating",
             Colors.orange,
           ),
         ),
+        if(listDetail?.openClose != "" && listDetail?.openClose != null)
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: _buildMiniStat(
             Icons.access_time_filled_rounded,
             "Open",
-            "${listDetail!.openClose}",
+            "${listDetail?.openClose ?? 0}",
             Colors.blue,
           ),
-        ) /*_buildMiniStat(Icons.verified_rounded, "Verified", "Business", Colors.green)*/,
+        )
       ],
     );
   }
@@ -1666,7 +1529,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
   Widget _buildAddButton({required VoidCallback onTap}) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(10), // Ripple effect ne container ni border mujab set karva
+      borderRadius: BorderRadius.circular(10),
       child: Container(
         height: 32,
         width: 65,
@@ -1760,104 +1623,242 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
     );
   }
 
-  // Widget _buildActionBottomBar() {
-  //   return Container(
-  //     padding: const EdgeInsets.fromLTRB(20, 15, 20, 35),
-  //     decoration: BoxDecoration(
-  //       color: Colors.white,
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: darkBlue.withOpacity(0.08),
-  //           blurRadius: 30,
-  //           offset: const Offset(0, -10),
-  //         )
-  //       ],
-  //       borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-  //     ),
-  //     child: Row(
-  //       children: [
-  //         // --- Left Side: Stats/Info ---
-  //         const Expanded(
-  //           flex: 2,
-  //           child: Column(
-  //             mainAxisSize: MainAxisSize.min,
-  //             crossAxisAlignment: CrossAxisAlignment.start,
-  //             children: [
-  //               Text(
-  //                 "Exclusive",
-  //                 style: TextStyle(color: primaryColor, fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: 1),
-  //               ),
-  //               SizedBox(height: 2),
-  //               Text(
-  //                 "PREMIUM DEALS",
-  //                 style: TextStyle(color: darkBlue, fontWeight: FontWeight.w900, fontSize: 15),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //
-  //         // --- Right Side: Book Now Button ---
-  //         Expanded(
-  //           flex: 3,
-  //           child: Container(
-  //             height: 55,
-  //             decoration: BoxDecoration(
-  //               borderRadius: BorderRadius.circular(18),
-  //               gradient: const LinearGradient(
-  //                 colors: [darkBlue, Color(0xFF2C4A63)],
-  //                 begin: Alignment.centerLeft,
-  //                 end: Alignment.centerRight,
-  //               ),
-  //               boxShadow: [
-  //                 BoxShadow(
-  //                   color: darkBlue.withOpacity(0.3),
-  //                   blurRadius: 15,
-  //                   offset: const Offset(0, 8),
-  //                 )
-  //               ],
-  //             ),
-  //             child: ElevatedButton(
-  //               onPressed: () {
-  //                 // Booking Logic
-  //               },
-  //               style: ElevatedButton.styleFrom(
-  //                 backgroundColor: Colors.transparent,
-  //                 shadowColor: Colors.transparent,
-  //                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-  //               ),
-  //               child: const Row(
-  //                 mainAxisAlignment: MainAxisAlignment.center,
-  //                 children: [
-  //                   Text(
-  //                     "BOOK NOW",
-  //                     style: TextStyle(
-  //                         color: Colors.white,
-  //                         fontWeight: FontWeight.w900,
-  //                         fontSize: 15,
-  //                         letterSpacing: 1.5
-  //                     ),
-  //                   ),
-  //                   SizedBox(width: 8),
-  //                   Icon(Icons.bolt_rounded, color: Colors.yellow, size: 20), // "Bolt" icon for urgency
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+  Widget review(BuildContext context) {
 
-  Widget _vegBadge() {
-    return Container(
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: Colors.green, width: 1),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Reviews & Ratings",
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF1B2E3F),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(Icons.star_rounded, color: Colors.orange, size: 20),
+                      const SizedBox(width: 5),
+                      if(allReview != "" && allReview != null)
+                      Text(
+                        "$allReview",
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 13,
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              GestureDetector(
+                onTap: () => _showAddReviewSheet(context),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1B2E3F),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    "+ Add Review",
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        ListView.builder(
+          itemCount: reviewData.length,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemBuilder: (context, index) {
+
+            final item = reviewData[index];
+            String originalDate = item.createdAt ?? "";
+
+
+            String formattedDate = "";
+            if (originalDate.isNotEmpty) {
+              List<String> parts = originalDate.split("T")[0].split("-");
+              if (parts.length == 3) {
+                formattedDate = "${parts[2]}-${parts[1]}-${parts[0].substring(2)}";
+              }
+            }
+            double rating = double.parse(item.rating.toString());
+
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey.withOpacity(0.3)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: List.generate(5, (starIndex) {
+                          return Icon(
+                            starIndex < rating ? Icons.star_rounded : Icons.star_outline_rounded,
+                            color: Colors.orange,
+                            size: 16,
+                          );
+                        }),
+                      ),
+                      Text(
+                        formattedDate,
+                        style: GoogleFonts.plusJakartaSans(fontSize: 10, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    item.title!,
+                    style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  Text(
+                    item.review!,
+                    style: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  void _showAddReviewSheet(BuildContext context) {
+    _currentRating = 0;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+          builder: (context, setSheetState) {
+            return Container(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+                top: 20, left: 20, right: 20,
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)))),
+                  const SizedBox(height: 20),
+                  Text("Rate your experience", style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 15),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: List.generate(5, (index) {
+                      num starValue = index + 1;
+                      IconData icon;
+
+                      if (_currentRating >= starValue) {
+                        icon = Icons.star_rounded;
+                      } else if (_currentRating >= starValue - 0.5) {
+                        icon = Icons.star_half_rounded;
+                      } else {
+                        icon = Icons.star_outline_rounded;
+                      }
+
+                      return GestureDetector(
+                        onTapDown: (details) {
+
+                          double tapPos = details.localPosition.dx;
+                          setSheetState(() {
+                            if (tapPos < 17) {
+                              _currentRating = starValue - 0.5;
+                            } else {
+                              _currentRating = starValue.toDouble();
+                            }
+                          });
+                        },
+                        child: Icon(
+                          icon,
+                          color: Colors.orange,
+                          size: 40,
+                        ),
+                      );
+                    }),
+                  ),
+
+                  if(_currentRating > 0)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text("Rating: $_currentRating", style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+                    ),
+
+                  const SizedBox(height: 20),
+                  _buildTextFieldReview("Review Title (e.g. Good Service)",_reviewTitle),
+                  const SizedBox(height: 12),
+                  _buildTextFieldReview("Write your review here...",_review, maxLines: 3),
+                  const SizedBox(height: 25),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 55,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        callAddReview();
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF1B2E3F),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                      ),
+                      child: Text("Submit Review", style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
       ),
-      child: const Icon(Icons.circle, color: Colors.green, size: 7),
+    );
+  }
+
+  Widget _buildTextFieldReview(String hint,TextEditingController controller, {int maxLines = 1}) {
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: GoogleFonts.plusJakartaSans(fontSize: 14, color: Colors.grey),
+        filled: true,
+        fillColor: Colors.grey[100],
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+      ),
     );
   }
 
@@ -1881,7 +1882,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
           await ApiCalls.callSubCategoryListDetails(
             RequestSubCategoryListDetails(
               listId: widget.listId ?? 0,
-              userID: 0,
+              userID: AppPrefs.userId=="" ? 0 :  int.parse(AppPrefs.userId),
             ),
           );
 
@@ -1893,6 +1894,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
         _bannerImages.clear();
         myDealsList.clear();
         amenities.clear();
+        isFav = response.data!.listDetail!.isFavourite!;
         listDetail = response.data!.listDetail;
         vendor = response.data!.listDetail!.vendor;
         myDealsList.addAll(response.data!.lisitngdeals!);
@@ -1908,7 +1910,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
         isDataAvailable.value = false;
       }
     } catch (e) {
-      log("HomeBanner Error: $e");
+      log("listing detail: $e");
 
       _bannerImages.clear();
       myDealsList.clear();
@@ -1933,7 +1935,6 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
     try {
       if (!isPagination) {
         currentCounter = 0;
-        // Search vakhte full screen loader na ave ena mate check
         if (!isSearching) isProductApiComplete.value = false;
       } else {
         setState(() => isLoadMore = true);
@@ -2015,7 +2016,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
       if(internet){
         try{
           ResponseAddEnquiry? response= await ApiCalls.callAddEnquiry(RequestAddEnquiry(
-              listingId: 0,
+              listingId: widget.listId,
               userId: AppPrefs.userId ?? "",
               email: _emailController.text,
               phone: _numberController.text,
@@ -2040,6 +2041,152 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
         SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
       }
     },);
+  }
+
+
+  Future<void> callAddFav() async {
+    MyApplication.checkInternet().then((internet) async {
+      if(internet){
+        try{
+          ResponseAddFav? response= await ApiCalls.callAddFav(RequestAddFav(
+            listingId: widget.listId.toString(),
+            userId: AppPrefs.userId=="" ? 0 : int.parse(AppPrefs.userId)
+          ));
+          if(response != null){
+            if(response.result!.isNotEmpty && response.result != null &&
+                response.result!.toLowerCase().contains("pass")){
+              SharedWidgets.showTopSnackBar(context, message: response.message!);
+              callSubCategoryListDetails();
+            }
+          }
+        }on Exception catch(e){
+          log("$e");
+        }catch(e){
+          log("$e");
+        }finally{
+
+        }
+      }else{
+        SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      }
+    },);
+  }
+
+
+  Future<void> callReview() async {
+    MyApplication.checkInternet().then((internet) async {
+      if(internet){
+        try{
+          ResponseReview? response= await ApiCalls.callReview(RequestReview(
+              listingId: widget.listId.toString(),
+          ));
+          if(response != null){
+            if(response.result!.isNotEmpty && response.result != null &&
+                response.result!.toLowerCase().contains("pass")){
+                reviewData.addAll(response.data!);
+                allReview = response.averageRating!;
+                setState(() {});
+            }
+          }
+        }on Exception catch(e){
+          log("$e");
+        }catch(e){
+          log("$e"); 
+        }finally{
+
+        }
+      }else{
+        SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      }
+    },);
+  }
+
+  Future<void> callAddReview() async {
+    MyApplication.checkInternet().then((internet) async {
+      if(internet){
+        try{
+          ResponseAddReview? response= await ApiCalls.callAddReview(RequestAddReview(
+              listingId: widget.listId.toString(),
+              userId:AppPrefs.userId,
+              rating: _currentRating.toString(),
+              review: _review.text,
+              title: _reviewTitle.text,
+          ));
+          if(response != null){
+            if(response.result!.isNotEmpty && response.result != null &&
+                response.result!.toLowerCase().contains("pass")){
+              SharedWidgets.showTopSnackBar(context, message: response.message!);
+              callSubCategoryListDetails();
+            }
+          }
+        }on Exception catch(e){
+          log("$e");
+        }catch(e){
+          log("$e");
+        }finally{
+
+        }
+      }else{
+        SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      }
+    },);
+  }
+
+
+  Future<void> callShare() async {
+    MyApplication.checkInternet().then((internet) async {
+      if(internet){
+        try{
+          ResponseShare? response= await ApiCalls.callShare(RequestShare(
+            listId: widget.listId.toString(),
+          ));
+          if(response != null){
+            if(response.result!.isNotEmpty && response.result != null &&
+                response.result!.toLowerCase().contains("pass")){
+              shareUrl=response.data?.webUrl!;
+              setState(() {});
+            }
+          }
+        }on Exception catch(e){
+          log("$e");
+        }catch(e){
+          log("$e");
+        }finally{
+
+        }
+      }else{
+        SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      }
+    },);
+  }
+
+  Future<void> _callCrackDeal({String? dealId=""}) async {
+    try {
+      bool internet = await MyApplication.checkInternet();
+      if(internet)
+      {
+        ResponseCrackDeal? response = await ApiCalls.callCrackDeal(RequestCrackDeal(
+            userId: AppPrefs.userId,
+            dealId: dealId
+        ));
+        if (response != null &&
+            response.result != null &&
+            response.result!.isNotEmpty &&
+            response.result!.toLowerCase().contains("pass")) {
+          Get.to(()=> const UserDealsScreen());
+          SharedWidgets.showTopSnackBar(context, message: response.message!);
+        } else {
+          SharedWidgets.showTopSnackBar(context, message: response!.message!);
+        }
+      }
+
+    } catch (e) {
+      log("HomeBanner Error: $e");
+    } finally {
+      if (mounted) {
+        setState(() {});
+      }
+    }
   }
 
 

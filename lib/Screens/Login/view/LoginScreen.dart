@@ -11,7 +11,11 @@ import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/MyApplication/MyApplication.dart';
 import 'package:gotilo_new/Notifications/PushNotificationService.dart';
 import 'package:gotilo_new/Screens/JoinUs/view/JoinUsScreen.dart';
+import 'package:gotilo_new/Screens/OTP/OtpVerifyScreen.dart';
 import 'package:gotilo_new/Screens/User/Dashboard/UserDashboardScreen.dart';
+import 'package:gotilo_new/Screens/User/ForgetPassword/ForgetPassword.dart';
+
+import '../../ForgetPassword/ForgetPasswordScreen.dart';
 
 class ModernLoginScreen extends StatefulWidget {
   const ModernLoginScreen({super.key});
@@ -134,7 +138,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
           const SizedBox(height: 25),
           _buildRememberForgotPassword(),
           const SizedBox(height: 35),
-          _buildSignInButton(), // <--- Loader aya batavse
+          _buildSignInButton(),
           const SizedBox(height: 25),
           _buildOrDivider(),
           const SizedBox(height: 25),
@@ -330,14 +334,18 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
             ),
           ],
         ),
-        TextButton(
-          onPressed: () {},
-          child: Text(
-            "Forgot Password?",
-            style: GoogleFonts.montserrat(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: ModernLoginScreen.primaryCyan,
+        Expanded(
+          child: TextButton(
+            onPressed: () {
+              Get.to(()=> const ForgotPasswordScreen());
+            },
+            child: Text(
+              "Forgot Password?",
+              style: GoogleFonts.montserrat(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: ModernLoginScreen.primaryCyan,
+              ),
             ),
           ),
         ),
@@ -368,7 +376,6 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
         onPressed: _isLoading
             ? null
             : () {
-                // Loading hoy tyare button disable
                 if (_mobileController.text.isNotEmpty &&
                     _passwordController.text.isNotEmpty) {
                   _callLogin();
@@ -499,9 +506,12 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
 
             if (response.data!.userId != null &&
                 response.data!.userId!.isNotEmpty) {
-              Get.offAll(
-                () => const Userdashboardscreen(),
-              );
+              if(response.data!.isVerified==0){
+                Get.to(()=> OtpVerificationScreen(number: _mobileController.text,isLogin: true,));
+              }else{
+                Get.off(() => const Userdashboardscreen(),);
+              }
+
             }
           } else {
             if (context.mounted) {

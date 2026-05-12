@@ -38,7 +38,6 @@ class _LatestReleaseScreenState extends State<LatestReleaseScreen> {
     super.initState();
     _callAllLatestRelease(searchText: "", count: "0");
 
-    // SCROLL LISTENER FOR PAGINATION
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.9) {
         if (!isMoreLoading.value && hasMoreData && isApiComplete.value) {
@@ -68,7 +67,6 @@ class _LatestReleaseScreenState extends State<LatestReleaseScreen> {
       currentCounter = 0;
       hasMoreData = true;
       allProducts.clear();
-      // Search vakhte loader dikhava mate
       isApiComplete.value = false;
       _callAllLatestRelease(searchText: enteredKeyword, count: "0");
     });
@@ -134,7 +132,6 @@ class _LatestReleaseScreenState extends State<LatestReleaseScreen> {
             ),
           ),
 
-          // TOP MAIN LOADER (Search vakhte dekhase)
           ValueListenableBuilder(
             valueListenable: isApiComplete,
             builder: (context, complete, child) {
@@ -147,7 +144,6 @@ class _LatestReleaseScreenState extends State<LatestReleaseScreen> {
             },
           ),
 
-          // LIST VIEW
           allProducts.isNotEmpty
               ? SliverPadding(
             padding: const EdgeInsets.only(top: 20),
@@ -165,7 +161,6 @@ class _LatestReleaseScreenState extends State<LatestReleaseScreen> {
             ),
           ),
 
-          // BOTTOM PAGINATION LOADER
           SliverToBoxAdapter(
             child: ValueListenableBuilder(
               valueListenable: isMoreLoading,
@@ -184,7 +179,6 @@ class _LatestReleaseScreenState extends State<LatestReleaseScreen> {
     );
   }
 
-  // API CALL LOGIC
   Future<void> _callAllLatestRelease({required String searchText, required String count, bool isLoadMore = false}) async {
     if (isLoadMore) {
       isMoreLoading.value = true;
@@ -214,7 +208,6 @@ class _LatestReleaseScreenState extends State<LatestReleaseScreen> {
           allProducts.clear();
         }
 
-        // Pagination check
         if (fetchedData.length < 10) {
           hasMoreData = false;
         } else {
@@ -252,7 +245,6 @@ class _LatestReleaseScreenState extends State<LatestReleaseScreen> {
           children: [
             Stack(
               children: [
-                // SHIMMER + CACHED IMAGE
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
                   child: CachedNetworkImage(

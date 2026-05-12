@@ -68,6 +68,10 @@ dependencies:
   geocoding: ^4.0.0
   flutter_typeahead: ^6.0.0
   flutter_html: ^3.0.0
+  lottie: ^3.3.3
+  sms_autofill: ^2.4.1
+  flutter_rating_bar: ^4.0.1
+  share_plus: ^12.0.2
 
 
 dev_dependencies:
@@ -94,51 +98,10 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/home.svg
-    - assets/about.svg
-    - assets/contact_us.svg
-    - assets/login.svg
-    - assets/blog.svg
-    - assets/prise.svg
-    - assets/map.png
-    - assets/banner.png
-    - assets/join_us.svg
-    - assets/contact_banner.png
-    - assets/gotilo_logo.png
-    - assets/banner1.png
-    - assets/banner2.png
-    - assets/banner3.png
-    - assets/banner4.png
-    - assets/banner5.png
-    - assets/food.png
-    - assets/food_c.svg
-    - assets/travel.png
-    - assets/travel_c.svg
-    - assets/helth.png
-    - assets/health_c.svg
-    - assets/education.png
-    - assets/education_c.svg
-    - assets/beauty.png
-    - assets/construction.png
-    - assets/nature.png
-    - assets/solar.png
-    - assets/dry.png
-    - assets/search.svg
-    - assets/beauty_salon.png
-    - assets/filter.svg
-    - assets/overview.svg
-    - assets/product.svg
-    - assets/edit.svg
-    - assets/delete.svg
-    - assets/chesse_masala.png
-    - assets/masala.png
-    - assets/bread_butter.png
-    - assets/maska.png
     - assets/videos/logo_animation.mp4
     - assets/videos/logo_splash.mp4
     - assets/videos/logo_splash1.mp4
-    - assets/amenities.svg
-    - assets/app_icon.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

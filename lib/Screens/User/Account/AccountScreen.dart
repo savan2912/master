@@ -46,7 +46,7 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
   File? imageFile;
   bool isLoading = true;
   bool isEditingAddress = false;
-  bool isEditingProfile = false; // Profile edit toggle
+  bool isEditingProfile = false;
   String currentEditAddressId = "";
 
   final ImagePicker _picker = ImagePicker();
@@ -97,7 +97,7 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
     super.dispose();
   }
 
-  // --- API Methods ---
+
 
   Future<void> _callProfile() async {
     setState(() => isLoading = true);
@@ -132,7 +132,7 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
     try {
       ResponseUpdateProfile? response = await ApiCalls.callUpdateProfile(
           RequestUpdateProfile(
-            id: int.parse(AppPrefs.userId),
+            id: AppPrefs.userId=="" ? 0 :int.parse(AppPrefs.userId),
             fName: _fNameController.text,
             lName: _lNameController.text,
             email: _emailController.text,
@@ -145,9 +145,9 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
         SharedWidgets.showTopSnackBar(context, message: response.message ?? "Profile Updated!");
         setState(() {
           isEditingProfile = false;
-          imageFile = null; // Clear local file after success
+          imageFile = null;
         });
-        _callProfile(); // Refresh Data
+        _callProfile();
       }
     } catch (e) { log("Update Error: $e"); }
     finally { setState(() => isLoading = false); }
@@ -215,8 +215,6 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
       }
     }
   }
-
-  // --- UI Components ---
 
   @override
   Widget build(BuildContext context) {
@@ -402,8 +400,6 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
       ),
     );
   }
-
-  // --- Address UI Widgets ---
 
   Widget _buildAddressListing({Key? key}) {
     return Padding(

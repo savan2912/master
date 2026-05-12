@@ -20,8 +20,8 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
 
-  bool isLoading = true; // Initial load (screen open)
-  bool isSearching = false; // Typing/API call load
+  bool isLoading = true;
+  bool isSearching = false;
   List<SearchData> searchResults = [];
   Timer? _debouncer;
 
@@ -60,7 +60,7 @@ class _SearchScreenState extends State<SearchScreen> {
       } finally {
         setState(() {
           isLoading = false;
-          isSearching = false; // Search loader bandh thase
+          isSearching = false;
         });
       }
     }
@@ -87,7 +87,6 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  /// --- 1. PREMIUM APPBAR ---
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       backgroundColor: Colors.white,
@@ -124,9 +123,7 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  /// --- 2. BODY LOGIC (LOADER & NO DATA) ---
   Widget _buildBodyContent() {
-    // 1. Search Result Processing Loader
     if (isSearching) {
       return Center(
         child: Column(
@@ -147,7 +144,6 @@ class _SearchScreenState extends State<SearchScreen> {
       );
     }
 
-    // 2. Empty State (No Data Found)
     if (searchResults.isEmpty) {
       return Center(
         child: Column(
@@ -177,7 +173,6 @@ class _SearchScreenState extends State<SearchScreen> {
       );
     }
 
-    // 3. Main Result List
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
       physics: const BouncingScrollPhysics(),
@@ -254,7 +249,6 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  // --- HELPERS ---
   Widget _buildListShimmer() {
     return ListView.builder(
       padding: const EdgeInsets.all(18),

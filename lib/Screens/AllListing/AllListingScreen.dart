@@ -8,6 +8,9 @@ import 'package:gotilo_new/Api/Response/SubCategoryList/ResponseSubCategoryList.
 import 'package:gotilo_new/Constant/AppPref.dart';
 import 'package:gotilo_new/Screens/AllListing/AllListingDetailScreen.dart';
 import '../../Api/ApiCalls.dart';
+import '../../Api/Request/Fav/RequestAddFav.dart';
+import '../../Api/Response/Fav/ResponseAddFav.dart';
+import '../../CustomeWidgets/SharedWidgets.dart';
 import '../../MyApplication/MyApplication.dart';
 
 class AllListingScreen extends StatefulWidget {
@@ -23,6 +26,7 @@ class _AllListingScreenState extends State<AllListingScreen> {
   bool isLoading = false;
   bool isMoreLoading = false;
   bool hasMoreData = true;
+  bool isFav = false;
 
   final TextEditingController searchController = TextEditingController();
   final ScrollController scrollController = ScrollController();
@@ -65,7 +69,7 @@ class _AllListingScreenState extends State<AllListingScreen> {
       setState(() {
         isLoading = true;
         currentCounter = 0;
-        allListings.clear(); // Pehla badha data kadhi nakho
+        allListings.clear();
         hasMoreData = true;
       });
     } else {
@@ -80,6 +84,7 @@ class _AllListingScreenState extends State<AllListingScreen> {
 
       ResponseSubCategoryList? response = await ApiCalls.callSubCategoryList(
         RequestSubCategoryList(
+          userID: AppPrefs.userId=="" ? 0 :int.parse(AppPrefs.userId),
           counter: currentCounter,
           search: searchController.text.trim(),
           cityID: AppPrefs.cityId,
@@ -91,9 +96,7 @@ class _AllListingScreenState extends State<AllListingScreen> {
           response.data != null &&
           response.data!.isNotEmpty) {
         setState(() {
-          // ⭐ Duplicate data rokva mate unique ID check
           for (var newItem in response.data!) {
-            // Jo ID pehla thi list ma na hoy to j add karvu
             bool alreadyExists = allListings.any(
               (existingItem) => existingItem.id == newItem.id,
             );
@@ -371,14 +374,12 @@ class _AllListingScreenState extends State<AllListingScreen> {
                       child: Column(
                         children: [
                           _buildGlassActionButton(
-                            icon: Icons.favorite_border_rounded,
-                            onTap: () {},
+                            icon: item.isFavourite== 1 ? Icons.favorite_outlined : Icons.favorite_border_rounded,
+                            onTap: () {
+                              callAddFav(id: item.id.toString());
+                            },
                           ),
-                          const SizedBox(height: 8),
-                          _buildGlassActionButton(
-                            icon: Icons.share_outlined,
-                            onTap: () {},
-                          ),
+
                         ],
                       ),
                     ),
@@ -488,108 +489,32 @@ class _AllListingScreenState extends State<AllListingScreen> {
     );
   }
 
-  // --- FILTER BOTTOM SHEET ---
-  void _showFilterBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.7,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-        ),
-        padding: const EdgeInsets.all(25),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 50,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-            const SizedBox(height: 25),
-            Text(
-              "Filters",
-              style: GoogleFonts.montserrat(
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            const SizedBox(height: 25),
-            _buildFilterLabel("Location"),
-            _buildFilterDropdown("Select City", Icons.location_on_outlined),
-            const SizedBox(height: 20),
-            _buildFilterLabel("Categories"),
-            _buildFilterDropdown("Select Category", Icons.category_outlined),
-            const Spacer(),
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0D1B1E),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                ),
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  "APPLY FILTERS",
-                  style: GoogleFonts.montserrat(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+
+  Future<void> callAddFav({String? id="0"}) async {
+    MyApplication.checkInternet().then((internet) async {
+      if(internet){
+        try{
+          ResponseAddFav? response= await ApiCalls.callAddFav(RequestAddFav(
+              listingId:id,
+              userId: AppPrefs.userId == "" ? 0 :int.parse(AppPrefs.userId)
+          ));
+          if(response != null){
+            if(response.result!.isNotEmpty && response.result != null &&
+                response.result!.toLowerCase().contains("pass")){
+              SharedWidgets.showTopSnackBar(context, message: response.message!);
+              _callSubCategoryList(isFirstTime: true);
+            }
+          }
+        }on Exception catch(e){
+          log("$e");
+        }catch(e){
+          log("$e");
+        }finally{
+
+        }
+      }else{
+        SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      }
+    },);
   }
-
-  Widget _buildFilterLabel(String title) => Padding(
-    padding: const EdgeInsets.only(bottom: 10),
-    child: Text(
-      title,
-      style: GoogleFonts.montserrat(
-        fontSize: 15,
-        fontWeight: FontWeight.w700,
-        color: Colors.grey[800],
-      ),
-    ),
-  );
-
-  Widget _buildFilterDropdown(String hint, IconData icon) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-    decoration: BoxDecoration(
-      color: const Color(0xFFF6F8FB),
-      borderRadius: BorderRadius.circular(15),
-      border: Border.all(color: Colors.grey.shade200),
-    ),
-    child: Row(
-      children: [
-        Icon(icon, size: 20, color: const Color(0xFF0D1B1E)),
-        const SizedBox(width: 12),
-        Text(
-          hint,
-          style: GoogleFonts.montserrat(
-            color: Colors.grey[600],
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const Spacer(),
-        const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.grey),
-      ],
-    ),
-  );
 }

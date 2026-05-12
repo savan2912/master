@@ -53,6 +53,9 @@
 
         <!-- NOTIFICATION ICON -->
         <meta-data
+            android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVER"
+            android:value="true"/>
+        <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDqE1VbBnVQxNw5fxjK73BLA2dgGIxUjHQ"/>
         <meta-data

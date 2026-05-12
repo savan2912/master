@@ -10,5 +10,6 @@ class AppRoutes {
   static const String prisePlaning = '/prisePlaning';
   static const String blog = '/blog';
   static const String allCategory = '/allCategory';
+  static const String allListingDetail = '/allListingDetail';
 
 }

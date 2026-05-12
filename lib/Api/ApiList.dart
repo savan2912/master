@@ -5,7 +5,8 @@ class  ApiList {
   //TODO: ----------------------------- Clint URL -----------------------------
 
   //TODO: Local URL
-  static String get baseURL => "http://192.168.1.21:8000/api/v1";
+  // static String get baseURL => "http://192.168.1.21:8000/api/v1";
+  static String get baseURL => "http://192.168.1.9:8000/api/v1";
 
   //TODO: -------------------------------- App URL --------------------------------
 
@@ -32,13 +33,29 @@ class  ApiList {
   static String get urlBlogs => "$baseURL/blogs";
   static String get urlPrisePlan => "$baseURL/pricing-plans";
   static String get urlLogin => "$baseURL/auth/login";
+  static String get urlLoginOtp => "$baseURL/auth/verify-login-otp";
+
+
   static String get urlRegister => "$baseURL/auth/sign-up";
   static String get urlLogout => "$baseURL/auth/logout";
   static String get urlBlogDetail => "$baseURL/blog-details";
   static String get urlAddCart => "$baseURL/add-to-cart";
   static String get urlAddEnquiry => "$baseURL/users/enquiry-create";
   static String get urlProductDetail => "$baseURL/product-details";
+  static String get urlCartItem => "$baseURL/get-cart-list";
+  static String get urlUpdateCart => "$baseURL/update-cart-item";
+  static String get urlCartAddress => "$baseURL/get-addresses";
+  static String get urlCartDelete => "$baseURL/delete-cart-item";
+  static String get urlPlaceOrder => "$baseURL/place-order";
   static String get urlAboutUs => "$baseURL/about-us";
+  static String get urlSendOtp => "$baseURL/send-otp";
+  static String get urlVerifyOtp => "$baseURL/verify-otp";
+  static String get urlResetPassword => "$baseURL/reset-password";
+  static String get urlAddFav => "$baseURL/users/userfavourites";
+  static String get urlReview => "$baseURL/reviewshow";
+  static String get urlAddReview => "$baseURL/reviewadd";
+  static String get urlShare => "$baseURL/share-listing";
+  static String get urlCrackDeal => "$baseURL/users/add-crack-deal";
 
   //TODO USER API LIST
   static String get urlUserDashboard => "$baseURL/auth/dashboard-overview";
