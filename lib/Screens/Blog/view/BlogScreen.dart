@@ -8,7 +8,7 @@ import 'package:gotilo_new/Api/Request/Blog/RequestBlogsData.dart';
 import 'package:gotilo_new/Api/Response/Blog/ResponseBlogData.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/MyApplication/MyApplication.dart';
-import 'package:shimmer/shimmer.dart'; // <--- Shimmer Import
+import 'package:shimmer/shimmer.dart';
 import 'package:intl/intl.dart';
 
 import 'BlogDetailScreen.dart';
@@ -20,7 +20,8 @@ class BlogScreen extends StatefulWidget {
 }
 
 class _BlogScreenState extends State<BlogScreen> {
-  List<BlogsData> blogData = [];
+  List<Blogs> allBlogs = [];
+
   final ScrollController _scrollController = ScrollController();
 
   int _counter = 0;
@@ -28,6 +29,7 @@ class _BlogScreenState extends State<BlogScreen> {
   bool _isFetching = false;
   bool _hasMore = true;
   bool _isInitialLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -66,9 +68,11 @@ class _BlogScreenState extends State<BlogScreen> {
         if (response != null && response.result != null &&
             response.result!.toLowerCase().contains("pass")) {
 
-          if (response.data != null && response.data!.isNotEmpty) {
+          if (response.data != null && response.data!.blogs != null && response.data!.blogs!.isNotEmpty) {
             setState(() {
-              blogData.addAll(response.data!);
+              // મુખ્ય ફેરફાર: અહિં નવો ડેટા જૂના લિસ્ટમાં ઉમેરવામાં આવે છે
+              allBlogs.addAll(response.data!.blogs!);
+
               _counter = _counter + _limit;
               _isFetching = false;
               _isInitialLoading = false;
@@ -116,7 +120,7 @@ class _BlogScreenState extends State<BlogScreen> {
               onRefresh: () async {
                 setState(() {
                   _counter = 0;
-                  blogData.clear();
+                  allBlogs.clear(); // રિફ્રેશ વખતે ડેટા ક્લિયર કરવો જરૂરી છે
                   _hasMore = true;
                 });
                 await _callBlogsData();
@@ -133,11 +137,12 @@ class _BlogScreenState extends State<BlogScreen> {
                     shrinkWrap: true,
                     padding: const EdgeInsets.only(top: 10),
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: blogData.length,
+                    itemCount: allBlogs.length, // use allBlogs
                     itemBuilder: (context, index) {
-                      return _buildPremiumBlogCard(blogData[index]);
+                      return _buildPremiumBlogCard(allBlogs[index]);
                     },
                   ),
+                  // જો હજુ ડેટા લોડ થતો હોય તો નીચે પ્રોગ્રેસ બાર બતાવવો
                   if (_isFetching && _hasMore)
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 20),
@@ -157,6 +162,9 @@ class _BlogScreenState extends State<BlogScreen> {
       ),
     );
   }
+
+  // ... બાકીના બધા Widgets (StickyHeader, SectionTitle, PremiumBlogCard, Skeleton) સેમ જ રહેશે ...
+  // ફક્ત _buildPremiumBlogCard માં 'allBlogs' નો ડેટા પાસ થશે.
 
   Widget _buildSectionTitle() {
     return Padding(
@@ -229,7 +237,7 @@ class _BlogScreenState extends State<BlogScreen> {
     );
   }
 
-  Widget _buildPremiumBlogCard(BlogsData item) {
+  Widget _buildPremiumBlogCard(Blogs item) {
     String displayDate = item.updatedAt ?? "No Date";
     try {
       if(item.updatedAt != null) {
@@ -338,6 +346,7 @@ class _BlogScreenState extends State<BlogScreen> {
       ),
     );
   }
+
   Widget _buildSkeletonList() {
     return ListView.builder(
       padding: const EdgeInsets.only(top: 30),

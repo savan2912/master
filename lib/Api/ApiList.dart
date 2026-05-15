@@ -5,8 +5,8 @@ class  ApiList {
   //TODO: ----------------------------- Clint URL -----------------------------
 
   //TODO: Local URL
-  // static String get baseURL => "http://192.168.1.21:8000/api/v1";
   static String get baseURL => "http://192.168.1.9:8000/api/v1";
+  // static String get baseURL => "https://gotilo.net/api/v1";
 
   //TODO: -------------------------------- App URL --------------------------------
 
@@ -34,8 +34,6 @@ class  ApiList {
   static String get urlPrisePlan => "$baseURL/pricing-plans";
   static String get urlLogin => "$baseURL/auth/login";
   static String get urlLoginOtp => "$baseURL/auth/verify-login-otp";
-
-
   static String get urlRegister => "$baseURL/auth/sign-up";
   static String get urlLogout => "$baseURL/auth/logout";
   static String get urlBlogDetail => "$baseURL/blog-details";
@@ -56,6 +54,7 @@ class  ApiList {
   static String get urlAddReview => "$baseURL/reviewadd";
   static String get urlShare => "$baseURL/share-listing";
   static String get urlCrackDeal => "$baseURL/users/add-crack-deal";
+  static String get urlSimilarListing => "$baseURL/listing/similar-nearby-listing";
 
   //TODO USER API LIST
   static String get urlUserDashboard => "$baseURL/auth/dashboard-overview";

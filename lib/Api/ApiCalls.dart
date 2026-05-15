@@ -10,6 +10,7 @@ import 'package:gotilo_new/Api/Request/AllCollection/RequestCollectionProductLis
 import 'package:gotilo_new/Api/Request/AllDeals/RequestAllDeals.dart';
 import 'package:gotilo_new/Api/Request/AllLatestRelease/RequestAllLatestRelease.dart';
 import 'package:gotilo_new/Api/Request/AllListings/RequestAllListings.dart';
+import 'package:gotilo_new/Api/Request/AllListings/RequestSimilarListing.dart';
 import 'package:gotilo_new/Api/Request/AllNewlyAdded/RequestAllNewlyAdded.dart';
 import 'package:gotilo_new/Api/Request/AllService/RequestAllService.dart';
 import 'package:gotilo_new/Api/Request/Blog/RequestBlogDetail.dart';
@@ -69,6 +70,7 @@ import 'package:gotilo_new/Api/Response/AllCollection/ResponseCollectionProductL
 import 'package:gotilo_new/Api/Response/AllDeals/ResponseAllDeals.dart';
 import 'package:gotilo_new/Api/Response/AllLatestRelease/ResponseAllLatestRelease.dart';
 import 'package:gotilo_new/Api/Response/AllListings/ResponseAllListings.dart';
+import 'package:gotilo_new/Api/Response/AllListings/ResponseSimilarListing.dart';
 import 'package:gotilo_new/Api/Response/AllNewlyAdded/ResponseAllNewlyAdded.dart';
 import 'package:gotilo_new/Api/Response/AllService/ResponseAllService.dart';
 import 'package:gotilo_new/Api/Response/Banner/ResponseBanner.dart';
@@ -921,6 +923,41 @@ class ApiCalls {
           log("Response Data = ${response.data}", name: TAG);
           //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
           return ResponseBlogsData.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+
+
+  static Future<ResponseSimilarListing?> callSimilarListing (RequestSimilarListing model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlSimilarListing}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlSimilarListing, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseSimilarListing.fromJson(response.data);
         } else {
           log("Response data = null", name: TAG);
           return null;

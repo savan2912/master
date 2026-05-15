@@ -247,8 +247,10 @@ class _DealsScreenState extends State<UserDealsScreen> with SingleTickerProvider
                       const SizedBox(height: 12),
                       Row(
                         children: [
+                          if(date != "" && date != null)
                           Icon(Icons.access_time_rounded, size: 14, color: Colors.grey[400]),
                           const SizedBox(width: 5),
+                          if(date != "" && date != null)
                           Text("Valid: $date", style: GoogleFonts.montserrat(color: Colors.grey[600], fontSize: 11, fontWeight: FontWeight.w500)),
                         ],
                       ),

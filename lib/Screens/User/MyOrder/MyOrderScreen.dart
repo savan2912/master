@@ -11,7 +11,6 @@ import 'package:gotilo_new/Constant/AppPref.dart';
 import 'package:gotilo_new/CustomeWidgets/CustomAppbar.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/MyApplication/MyApplication.dart';
-import 'package:gotilo_new/Screens/HeritageHomeScreen.dart';
 import 'package:intl/intl.dart';
 
 import '../../../CustomeWidgets/CustomDrawer.dart';
@@ -25,11 +24,17 @@ class MyOrderScreen extends StatefulWidget {
 }
 
 class _MyOrderScreenState extends State<MyOrderScreen> {
-  List<MyOrder> myOrder = [];
+  final List<MyOrder> _myOrdersList = []; // મુખ્ય લિસ્ટ
   MyOrderDetail? myOrderDetail;
 
-  ValueNotifier<bool> isApiComplete = ValueNotifier(false);
-  ValueNotifier<bool> isDataAvailable = ValueNotifier(false);
+  final ScrollController _scrollController = ScrollController();
+  ValueNotifier<bool> isInitialLoading = ValueNotifier(true);
+
+  // Pagination Variables
+  int _counter = 0;
+  final int _limit = 10;
+  bool _isFetching = false;
+  bool _hasMore = true;
 
   String loadingToken = "";
   final Color primaryDark = const Color(0xFF1A1C1E);
@@ -43,8 +48,23 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
 
   @override
   void initState() {
-    callMyOrder();
     super.initState();
+    _fetchOrders(); // પહેલીવાર ડેટા લોડ કરવા
+
+    // સ્ક્રોલ લિસનર એડ કર્યું
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+        if (!_isFetching && _hasMore) {
+          _fetchOrders();
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -59,29 +79,42 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
         onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
       ),
       body: RefreshIndicator(
-        onRefresh: () async => callMyOrder(),
+        onRefresh: () async {
+          setState(() {
+            _counter = 0;
+            _myOrdersList.clear();
+            _hasMore = true;
+            isInitialLoading.value = true;
+          });
+          await _fetchOrders();
+        },
         color: icon,
         child: ValueListenableBuilder(
-          valueListenable: isApiComplete,
-          builder: (context, apiDone, child) {
-            if (!apiDone) {
-              return const Center(child:CustomLoader(message: "Loading MyOrder..",));
+          valueListenable: isInitialLoading,
+          builder: (context, loading, child) {
+            if (loading) {
+              return const Center(child: CustomLoader(message: "Loading My Orders.."));
             }
-            return ValueListenableBuilder(
-              valueListenable: isDataAvailable,
-              builder: (context, dataExists, child) {
-                if (!dataExists || myOrder.isEmpty) {
-                  return _buildEmptyState();
-                }
 
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: myOrder.length,
-                  itemBuilder: (context, index) {
-                    return myOrderDesign(myOrder[index]);
-                  },
-                );
+            if (_myOrdersList.isEmpty) {
+              return _buildEmptyState();
+            }
+
+            return ListView.builder(
+              controller: _scrollController, // કંટ્રોલર એટેચ કર્યું
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+              itemCount: _myOrdersList.length + (_hasMore ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index < _myOrdersList.length) {
+                  return myOrderDesign(_myOrdersList[index]);
+                } else {
+                  // નીચે લોડર બતાવવા માટે
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 30),
+                    child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                  );
+                }
               },
             );
           },
@@ -89,6 +122,53 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
       ),
     );
   }
+
+  Future<void> _fetchOrders() async {
+    if (_isFetching) return;
+
+    _isFetching = true;
+
+    bool internet = await MyApplication.checkInternet();
+    if (internet) {
+      try {
+        log("Fetching Orders: Counter = $_counter");
+        ResponseMyOrder? response = await ApiCalls.callMyOrder(
+          RequestMyOrder(userId: AppPrefs.userId, counter: _counter.toString()),
+        );
+
+        if (response != null && response.result!.toLowerCase().contains("pass")) {
+          if (response.data != null && response.data!.isNotEmpty) {
+            setState(() {
+              _myOrdersList.addAll(response.data!);
+              _counter += _limit; // નેક્સ્ટ પેજ માટે કાઉન્ટર વધાર્યું
+              _isFetching = false;
+            });
+          } else {
+            setState(() {
+              _hasMore = false; // હવે ડેટા નથી
+              _isFetching = false;
+            });
+          }
+        } else {
+          setState(() {
+            _hasMore = false;
+            _isFetching = false;
+          });
+        }
+      } catch (e) {
+        log("Order API Error: $e");
+        setState(() => _isFetching = false);
+      } finally {
+        isInitialLoading.value = false;
+      }
+    } else {
+      setState(() => _isFetching = false);
+      isInitialLoading.value = false;
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Connection");
+    }
+  }
+
+  // --- બાકીના Designs (Card, Sheet, Details) સેમ જ રહેશે ---
 
   Widget myOrderDesign(MyOrder item) {
     String displayDate = "N/A";
@@ -297,7 +377,6 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
               itemBuilder: (context, index) => _buildProductListItem(myOrderDetail!.products![index]),
             ),
           ),
-
         ],
       ),
     );
@@ -348,31 +427,6 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
         ],
       ),
     );
-  }
-
-  Future<void> callMyOrder() async {
-    isApiComplete.value = false;
-    myOrder.clear();
-    _callMyOrder();
-  }
-
-  Future<void> _callMyOrder() async {
-    bool internet = await MyApplication.checkInternet();
-    if (internet) {
-      try {
-        ResponseMyOrder? response = await ApiCalls.callMyOrder(RequestMyOrder(userId: AppPrefs.userId, counter: "0"));
-        if (response != null && response.result!.toLowerCase().contains("pass")) {
-          myOrder.addAll(response.data!);
-          isDataAvailable.value = true;
-        }
-      } catch (e) {
-        log("Order API Error: $e");
-      } finally {
-        isApiComplete.value = true;
-      }
-    } else {
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Connection");
-    }
   }
 
   Future<void> callMyOrderDetail({String? tokenNumber}) async {

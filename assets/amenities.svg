@@ -1,0 +1,24 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M50 5L10 35V90H90V35L50 5Z" stroke="#1A1A1A" stroke-width="3" stroke-linejoin="round" fill="#F8F9FA"/>
+
+    <line x1="50" y1="35" x2="50" y2="80" stroke="#E0E0E0" stroke-width="1" stroke-dasharray="2 2"/>
+    <line x1="25" y1="58" x2="75" y2="58" stroke="#E0E0E0" stroke-width="1" stroke-dasharray="2 2"/>
+
+    <g transform="translate(28, 42)">
+        <path d="M0 6C3 3 7 3 10 6M-3 3C2 -2 8 -2 13 3M5 10C5.5 10 6 9.5 6 9C6 8.5 5.5 8 5 8C4.5 8 4 8.5 4 9C4 9.5 4.5 10 5 10Z" stroke="#2196F3" stroke-width="2" stroke-linecap="round"/>
+    </g>
+
+    <g transform="translate(62, 42)">
+        <rect width="12" height="12" rx="2" fill="#1A1A1A"/>
+        <text x="3" y="10" fill="white" font-family="Arial" font-weight="bold" font-size="9">P</text>
+    </g>
+
+    <g transform="translate(28, 65)">
+        <path d="M2 10V2M2 4C5 4 8 2 8 2V8" stroke="#E91E63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="0" cy="10" r="2" fill="#E91E63"/>
+    </g>
+
+    <g transform="translate(62, 65)">
+        <path d="M2 10C2 10 2 2 10 2M2 10C2 10 10 10 10 2M2 10L6 6" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+</svg>

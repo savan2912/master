@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gotilo_new/Api/Request/AllListings/RequestSimilarListing.dart';
 import 'package:gotilo_new/Api/Request/Cart/RequestAddCart.dart';
 import 'package:gotilo_new/Api/Request/Enquiry/RequestAddEnquiry.dart';
 import 'package:gotilo_new/Api/Request/Fav/RequestAddFav.dart';
@@ -15,6 +16,7 @@ import 'package:gotilo_new/Api/Request/Review/RequestReview.dart';
 import 'package:gotilo_new/Api/Request/Share/RequestShare.dart';
 import 'package:gotilo_new/Api/Request/SubCategoryList/RequestSubCategoryListDetails.dart';
 import 'package:gotilo_new/Api/Request/SubCategoryList/RequestSubCategoryProductList.dart';
+import 'package:gotilo_new/Api/Response/AllListings/ResponseSimilarListing.dart';
 import 'package:gotilo_new/Api/Response/Cart/ResponseAddCart.dart';
 import 'package:gotilo_new/Api/Response/Enquiry/ResponseAddEnquiry.dart';
 import 'package:gotilo_new/Api/Response/Fav/ResponseAddFav.dart';
@@ -64,6 +66,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
   Timer? _marqueeTimer;
 
   List<Lisitngdeals> myDealsList = [];
+  List<SimilarListing> similarList = [];
 
   bool _isSearching = false;
   final int _selectedDealIndex = 0;
@@ -114,6 +117,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
         });
       }
     });
+    _callSimilarListing();
     callReview();
     callShare();
     callSubCategoryListDetails();
@@ -625,11 +629,101 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
               "${listDetail?.address}",
             ),
             const SizedBox(height: 12),
+            _sectionHeader("Similar Listing"),
+            similarListData(similarList),
+            const SizedBox(height: 12),
             review(context),
             const SizedBox(height: 120),
           ],
         ),
       ),
+    );
+  }
+
+  Widget similarListData(List<SimilarListing> items) {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final item = items[index];
+        return GestureDetector(
+          onTap: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AllListingDetailScreen(listId: items[index].id,),
+              ),
+            );
+          },
+          child: Card(
+            color: Colors.white,
+            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            elevation: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      item.image ?? '',
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: 80,
+                        height: 80,
+                        color: Colors.white,
+                        child: const Icon(Icons.image_not_supported),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+
+                  // 2. Text Content (Title & Address)
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.listingTitle ?? 'No Title',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on, size: 14, color: Colors.grey),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                item.address ?? 'No Address',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[600],
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -908,7 +1002,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
 
   Widget _buildVendorCard() {
     String ownerPhone = "${vendor?.phone}";
-    String ownerEmail = "${vendor?.email}";
+    String ownerEmail = "${vendor?.email==null ? "" : vendor?.email}";
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -2175,6 +2269,36 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
             response.result!.toLowerCase().contains("pass")) {
           Get.to(()=> const UserDealsScreen());
           SharedWidgets.showTopSnackBar(context, message: response.message!);
+        } else {
+          SharedWidgets.showTopSnackBar(context, message: response!.message!);
+        }
+      }
+
+    } catch (e) {
+      log("HomeBanner Error: $e");
+    } finally {
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
+
+
+  Future<void> _callSimilarListing() async {
+    try {
+      bool internet = await MyApplication.checkInternet();
+      if(internet)
+      {
+        ResponseSimilarListing? response = await ApiCalls.callSimilarListing(RequestSimilarListing(
+             userId: AppPrefs.userId=="" ? 0 :int.parse(AppPrefs.userId),
+             listId: widget.listId
+        ));
+        if (response != null &&
+            response.result != null &&
+            response.result!.isNotEmpty &&
+            response.result!.toLowerCase().contains("pass")) {
+            similarList.addAll(response.data!);
+            setState(() {});
         } else {
           SharedWidgets.showTopSnackBar(context, message: response!.message!);
         }

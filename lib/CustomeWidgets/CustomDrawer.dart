@@ -34,10 +34,10 @@ class CustomDrawer extends StatefulWidget {
 
 class _CustomDrawerState extends State<CustomDrawer> {
 
-  // --- Static variables to cache data ---
+
   static List<Menu> menuList = [];
-  static ProfileData? profileData; // Have aa static che
-  static bool isDataLoaded = false; // Check karva mate ke data load thai gaya che ke nahi
+  static ProfileData? profileData;
+  static bool isDataLoaded = false;
 
   late String activeRoute;
 
@@ -51,7 +51,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
     super.initState();
     activeRoute = widget.initialRoute;
 
-    // Jo data pehle thi hoy to biji var call nahi kare
     if (!isDataLoaded) {
       callProfile();
     }
@@ -171,7 +170,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     child: ElevatedButton(
                       onPressed: () {
                         Get.back();
-                        // Logout vakhte badhu clear karvu jaruri che
                         menuList.clear();
                         profileData = null;
                         isDataLoaded = false;
@@ -181,7 +179,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         backgroundColor: accentCyan,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: Text("Yes, Logout", style: GoogleFonts.montserrat(color: drawerBG, fontWeight: FontWeight.bold)),
+                      child: Text("Logout", style: GoogleFonts.montserrat(color: drawerBG, fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],
@@ -295,7 +293,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
         ResponseProfile? response = await ApiCalls.callProfile(RequestProfile(userId: AppPrefs.userId));
         if (response != null && response.result != null && response.result!.toLowerCase().contains("pass")) {
           profileData = response.data;
-          isDataLoaded = true; // Mark as loaded
+          isDataLoaded = true;
           setState(() {});
         }
       } catch (e) {

@@ -116,7 +116,6 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                   ),
                 ),
                 const SizedBox(height: 15),
-
                 Container(
                   height: 45,
                   padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -1407,7 +1406,6 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                SharedWidgets.showTopSnackBar(context, message: response!.message!);
           }
         }
-
     } catch (e) {
       log("HomeBanner Error: $e");
       allCities.clear();
@@ -1417,9 +1415,4 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
       }
     }
   }
-
-
-
 }
-// W/WindowOnBackDispatcher(16564): OnBackInvokedCallback is not enabled for the application.
-// W/WindowOnBackDispatcher(16564): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
