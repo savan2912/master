@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Constant/AppPref.dart';
 import 'package:gotilo_new/Screens/AllListing/AllList/AllListingsByCategory.dart';
+import 'package:gotilo_new/Screens/HeritageHomeScreen.dart';
+import 'package:marquee/marquee.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:gotilo_new/Api/Request/AllCollection/RequestCollectionDetails.dart';
 import 'package:gotilo_new/Api/Request/AllCollection/RequestCollectionProductListings.dart';
@@ -16,7 +18,8 @@ import '../../MyApplication/MyApplication.dart';
 
 class CollectionDetailScreen extends StatefulWidget {
   final int? categoryId;
-  const CollectionDetailScreen({super.key, this.categoryId = 0});
+  String? title = "";
+  CollectionDetailScreen({super.key, this.categoryId = 0, required this.title});
 
   @override
   State<CollectionDetailScreen> createState() => _CollectionDetailScreenState();
@@ -48,7 +51,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFDFD),
+      backgroundColor: ModernHeritageApp.appBg,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
@@ -56,7 +59,6 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
           ValueListenableBuilder(
             valueListenable: isPageLoading,
             builder: (context, isLoading, child) {
-
               if (isLoading) {
                 return const SliverFillRemaining(
                   hasScrollBody: false,
@@ -91,7 +93,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                           mainAxisExtent: 180,
                         ),
                         delegate: SliverChildBuilderDelegate(
-                          (context, index) {
+                              (context, index) {
                             if (index == 0) {
                               return _buildAllListingCard();
                             }
@@ -128,7 +130,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
 
   Widget _buildAllListingCard() {
     return GestureDetector(
-      onTap: () => Get.to(() =>  AllListingByCategory(categoryId: widget.categoryId,)),
+      onTap: () => Get.to(() => AllListingByCategory(categoryId: widget.categoryId)),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -171,13 +173,10 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
 
   Widget _buildSliverAppBar() {
     return SliverAppBar(
-      expandedHeight: isSearching ? 130 : 150,
-      collapsedHeight: 85,
-      toolbarHeight: 80,
       pinned: true,
-      stretch: true,
-      backgroundColor: const Color(0xFFFDFDFD),
       elevation: 0,
+      centerTitle: true,
+      backgroundColor: const Color(0xFFFDFDFD),
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF0D1B1E), size: 18),
         onPressed: () {
@@ -207,14 +206,10 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
         ),
         const SizedBox(width: 10),
       ],
-      flexibleSpace: FlexibleSpaceBar(
-        centerTitle: true,
-        title: SafeArea(
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            child: isSearching ? _buildSearchField() : _buildTitleText(),
-          ),
-        ),
+      // ટાઈટલને FlexibleSpaceBar માંથી હટાવીને ડાયરેક્ટ title પ્રોપર્ટીમાં સેટ કર્યું જેથી ઓવરફ્લો ન થાય
+      title: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        child: isSearching ? _buildSearchField() : _buildTitleText(),
       ),
     );
   }
@@ -222,8 +217,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
   Widget _buildSearchField() {
     return Container(
       key: const ValueKey("SearchField"),
-      height: 44,
-      margin: const EdgeInsets.symmetric(horizontal: 55),
+      height: 40,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -237,23 +231,50 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
           hintText: "Search here...",
           border: InputBorder.none,
           prefixIcon: Icon(Icons.search_rounded, size: 18),
-          isDense: true,
-          contentPadding: EdgeInsets.only(top: 10),
+          contentPadding: EdgeInsets.symmetric(vertical: 10),
         ),
       ),
     );
   }
 
   Widget _buildTitleText() {
-    return Text(
-      "COLLECTION DETAILS",
-      key: const ValueKey("TitleText"),
-      style: GoogleFonts.montserrat(
-        letterSpacing: 2,
-        fontWeight: FontWeight.w900,
-        fontSize: 14,
-        color: const Color(0xFF0D1B1E),
-      ),
+    if (widget.title == null || widget.title!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final TextStyle titleStyle = GoogleFonts.montserrat(
+      letterSpacing: 2,
+      fontWeight: FontWeight.w900,
+      fontSize: 14,
+      color: const Color(0xFF0D1B1E),
+    );
+
+    // LayoutBuilder નો ઉપયોગ કરીને ટર્મિનલ સ્ક્રીન પ્રમાણે માપ લઈએ
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // આજુબાજુના આઈકોન્સને ન નડે એ રીતે વિડ્થ સેટ કરી (સ્ક્રીનની 60% જગ્યા જ રોકશે)
+        double availableWidth = MediaQuery.of(context).size.width * 0.6;
+
+        return SizedBox(
+          key: const ValueKey("TitleText"),
+          width: availableWidth,
+          height: 22,
+          child: Marquee(
+            text: widget.title!,
+            style: titleStyle,
+            scrollAxis: Axis.horizontal,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            blankSpace: 40.0,
+            velocity: 30.0,
+            pauseAfterRound: const Duration(seconds: 2),
+            startPadding: 0.0,
+            accelerationDuration: const Duration(seconds: 1),
+            accelerationCurve: Curves.linear,
+            decelerationDuration: const Duration(milliseconds: 500),
+            decelerationCurve: Curves.easeOut,
+          ),
+        );
+      },
     );
   }
 
@@ -275,7 +296,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
             ),
             TextButton(
               onPressed: () {
-                Get.to(()=> AllListingByCategory(categoryId: widget.categoryId,));
+                Get.to(() => AllListingByCategory(categoryId: widget.categoryId));
               },
               child: Text("View All", style: GoogleFonts.montserrat(color: const Color(0xFF6C63FF), fontWeight: FontWeight.w700)),
             )
@@ -287,7 +308,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
 
   Widget _buildMinimalCategoryCard(CollectionDetail cat) {
     return GestureDetector(
-      onTap: () => Get.to(() => AllListingScreen(subCategoryId: cat.id,)),
+      onTap: () => Get.to(() => AllListingScreen(subCategoryId: cat.id)),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -413,6 +434,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
       log("Detail API Error: $e");
     }
   }
+
   Future<void> _callCollectionProductList() async {
     try {
       if (!await MyApplication.checkInternet()) return;
@@ -426,4 +448,3 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
     }
   }
 }
-

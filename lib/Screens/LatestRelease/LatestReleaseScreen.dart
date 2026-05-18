@@ -11,6 +11,7 @@ import 'package:gotilo_new/Api/Request/AllLatestRelease/RequestAllLatestRelease.
 import 'package:gotilo_new/Api/Response/AllLatestRelease/ResponseAllLatestRelease.dart';
 import '../../Api/ApiCalls.dart';
 import '../../MyApplication/MyApplication.dart';
+import '../HeritageHomeScreen.dart';
 
 class LatestReleaseScreen extends StatefulWidget {
   const LatestReleaseScreen({super.key});
@@ -75,7 +76,7 @@ class _LatestReleaseScreenState extends State<LatestReleaseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFDFD),
+      backgroundColor: ModernHeritageApp.appBg,
       body: CustomScrollView(
         controller: _scrollController,
         physics: const BouncingScrollPhysics(),

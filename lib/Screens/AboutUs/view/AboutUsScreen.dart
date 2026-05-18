@@ -137,10 +137,10 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
-            image: DecorationImage(
+            image: aboutData?.aboutImage !=null ? DecorationImage(
               image: NetworkImage(aboutData?.aboutImage ?? ""),
               fit: BoxFit.cover,
-            ),
+            ): DecorationImage(image: AssetImage("assets/gotilo_logo.png")),
           ),
         ),
         const SizedBox(height: 30),

@@ -13,6 +13,7 @@ import 'package:gotilo_new/Api/Response/AllNewlyAdded/ResponseAllNewlyAdded.dart
 
 import '../../Api/ApiCalls.dart';
 import '../../MyApplication/MyApplication.dart';
+import '../HeritageHomeScreen.dart';
 
 class NewlyAddedListing extends StatefulWidget {
   const NewlyAddedListing({super.key});
@@ -67,7 +68,7 @@ class _NewlyAddedListingState extends State<NewlyAddedListing> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFDFD),
+      backgroundColor: ModernHeritageApp.appBg,
       body: CustomScrollView(
         controller: _scrollController,
         physics: const BouncingScrollPhysics(),

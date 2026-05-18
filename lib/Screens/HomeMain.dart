@@ -618,6 +618,7 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
               Get.to(
                 () => CollectionDetailScreen(
                   categoryId: homeCollection?[index].id,
+                  title:homeCollection?[index].name,
                 ),
               );
             },
@@ -864,6 +865,7 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                 Get.to(
                   () => CollectionDetailScreen(
                     categoryId: homeService?[index].id,
+                    title: homeService?[index].name
                   ),
                 );
               },

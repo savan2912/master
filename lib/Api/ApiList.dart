@@ -5,8 +5,8 @@ class  ApiList {
   //TODO: ----------------------------- Clint URL -----------------------------
 
   //TODO: Local URL
-  static String get baseURL => "http://192.168.1.9:8000/api/v1";
-  // static String get baseURL => "https://gotilo.net/api/v1";
+  // static String get baseURL => "http://192.168.1.9:8000/api/v1";
+  static String get baseURL => "https://gotilo.net/api/v1";
 
   //TODO: -------------------------------- App URL --------------------------------
 

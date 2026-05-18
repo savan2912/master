@@ -1,6 +1,8 @@
 import 'dart:developer';
+import 'dart:math' hide log;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart'; // url_launcher ઈમ્પોર્ટ કર્યું
 import 'package:gotilo_new/Api/ApiCalls.dart';
 import 'package:gotilo_new/Api/Response/PrisePlan/ResponsePrisePlan.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
@@ -16,11 +18,160 @@ class PrisePlanScreen extends StatefulWidget {
 class _PrisePlanScreenState extends State<PrisePlanScreen> {
   List<PrisePlan> priseList = [];
   bool isLoading = true;
+  String? number="";
+  String? email="";
 
   @override
   void initState() {
     super.initState();
     _callPrisePlan();
+  }
+
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
+    } else {
+      log('Could not launch $launchUri');
+    }
+  }
+
+  Future<void> _sendEmail(String emailAddress, String planName) async {
+    final Uri launchUri = Uri(
+      scheme: 'mailto',
+      path: emailAddress,
+      queryParameters: {
+        'subject': 'Inquiry for $planName Package',
+        'body': 'Hello Gotilo Team,\n\nI want to become a vendor under the $planName plan. Please guide me further.',
+      },
+    );
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
+    } else {
+      log('Could not launch $launchUri');
+    }
+  }
+
+  void _showVendorContactBottomSheet(BuildContext context, String planName) {
+
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+      ),
+      backgroundColor: Colors.white,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 50,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              const SizedBox(height: 25),
+              Text(
+                "Brand Builder Digital PVT LTD",
+                style: GoogleFonts.montserrat(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF0D1B1E),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "Connect with Us",
+                style: GoogleFonts.montserrat(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF0D1B1E),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "Interested in '$planName'? Choose how you want to reach us.",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.montserrat(
+                  fontSize: 13,
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 30),
+
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.grey[200]!),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.phone_android_rounded, color: Colors.pinkAccent, size: 24),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Call Us", style: GoogleFonts.montserrat(fontSize: 11, color: Colors.grey[500], fontWeight: FontWeight.bold)),
+                          Text(number!, style: GoogleFonts.montserrat(fontSize: 15, color: const Color(0xFF0D1B1E), fontWeight: FontWeight.w600)),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => _makePhoneCall(number!),
+                      icon: const Icon(Icons.phone_forwarded_rounded, color: Colors.green, size: 24),
+                      style: IconButton.styleFrom(backgroundColor: Colors.green.withOpacity(0.1)),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(height: 15),
+
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.grey[200]!),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.email_outlined, color: Colors.pinkAccent, size: 24),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Email Us", style: GoogleFonts.montserrat(fontSize: 11, color: Colors.grey[500], fontWeight: FontWeight.bold)),
+                          Text(email!, style: GoogleFonts.montserrat(fontSize: 15, color: const Color(0xFF0D1B1E), fontWeight: FontWeight.w600)),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => _sendEmail(email!, planName),
+                      icon: const Icon(Icons.arrow_outward_rounded, color: Colors.blue, size: 24),
+                      style: IconButton.styleFrom(backgroundColor: Colors.blue.withOpacity(0.1)),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(height: 15),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -222,7 +373,7 @@ class _PrisePlanScreenState extends State<PrisePlanScreen> {
                     ),
                     child: ElevatedButton(
                       onPressed: () {
-                        log("Selected Plan: $title");
+                        _showVendorContactBottomSheet(context, title,);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
@@ -232,7 +383,7 @@ class _PrisePlanScreenState extends State<PrisePlanScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Choose Plan", style: GoogleFonts.montserrat(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16)),
+                          Text("Become a vendor", style: GoogleFonts.montserrat(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16)),
                           const SizedBox(width: 12),
                           const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 20),
                         ],
@@ -260,6 +411,8 @@ class _PrisePlanScreenState extends State<PrisePlanScreen> {
             priseList = response.data ?? [];
             isLoading = false;
           });
+          number = response.number;
+          email = response.email;
         } else {
           setState(() => isLoading = false);
           SharedWidgets.showTopSnackBar(context, message: response?.message ?? "Failed to load plans");

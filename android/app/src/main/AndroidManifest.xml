@@ -1,12 +1,10 @@
 <manifest xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- CAMERA FEATURE -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
 
-    <!-- PERMISSIONS -->
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -15,12 +13,11 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <!-- Android 13+ -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
+<!--    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>-->
+
 
     <application
-        android:label="gotilo_new"
+        android:label="Gotilo"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:enableOnBackInvokedCallback="true">

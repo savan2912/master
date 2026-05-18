@@ -465,8 +465,6 @@ class _UserdashboardscreenState extends State<Userdashboardscreen> {
     );
   }
 
-  /// ---------------- SUB-WIDGETS FOR NEW DESIGN ----------------
-
   Widget _statusBadge(bool isPending) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -525,6 +523,7 @@ class _UserdashboardscreenState extends State<Userdashboardscreen> {
       ],
     );
   }
+
 
   Widget _viewButton(BookingHistory data) {
     return GestureDetector(

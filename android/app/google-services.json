@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "755876006995",
-    "project_id": "gotilo-4e32c",
-    "storage_bucket": "gotilo-4e32c.firebasestorage.app"
+    "project_number": "521950457583",
+    "project_id": "gotilo-5a831",
+    "storage_bucket": "gotilo-5a831.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:755876006995:android:716825242714e5def84aa6",
+        "mobilesdk_app_id": "1:521950457583:android:963b5c00daef1d7107751a",
         "android_client_info": {
-          "package_name": "com.example.gotilo_new"
+          "package_name": "com.gotilodigital"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDKzuA7WzmEqv4zfnKUxApeMNutUNH3rkw"
+          "current_key": "AIzaSyAuk3axHMy5NBBTALfQxRTHOsbjVnQ2iG4"
         }
       ],
       "services": {

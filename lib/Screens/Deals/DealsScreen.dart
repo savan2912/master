@@ -16,6 +16,7 @@ import '../../Api/Response/CrackDeal/ResponseCrackDeal.dart';
 import '../../Constant/AppPref.dart';
 import '../../CustomeWidgets/SharedWidgets.dart';
 import '../../MyApplication/MyApplication.dart';
+import '../HeritageHomeScreen.dart';
 import '../User/Deals/DealsScreen.dart';
 
 class DealsScreen extends StatefulWidget {
@@ -82,7 +83,7 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFDFD),
+      backgroundColor:ModernHeritageApp.appBg,
       body: CustomScrollView(
         controller: _scrollController,
         physics: const BouncingScrollPhysics(),

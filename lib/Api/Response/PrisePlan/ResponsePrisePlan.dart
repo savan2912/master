@@ -1,13 +1,19 @@
+import 'dart:math';
+
 class ResponsePrisePlan {
   String? result;
   String? message;
+  String? number;
+  String? email;
   List<PrisePlan>? data;
 
-  ResponsePrisePlan({this.result, this.message, this.data});
+  ResponsePrisePlan({this.result, this.message, this.data,this.number,this.email});
 
   ResponsePrisePlan.fromJson(Map<String, dynamic> json) {
     result = json['result'];
     message = json['message'];
+    number = json['company_number'];
+    email = json['company_email'];
     if (json['data'] != null) {
       data = <PrisePlan>[];
       json['data'].forEach((v) {
@@ -20,6 +26,8 @@ class ResponsePrisePlan {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['result'] = result;
     data['message'] = message;
+    data['company_number'] = number;
+    data['company_email'] = email;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }

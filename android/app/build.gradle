@@ -7,7 +7,7 @@ plugins {
 
 android {
 
-    namespace "com.example.gotilo_new"
+    namespace "com.gotilodigital"
 
     // REQUIRED by plugins
     compileSdk 36
@@ -26,23 +26,36 @@ android {
 
     defaultConfig {
 
-        applicationId "com.example.gotilo_new"
+        applicationId "com.gotilodigital"
 
         // image_picker / camera requirement
         minSdkVersion flutter.minSdkVersion
 
         // Android 14 / 15
-        targetSdk 35
+        targetSdk = 35
 
-        versionCode 1
-        versionName "1.0"
+        versionCode = 31
+        versionName = "2.31"
 
         multiDexEnabled true
     }
-
+    signingConfigs {
+        release {
+            keyAlias 'gotilo'
+            keyPassword '123456'
+            storeFile file('C:\\Users\\PC-6\\StudioProjects\\gotilo_new\\android\\app\\gotilo.jks')
+            storePassword '123456'
+        }
+        debug {
+            keyAlias 'gotilo'
+            keyPassword '123456'
+            storeFile file('C:\\Users\\PC-6\\StudioProjects\\gotilo_new\\android\\app\\gotilo.jks')
+            storePassword '123456'
+        }
+    }
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled false
             shrinkResources false
         }

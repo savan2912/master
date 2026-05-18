@@ -337,7 +337,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
         Expanded(
           child: TextButton(
             onPressed: () {
-              Get.to(()=> const ForgotPasswordScreen());
+              Get.off(()=> const ForgotPasswordScreen());
             },
             child: Text(
               "Forgot Password?",

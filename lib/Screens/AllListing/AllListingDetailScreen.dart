@@ -36,6 +36,7 @@ import '../../Api/ApiCalls.dart';
 import '../../Api/Request/CrackDeal/RequestCrackDeal.dart';
 import '../../Api/Response/CrackDeal/ResponseCrackDeal.dart';
 import '../../MyApplication/MyApplication.dart';
+import '../HeritageHomeScreen.dart';
 import '../User/Deals/DealsScreen.dart';
 import '../cart/CartScreen.dart';
 
@@ -170,7 +171,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ModernHeritageApp.appBg,
       floatingActionButton: ValueListenableBuilder(
         valueListenable: isApiComplete,
         builder: (context, value, child) {
@@ -309,7 +310,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
 
                         SliverToBoxAdapter(
                           child: Container(
-                            color: Colors.white,
+                            color: ModernHeritageApp.appBg,
                             padding: const EdgeInsets.only(top: 20),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

@@ -12,6 +12,7 @@ import 'package:gotilo_new/Api/Request/AllService/RequestAllService.dart';
 import 'package:gotilo_new/Api/Response/AllService/ResponseAllService.dart';
 import '../../Api/ApiCalls.dart';
 import '../../MyApplication/MyApplication.dart';
+import '../HeritageHomeScreen.dart';
 
 class OurFeaturedServicesScreen extends StatefulWidget {
   const OurFeaturedServicesScreen({super.key});
@@ -71,7 +72,7 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFDFD),
+      backgroundColor: ModernHeritageApp.appBg,
       body: CustomScrollView(
         controller: _scrollController,
         physics: const BouncingScrollPhysics(),
@@ -212,7 +213,7 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
   Widget _buildModernServiceCard(AllService service) {
     return GestureDetector(
       onTap: () {
-        Get.to(() => CollectionDetailScreen(categoryId: service.id));
+        Get.to(() => CollectionDetailScreen(categoryId: service.id,title: service.name,));
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 40),

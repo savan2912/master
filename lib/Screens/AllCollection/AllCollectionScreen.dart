@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gotilo_new/Screens/HeritageHomeScreen.dart';
 
 import '../../Api/ApiCalls.dart';
 import '../../Api/Request/AllCollection/RequestAllCollection.dart';
@@ -141,7 +142,7 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDFDFD),
+      backgroundColor: ModernHeritageApp.appBg,
       body: CustomScrollView(
         controller: _scrollController,
         physics: const BouncingScrollPhysics(),
@@ -314,7 +315,7 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
     }
 
     return GestureDetector(
-      onTap: () => Get.to(() => CollectionDetailScreen(categoryId: cat.id,)),
+      onTap: () => Get.to(() => CollectionDetailScreen(categoryId: cat.id,title: cat.name,)),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
