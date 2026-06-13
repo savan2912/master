@@ -2,13 +2,17 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gotilo_new/Api/Request/DeleteUser/RequestDeleteUser.dart';
 import 'package:gotilo_new/Api/Request/User/Menu/RequestMenu.dart';
 import 'package:gotilo_new/Api/Request/User/Profile/RequestProfile.dart';
+import 'package:gotilo_new/Api/Response/DeleteUser/ResponseDeleteUser.dart';
 import 'package:gotilo_new/Api/Response/User/Menu/ResponseMenu.dart';
 import 'package:gotilo_new/Api/Response/User/Profile/ResponseProfile.dart';
 import 'package:gotilo_new/Constant/AppPref.dart';
+import 'package:gotilo_new/Constant/Constants.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/MyApplication/MyApplication.dart';
+import 'package:gotilo_new/Screens/HeritageHomeScreen.dart';
 import 'package:gotilo_new/Screens/User/Dashboard/UserDashboardScreen.dart';
 import 'package:gotilo_new/Screens/User/MyOrder/MyOrderScreen.dart';
 
@@ -34,7 +38,6 @@ class CustomDrawer extends StatefulWidget {
 
 class _CustomDrawerState extends State<CustomDrawer> {
 
-
   static List<Menu> menuList = [];
   static ProfileData? profileData;
   static bool isDataLoaded = false;
@@ -45,6 +48,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   final Color surfaceColor = const Color(0xFF2F3136);
   final Color accentCyan = const Color(0xFF00E5FF);
   final Color textMuted = const Color(0xFFB9BBBE);
+  final Color errorColor = const Color(0xFFFF5252); // Delete માટે રેડ કલર
 
   @override
   void initState() {
@@ -137,6 +141,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
     });
   }
 
+  // Logout નો ડાયલોગ
   void _showLogoutDialog() {
     Get.dialog(
       Dialog(
@@ -192,6 +197,61 @@ class _CustomDrawerState extends State<CustomDrawer> {
     );
   }
 
+  // Account Delete કરવાનો નવો ડાયલોગ
+  void _showDeleteAccountDialog() {
+    Get.dialog(
+      Dialog(
+        backgroundColor: surfaceColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.delete_forever_rounded, color: errorColor, size: 50),
+              const SizedBox(height: 20),
+              Text("Delete Account", style: GoogleFonts.montserrat(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              Text("Are you sure you want to permanently delete your account? This action cannot be undone.", textAlign: TextAlign.center, style: GoogleFonts.montserrat(color: textMuted, fontSize: 14)),
+              const SizedBox(height: 25),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () =>   Get.back(),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: textMuted.withOpacity(0.3)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: Text("Cancel", style: GoogleFonts.montserrat(color: Colors.white)),
+                    ),
+                  ),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        callDeleteUser();
+                        menuList.clear();
+                        profileData = null;
+                        isDataLoaded = false;
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: errorColor,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: Text("Delete", style: GoogleFonts.montserrat(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+  }
+
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
@@ -223,16 +283,36 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       : null,
                 ),
               ),
-              GestureDetector(
-                onTap: () => _showLogoutDialog(),
-                child: Container(
-                  height: 38, width: 38,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.08),
-                    shape: BoxShape.circle,
+
+              // અહીં Logout અને Delete બંને આઇકન રો (Row) માં સેટ કર્યા છે
+              Row(
+                children: [
+                  // Delete Account બટન
+                  GestureDetector(
+                    onTap: () => _showDeleteAccountDialog(),
+                    child: Container(
+                      height: 38, width: 38,
+                      decoration: BoxDecoration(
+                        color: errorColor.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.delete_outline_rounded, color: errorColor, size: 20),
+                    ),
                   ),
-                  child: Icon(Icons.power_settings_new_rounded, color: accentCyan, size: 20),
-                ),
+                  const SizedBox(width: 10),
+                  // Logout બટન
+                  GestureDetector(
+                    onTap: () => _showLogoutDialog(),
+                    child: Container(
+                      height: 38, width: 38,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.08),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.power_settings_new_rounded, color: accentCyan, size: 20),
+                    ),
+                  ),
+                ],
               )
             ],
           ),
@@ -317,4 +397,35 @@ class _CustomDrawerState extends State<CustomDrawer> {
     if (name.contains("favourite")) return Icons.favorite_border_rounded;
     return Icons.circle;
   }
+
+
+  Future<void> callDeleteUser() async {
+    print("savan");
+    MyApplication.checkInternet().then((internet) async {
+        if(internet){
+          try{
+            ResponseDeleteUser? response=await ApiCalls.callDeleteUser(
+              RequestDeleteUser(
+                userId: AppPrefs.userId
+              )
+            );
+            if(response != null){
+              if(response.result!.isNotEmpty && response.result != null &&
+              response.result!.toLowerCase().contains("pass")){
+                AppPrefs.setUserId("");
+                Get.offAll(()=> const ModernHeritageApp());
+                SharedWidgets.showTopSnackBar(context, message: response.message!);
+              }
+            }
+          }on Exception catch(e){
+            log("$e");
+          }catch(e){
+            log("$e");
+          }
+        }else{
+          SharedWidgets.showTopSnackBar(context, message:"No Internet Available");
+        }
+    },);
+  }
+
 }

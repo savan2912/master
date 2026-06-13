@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:gotilo_new/Screens/AboutUs/view/AboutUsScreen.dart';
-import 'package:gotilo_new/Screens/Blog/view/BlogScreen.dart';
+import 'package:gotilo_new/Screens/AllCollection/AllCollectionScreen.dart';
+import 'package:gotilo_new/Screens/Deals/DealsScreen.dart';
 import 'package:gotilo_new/Screens/HomeMain.dart';
-import 'package:gotilo_new/Screens/PrisePlan/view/PrisePlanScreen.dart';
 import 'dart:ui';
+
+import 'StoreWebView/StoreWebview.dart';
 
 class ModernHeritageApp extends StatefulWidget {
   const ModernHeritageApp({super.key});
@@ -28,10 +29,10 @@ class _ModernHeritageAppState extends State<ModernHeritageApp> {
   void initState() {
     _screens = [
       const HomeMainScreen(),
-      const AboutUsScreen(),
+      DealsScreen(isHome: true,),
       // aboutUs(),
-      const BlogScreen(),
-      const PrisePlanScreen(),
+      AllCollectionScreen(isHome: true,),
+      const StoreWebview(),
     ];
     super.initState();
   }
@@ -70,9 +71,9 @@ class _ModernHeritageAppState extends State<ModernHeritageApp> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _navIcon(Icons.home_filled, "Home", 0),
-              _navIcon(Icons.info_outline_rounded, "About", 1),
-              _navIcon(Icons.auto_stories_outlined, "Blog", 2),
-              _navIcon(Icons.subscriptions_outlined, "Plan", 3),
+              _navIcon(Icons.local_offer_outlined, "deal", 1),
+              _navIcon(Icons.category_outlined, "category", 2),
+              _navIcon(Icons.storefront, "Store", 3),
             ],
           ),
         ),

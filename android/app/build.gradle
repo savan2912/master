@@ -27,15 +27,11 @@ android {
     defaultConfig {
 
         applicationId "com.gotilodigital"
-
-        // image_picker / camera requirement
         minSdkVersion flutter.minSdkVersion
-
-        // Android 14 / 15
         targetSdk = 35
 
-        versionCode = 31
-        versionName = "2.31"
+        versionCode = 33
+        versionName = "2.33"
 
         multiDexEnabled true
     }

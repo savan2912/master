@@ -73,6 +73,8 @@ dependencies:
   sms_autofill: ^2.4.1
   flutter_rating_bar: ^4.0.1
   share_plus: ^12.0.2
+  webview_flutter: ^4.13.1
+  speech_to_text: ^7.4.0
 
 
 dev_dependencies:
@@ -105,6 +107,7 @@ flutter:
     - assets/amenities.svg
     - assets/gotilo_logo.png
     - assets/app_icon.png
+    - assets/g_logo.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

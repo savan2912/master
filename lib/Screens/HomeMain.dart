@@ -6,7 +6,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gotilo_new/Api/Request/BecomeVendor/RequestBecomeVendor.dart';
 import 'package:gotilo_new/Api/Request/CrackDeal/RequestCrackDeal.dart';
+import 'package:gotilo_new/Api/Response/BecomeVendor/ResponseBecomeVendor.dart';
 import 'package:gotilo_new/Api/Response/City/ResponseCity.dart';
 import 'package:gotilo_new/Api/Response/CrackDeal/ResponseCrackDeal.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
@@ -294,10 +296,16 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                               const SizedBox(height: 10),
                               _buildPremiumImageSlider(),
                               const SizedBox(height: 40),
+                              _buildSectionLabel(
+                                "EXCLUSIVE DEALS",
+                                    () => Get.to(() =>  DealsScreen(isHome: false,)),
+                              ),
+                              _buildExclusiveDeals(),
+                              const SizedBox(height: 40),
 
                               _buildSectionLabel(
                                 "CURATED COLLECTIONS",
-                                () => Get.to(() => const AllCollectionScreen()),
+                                () => Get.to(() => AllCollectionScreen(isHome: false,)),
                               ),
                               _buildPremiumBentoCollections(),
                               const SizedBox(height: 45),
@@ -324,15 +332,13 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                               ),
                               _buildFeaturedServices(),
                               const SizedBox(height: 45),
+                              // gotiloPremiumCarousel(),
+                              // const SizedBox(height: 45),
 
-                              _buildSectionLabel(
-                                "EXCLUSIVE DEALS",
-                                () => Get.to(() => const DealsScreen()),
-                              ),
-                              _buildExclusiveDeals(),
-                              const SizedBox(height: 45),
 
                               _buildHowItWorks(),
+                              const SizedBox(height: 20),
+                              _buildBecomeVendor(context),
                               const SizedBox(height: 150),
                             ],
                           ),
@@ -426,19 +432,17 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
       flexibleSpace: _isSearching
           ? null
           : FlexibleSpaceBar(
-              centerTitle: true,
-              titlePadding: const EdgeInsets.only(bottom: 12),
-              expandedTitleScale: 1.2,
-              title: Text(
-                "GOTILO",
-                style: GoogleFonts.playfairDisplay(
-                  color: ModernHeritageApp.textDark,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ),
+        centerTitle: true,
+        titlePadding: const EdgeInsets.only(bottom: 10),
+        expandedTitleScale: 1.1,
+        title: SizedBox(
+          height: 45,
+          child: Image.asset(
+            "assets/g_logo.png",
+            fit: BoxFit.contain,
+          ),
+        ),
+      ),
 
       actions: [
         Padding(
@@ -503,7 +507,7 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                 );
               }
               return SizedBox(
-                height: 280,
+                height: 180,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.only(left: 25),
@@ -513,17 +517,17 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                       width: 300,
                       margin: const EdgeInsets.only(right: 20),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(32),
+                        borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
                             color: const Color(0xFF0D1B1E).withOpacity(0.08),
-                            blurRadius: 30,
-                            offset: const Offset(0, 15),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
                           ),
                         ],
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(10),
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
@@ -590,108 +594,172 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
   }
 
   Widget _buildPremiumBentoCollections() {
-    final List<Color> colors = [
-      Colors.blueAccent,
-      Colors.redAccent,
-      Colors.greenAccent,
-      Colors.orangeAccent,
-      Colors.purpleAccent,
+    if (homeCollection == null || homeCollection!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final List<List<Color>> gradients = [
+      [const Color(0xFF1E2640), const Color(0xFF0F1424)],
+      [const Color(0xFF281D3C), const Color(0xFF130A1E)],
+      [const Color(0xFF102A2D), const Color(0xFF051214)],
+      [const Color(0xFF232526), const Color(0xFF111111)],
+      [const Color(0xFF2D1F1F), const Color(0xFF160E0E)],
+      [const Color(0xFF17252A), const Color(0xFF0B1316)],
+      [const Color(0xFF1A2332), const Color(0xFF0D131A)],
+      [const Color(0xFF1C2826), const Color(0xFF0E1413)],
+      [const Color(0xFF2D221E), const Color(0xFF17100E)],
+      [const Color(0xFF1E1E24), const Color(0xFF111115)],
     ];
 
-    if (homeCollection == null || homeCollection!.isEmpty)
-      return const SizedBox.shrink();
 
-    return SizedBox(
-      height: 180,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.only(left: 25, right: 10),
-        physics: const BouncingScrollPhysics(),
-        itemCount: homeCollection!.length > 4 ? 4 : homeCollection!.length,
-        itemBuilder: (context, index) {
-          bool isLong = index % 2 == 0;
-          Color circleColor = colors[index % colors.length];
-          final category = homeCollection![index];
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      itemCount: homeCollection!.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 14,
+        childAspectRatio: 0.82,
+      ),
+      itemBuilder: (context, index) {
+        final category = homeCollection![index];
+        final gradient = gradients[index % gradients.length];
 
-          return GestureDetector(
-            onTap: () {
-              Get.to(
-                () => CollectionDetailScreen(
-                  categoryId: homeCollection?[index].id,
-                  title:homeCollection?[index].name,
+        return GestureDetector(
+          onTap: () {
+            Get.to(
+                  () => CollectionDetailScreen(
+                categoryId: category.id,
+                title: category.name,
+              ),
+            );
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(28),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: gradient,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: gradient.first.withOpacity(0.3),
+                  blurRadius: 14,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 8),
                 ),
-              );
-            },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 500),
-              width: 150,
-              margin: EdgeInsets.only(
-                right: 18,
-                top: isLong ? 0 : 25,
-                bottom: isLong ? 25 : 0,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(32),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF0D1B1E).withOpacity(0.05),
-                    blurRadius: 25,
-                    offset: const Offset(0, 12),
-                  ),
-                ],
-              ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(28),
               child: Stack(
                 children: [
+                  // Background Circle Effect (Top Right)
                   Positioned(
-                    top: -25,
-                    right: -25,
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundColor: circleColor.withOpacity(0.3),
+                    top: -35,
+                    right: -20,
+                    child: Container(
+                      height: 100,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.12),
+                      ),
                     ),
                   ),
+
+                  // Background Circle Effect (Bottom Left)
+                  Positioned(
+                    bottom: -20,
+                    left: -15,
+                    child: Container(
+                      height: 75,
+                      width: 75,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.06),
+                      ),
+                    ),
+                  ),
+
+                  // Card Main Internal Content Layout
                   Padding(
-                    padding: const EdgeInsets.all(22),
+                    padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          height: 42,
-                          width: 42,
-                          child: category.icon!.contains('.svg')
-                              ? SvgPicture.network(
-                                  category.icon!,
-                                  placeholderBuilder: (context) =>
-                                      _shimmerCircle(),
-                                )
-                              : CachedNetworkImage(
-                                  fadeOutDuration: const Duration(
-                                    milliseconds: 500,
-                                  ),
-                                  fadeInDuration: const Duration(
-                                    milliseconds: 700,
-                                  ),
-                                  imageUrl: category.icon!,
-                                  placeholder: (context, url) =>
-                                      _shimmerCircle(),
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.category),
-                                ),
-                        ),
-                        const Spacer(),
-                        SizedBox(
-                          width: double.infinity,
-                          child: Text(
-                            category.name ?? "",
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.montserrat(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF0D1B1E),
+                        // Icon Container Setup
+                        Container(
+                          height: 65,
+                          width: 65,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.15),
                             ),
                           ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: category.icon!.contains('.svg')
+                                ? SvgPicture.network(
+                              category.icon!,
+                              colorFilter: const ColorFilter.mode(
+                                Colors.white,
+                                BlendMode.srcIn,
+                              ),
+                              placeholderBuilder: (_) => _shimmerCircle(),
+                            )
+                                : CachedNetworkImage(
+                              imageUrl: category.icon!,
+                              color: Colors.white,
+                              placeholder: (context, url) => _shimmerCircle(),
+                              errorWidget: (context, url, error) => const Icon(
+                                Icons.category,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const Spacer(),
+
+                        // Category Name Title
+                        Text(
+                          category.name ?? "",
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.montserrat(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            height: 1.2,
+                          ),
+                        ),
+
+                        const SizedBox(height: 6),
+
+                        // Bottom Explore Text Row
+                        Row(
+                          children: [
+                            Text(
+                              "Explore",
+                              style: GoogleFonts.montserrat(
+                                color: Colors.white.withOpacity(0.8),
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            const Icon(
+                              Icons.arrow_forward_rounded,
+                              color: Colors.white,
+                              size: 14,
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -699,9 +767,9 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                 ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -749,25 +817,22 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
   }
 
   Widget _buildNewlyAddedListings() {
-    if (homeNearListing == null) return const SizedBox.shrink();
-    return SizedBox(
-      height: 340,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.only(left: 25),
-        itemCount: homeNearListing!.length,
-        itemBuilder: (context, index) {
-          final item = homeNearListing![index];
+    if (homeNearListing == null || homeNearListing!.isEmpty) return const SizedBox.shrink();
+
+    // Scroll full block kadhi ne simple Column mapping set kari didhi chhe
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Aakha section mate exact spacing match
+      child: Column(
+        children: homeNearListing!.map((item) {
           return GestureDetector(
             onTap: () {
               Get.to(
-                () =>
-                    AllListingDetailScreen(listId: homeNearListing?[index].id),
+                    () => AllListingDetailScreen(listId: item.id), // Direct loop item mathi j access
               );
             },
             child: Container(
-              width: 260,
-              margin: const EdgeInsets.only(right: 20),
+              width: double.infinity, // Single wide block layout mate full width
+              margin: const EdgeInsets.only(bottom: 20), // Niche na container sathe perfect visual gap spacing
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(35),
@@ -811,7 +876,7 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                         const SizedBox(height: 5),
                         Text(
                           item.description ?? "",
-                          maxLines: 1,
+                          maxLines: 2, // Full width screen chhe aetle look rich lagva maxlines 2 kari didhi
                           overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.montserrat(
                             fontSize: 11,
@@ -843,7 +908,7 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
               ),
             ),
           );
-        },
+        }).toList(),
       ),
     );
   }
@@ -952,17 +1017,14 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
   Widget _buildExclusiveDeals() {
     if (homeDeal == null || homeDeal!.isEmpty) return const SizedBox.shrink();
 
-    return SizedBox(
-      height: 380,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.only(left: 25),
-        itemCount: homeDeal!.length,
-        itemBuilder: (context, index) {
-          final deal = homeDeal![index];
+    // Scroll full block kadhi nakhyo chhe jethi main home scroll ma locho na thay
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Aakha group mate unified padding
+      child: Column(
+        children: homeDeal!.map((deal) {
           return Container(
-            width: 280,
-            margin: const EdgeInsets.only(right: 20, bottom: 10),
+            width: double.infinity, // Single block dynamic layout
+            margin: const EdgeInsets.only(bottom: 20), // Each card vachhe niche ni side spacing
             decoration: BoxDecoration(
               color: ModernHeritageApp.cardColor,
               borderRadius: BorderRadius.circular(35),
@@ -986,7 +1048,7 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                         fadeOutDuration: const Duration(milliseconds: 500),
                         fadeInDuration: const Duration(milliseconds: 700),
                         imageUrl: deal.templateImage ?? "",
-                        height: 180,
+                        height: 200, // Card custom size height fix layout mapping
                         width: double.infinity,
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Shimmer.fromColors(
@@ -1042,7 +1104,7 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                     children: [
                       Text(
                         deal.dealDesc ?? "",
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.montserrat(
                           color: ModernHeritageApp.textDark,
@@ -1076,15 +1138,14 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
                         ),
                         child: ElevatedButton(
                           onPressed: () {
-                            if(AppPrefs.userId != ""){
+                            if (AppPrefs.userId != "") {
                               _callCrackDeal(dealId: deal.id.toString());
-                            }else{
+                            } else {
                               SharedWidgets.showTopSnackBar(
                                 context,
                                 message: "Login First",
                               );
                             }
-
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
@@ -1110,7 +1171,7 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
               ],
             ),
           );
-        },
+        }).toList(), // List of widgets ma pack kari didhu boss
       ),
     );
   }
@@ -1251,6 +1312,843 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
           }),
         ],
       ),
+    );
+  }
+
+  Widget _buildBecomeVendor(BuildContext context) { // context pass karvo padse bottom sheet mate boss
+    List<Map<String, String>> vendorSteps = [
+      {
+        "id": "1",
+        "title": "Call or WhatsApp Us",
+        "desc": "+91 8382868288",
+        "icon": "📞",
+      },
+      {
+        "id": "2",
+        "title": "Email Your Details",
+        "desc": "info@gotilo.net",
+        "icon": "✉️",
+      },
+    ];
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            ModernHeritageApp.textDark,
+            ModernHeritageApp.textDark.withOpacity(0.8),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(40),
+        boxShadow: [
+          BoxShadow(
+            color: ModernHeritageApp.primaryCyan.withOpacity(0.15),
+            blurRadius: 30,
+            offset: const Offset(0, 15),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          RichText(
+            text: TextSpan(
+              style: GoogleFonts.montserrat(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
+              children: const [
+                TextSpan(text: "Become a "),
+                TextSpan(
+                  text: "Vendor",
+                  style: TextStyle(color: ModernHeritageApp.accentCyan),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            "Grow your business with Gotilo. Reach out to our team via phone or email to get listed today.",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.montserrat(
+              color: Colors.white.withOpacity(0.6),
+              fontSize: 11,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 40),
+
+          ...vendorSteps.map((step) {
+            int index = vendorSteps.indexOf(step);
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 50,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.05),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: ModernHeritageApp.accentCyan.withOpacity(0.3),
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        step["icon"]!,
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            step["title"]!,
+                            style: GoogleFonts.montserrat(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            step["desc"]!,
+                            style: GoogleFonts.montserrat(
+                              color: ModernHeritageApp.accentCyan,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                if (index != vendorSteps.length - 1)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 25, top: 5, bottom: 5),
+                    child: Container(
+                      height: 30,
+                      width: 1,
+                      color: ModernHeritageApp.accentCyan.withOpacity(0.2),
+                    ),
+                  ),
+              ],
+            );
+          }),
+
+          const SizedBox(height: 30),
+
+          // NEW: Send Inquiry Premium Button Integration
+          Container(
+            width: double.infinity,
+            height: 52,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [
+                  ModernHeritageApp.primaryCyan,
+                  ModernHeritageApp.accentCyan,
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: ModernHeritageApp.primaryCyan.withOpacity(0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: ElevatedButton(
+              onPressed: () => _showInquiryBottomSheet(context), // Bottom sheet function call
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: Text(
+                "SEND INQUIRY",
+                style: GoogleFonts.montserrat(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+// NEW FUNCTION: Clean & Premium Bottom Sheet Form Setup
+  void _showInquiryBottomSheet(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    final nameController = TextEditingController();
+    final phoneController = TextEditingController();
+    final emailController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Keyboard aave tyre adjust thava mate essential chhe boss
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom, // Keyboard padding dynamic constraint
+          ),
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(35)),
+            ),
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Top Notch Indicator Line
+                  Center(
+                    child: Container(
+                      width: 50,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 25),
+
+                  Text(
+                    "Vendor Inquiry",
+                    style: GoogleFonts.montserrat(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: ModernHeritageApp.textDark,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    "Fill your details and our team will connect with you.",
+                    style: GoogleFonts.montserrat(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  const SizedBox(height: 25),
+
+                  // Name Input Field
+                  _buildTextField(
+                    controller: nameController,
+                    label: "Full Name",
+                    hint: "Enter your full name",
+                    icon: Icons.person_outline_rounded,
+                    validator: (val) => val == null || val.trim().isEmpty ? "Please enter name" : null,
+                  ),
+                  const SizedBox(height: 18),
+
+                  // Phone Input Field
+                  _buildTextField(
+                    controller: phoneController,
+                    label: "Mobile Number",
+                    hint: "Enter 10-digit number",
+                    icon: Icons.phone_android_outlined,
+                    keyboardType: TextInputType.phone,
+                    maxLength: 10,
+                    validator: (val) {
+                      if (val == null || val.trim().isEmpty) return "Please enter mobile number";
+                      if (val.trim().length != 10) return "Enter valid 10 digit number";
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 18),
+
+                  // Email Input Field
+                  _buildTextField(
+                    controller: emailController,
+                    label: "Email Address",
+                    hint: "Enter your email",
+                    icon: Icons.email_outlined,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (val) {
+                      if (val == null || val.trim().isEmpty) return "Please enter email";
+                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(val.trim())) {
+                        return "Enter a valid email address";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Save / Submit Button
+                  Container(
+                    width: double.infinity,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: ModernHeritageApp.textDark,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (formKey.currentState!.validate()) {
+                          // TODO: Tame tamari Inquiry API ahi call kari sako chho boss
+                          debugPrint("Name: ${nameController.text}");
+                          debugPrint("Phone: ${phoneController.text}");
+                          debugPrint("Email: ${emailController.text}");
+                          _callBecomeVendor(
+                            name: nameController.text,
+                            email: emailController.text,
+                            number: phoneController.text,
+                          );
+                          Navigator.pop(context);
+
+
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                      ),
+                      child: Text(
+                        "SAVE INQUIRY",
+                        style: GoogleFonts.montserrat(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+// Helper Widget: Safe Textfield Creator Reusable Design Pattern
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+    int? maxLength,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      maxLength: maxLength,
+      validator: validator,
+      style: GoogleFonts.montserrat(fontSize: 14, color: ModernHeritageApp.textDark, fontWeight: FontWeight.w600),
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        counterText: "", // Character limit label hide thay e mate
+        labelStyle: GoogleFonts.montserrat(color: Colors.grey[600], fontSize: 13, fontWeight: FontWeight.w500),
+        hintStyle: GoogleFonts.montserrat(color: Colors.grey[400], fontSize: 13),
+        prefixIcon: Icon(icon, color: ModernHeritageApp.primaryCyan, size: 20),
+        filled: true,
+        fillColor: Colors.grey[50],
+        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: Colors.grey[200]!, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: const BorderSide(color: ModernHeritageApp.primaryCyan, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: const BorderSide(color: Colors.redAccent, width: 1),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
+        ),
+      ),
+    );
+  }
+
+
+  Widget gotiloPremiumCarousel() {
+    final List<Map<String, String>> listingData = [
+      {
+        'title': 'The Grand Restaurant',
+        'city': 'Rajkot',
+        'category': 'Restaurant',
+        'badge': '🔥 Trending',
+        'image':
+        'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600&q=100',
+      },
+      {
+        'title': 'Luxury Spa Center',
+        'city': 'Ahmedabad',
+        'category': 'Beauty & Spa',
+        'badge': '⭐ Popular',
+        'image':
+        'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=1600&q=100',
+      },
+      {
+        'title': 'Elite Gym Club',
+        'city': 'Surat',
+        'category': 'Fitness',
+        'badge': '💪 Featured',
+        'image':
+        'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1600&q=100',
+      },
+      {
+        'title': 'Royal Cafe',
+        'city': 'Vadodara',
+        'category': 'Cafe',
+        'badge': '☕ Trending',
+        'image':
+        'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1600&q=100',
+      },
+    ];
+
+    final PageController pageController = PageController(
+      viewportFraction: 0.82,
+    );
+
+    double currentPage = 0;
+
+    return StatefulBuilder(
+      builder: (context, setState) {
+        pageController.addListener(() {
+          if (pageController.position.haveDimensions) {
+            setState(() {
+              currentPage = pageController.page ?? 0;
+            });
+          }
+        });
+
+        return Column(
+          children: [
+            SizedBox(
+              height: 350,
+              child: PageView.builder(
+                controller: pageController,
+                clipBehavior: Clip.none,
+                physics: const BouncingScrollPhysics(),
+                itemCount: listingData.length,
+                itemBuilder: (context, index) {
+                  final item = listingData[index];
+
+                  double diff = index - currentPage;
+
+                  final scale =
+                  (1 - (diff.abs() * 0.08))
+                      .clamp(0.90, 1.0);
+
+                  final opacity =
+                  (1 - (diff.abs() * 0.22))
+                      .clamp(0.72, 1.0);
+
+                  final translateY =
+                      diff.abs() * 14;
+
+                  final rotate =
+                      diff * -0.02;
+
+                  return Transform(
+                    transform: Matrix4.identity()
+                      ..translate(0.0, translateY)
+                      ..setEntry(3, 2, 0.001)
+                      ..rotateZ(rotate)
+                      ..scale(scale),
+                    alignment: Alignment.center,
+                    child: Opacity(
+                      opacity: opacity,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 18,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius:
+                          BorderRadius.circular(36),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black
+                                  .withOpacity(0.20),
+                              blurRadius: 35,
+                              spreadRadius: 2,
+                              offset:
+                              const Offset(0, 18),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius:
+                          BorderRadius.circular(36),
+                          child: Stack(
+                            children: [
+                              /// SHARP IMAGE
+                              Positioned.fill(
+                                child:
+                                CachedNetworkImage(
+                                  imageUrl:
+                                  item['image']!,
+                                  fit: BoxFit.cover,
+                                  memCacheWidth:
+                                  1600,
+                                  fadeInDuration:
+                                  const Duration(
+                                    milliseconds:
+                                    250,
+                                  ),
+                                  imageBuilder:
+                                      (context,
+                                      imageProvider) {
+                                    return Container(
+                                      decoration:
+                                      BoxDecoration(
+                                        image:
+                                        DecorationImage(
+                                          image:
+                                          imageProvider,
+                                          fit: BoxFit
+                                              .cover,
+                                          filterQuality:
+                                          FilterQuality
+                                              .high,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  placeholder:
+                                      (context,
+                                      url) =>
+                                      Container(
+                                        color: const Color(
+                                            0xFF101418),
+                                      ),
+                                  errorWidget:
+                                      (context,
+                                      url,
+                                      error) =>
+                                      Container(
+                                        color: Colors
+                                            .grey[900],
+                                        child:
+                                        const Icon(
+                                          Icons
+                                              .image_not_supported,
+                                          color: Colors
+                                              .white54,
+                                        ),
+                                      ),
+                                ),
+                              ),
+
+                              /// DARK PREMIUM OVERLAY
+                              Positioned.fill(
+                                child: Container(
+                                  decoration:
+                                  BoxDecoration(
+                                    gradient:
+                                    LinearGradient(
+                                      begin:
+                                      Alignment
+                                          .topCenter,
+                                      end:
+                                      Alignment
+                                          .bottomCenter,
+                                      colors: [
+                                        Colors.black
+                                            .withOpacity(
+                                            0.08),
+                                        Colors
+                                            .transparent,
+                                        Colors.black
+                                            .withOpacity(
+                                            0.82),
+                                      ],
+                                      stops:
+                                      const [
+                                        0.0,
+                                        0.45,
+                                        1.0
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              /// BADGE
+                              Positioned(
+                                top: 22,
+                                left: 22,
+                                child: Container(
+                                  padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal:
+                                    14,
+                                    vertical: 8,
+                                  ),
+                                  decoration:
+                                  BoxDecoration(
+                                    color: Colors
+                                        .black
+                                        .withOpacity(
+                                        0.22),
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        50),
+                                    border:
+                                    Border.all(
+                                      color: Colors
+                                          .white24,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    item['badge']!,
+                                    style:
+                                    const TextStyle(
+                                      color:
+                                      Colors.white,
+                                      fontWeight:
+                                      FontWeight
+                                          .w700,
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              /// GLASS INFO CARD
+                              Positioned(
+                                left: 18,
+                                right: 18,
+                                bottom: 18,
+                                child: ClipRRect(
+                                  borderRadius:
+                                  BorderRadius.circular(
+                                      28),
+                                  child:
+                                  BackdropFilter(
+                                    filter:
+                                    ImageFilter.blur(
+                                      sigmaX: 18,
+                                      sigmaY: 18,
+                                    ),
+                                    child:
+                                    Container(
+                                      padding:
+                                      const EdgeInsets
+                                          .all(
+                                          18),
+                                      decoration:
+                                      BoxDecoration(
+                                        color: Colors
+                                            .white
+                                            .withOpacity(
+                                            0.10),
+                                        borderRadius:
+                                        BorderRadius.circular(
+                                            28),
+                                        border:
+                                        Border.all(
+                                          color: Colors
+                                              .white
+                                              .withOpacity(
+                                              0.12),
+                                        ),
+                                      ),
+                                      child:
+                                      Column(
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .start,
+                                        mainAxisSize:
+                                        MainAxisSize
+                                            .min,
+                                        children: [
+                                          Text(
+                                            item[
+                                            'title']!,
+                                            maxLines:
+                                            2,
+                                            overflow:
+                                            TextOverflow
+                                                .ellipsis,
+                                            style:
+                                            const TextStyle(
+                                              color:
+                                              Colors
+                                                  .white,
+                                              fontSize:
+                                              24,
+                                              fontWeight:
+                                              FontWeight
+                                                  .w800,
+                                              height:
+                                              1.1,
+                                            ),
+                                          ),
+
+                                          const SizedBox(
+                                              height:
+                                              14),
+
+                                          Wrap(
+                                            spacing: 8,
+                                            runSpacing: 8,
+                                            children: [
+                                              /// CITY CHIP
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(
+                                                  horizontal: 12,
+                                                  vertical: 8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white.withOpacity(0.12),
+                                                  borderRadius: BorderRadius.circular(40),
+                                                ),
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.location_on_rounded,
+                                                      size: 15,
+                                                      color: Colors.white,
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Flexible(
+                                                      child: Text(
+                                                        item['city']!,
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.w600,
+                                                          fontSize: 12,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+
+                                              /// CATEGORY CHIP
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(
+                                                  horizontal: 12,
+                                                  vertical: 8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    colors: [
+                                                      const Color(0xFF00C6FF).withOpacity(0.25),
+                                                      const Color(0xFF0072FF).withOpacity(0.25),
+                                                    ],
+                                                  ),
+                                                  borderRadius: BorderRadius.circular(40),
+                                                ),
+                                                child: Text(
+                                                  item['category']!,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            Row(
+              mainAxisAlignment:
+              MainAxisAlignment.center,
+              children: List.generate(
+                listingData.length,
+                    (index) =>
+                    AnimatedContainer(
+                      duration:
+                      const Duration(
+                          milliseconds:
+                          300),
+                      margin:
+                      const EdgeInsets.symmetric(
+                        horizontal: 4,
+                      ),
+                      height: 7,
+                      width:
+                      currentPage.round() ==
+                          index
+                          ? 24
+                          : 8,
+                      decoration:
+                      BoxDecoration(
+                        gradient:
+                        currentPage.round() ==
+                            index
+                            ? const LinearGradient(
+                          colors: [
+                            Color(
+                                0xFF00C6FF),
+                            Color(
+                                0xFF0072FF),
+                          ],
+                        )
+                            : null,
+                        color:
+                        currentPage.round() ==
+                            index
+                            ? null
+                            : ModernHeritageApp.textDark,
+                        borderRadius:
+                        BorderRadius.circular(
+                            30),
+                      ),
+                    ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -1416,5 +2314,30 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
         setState(() {});
       }
     }
+  }
+
+
+  Future<void> _callBecomeVendor({String? name,String? number,String? email}) async {
+    MyApplication.checkInternet().then((internet) async {
+        if(internet){
+          try{
+            ResponseBecomeVendor? response = await ApiCalls.callBecomeVendor(RequestBecomeVendor(
+              phone: number,
+              name: name,
+              email: email
+            ));
+            if(response != null){
+              if(response.result!.isNotEmpty && response.result != null &&
+              response.result!.toLowerCase().contains("pass")){
+                SharedWidgets.showTopSnackBar(context, message: response.message!);
+              }
+            }
+          }on Exception catch(e){
+            log("$e");
+          }catch(e){
+            log("$e");
+          }
+        }
+    },);
   }
 }

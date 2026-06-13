@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Screens/AllListing/AllListingDetailScreen.dart';
+import 'package:gotilo_new/Screens/HeritageHomeScreen.dart';
 import 'package:shimmer/shimmer.dart';
 import '../Api/Response/Home/ResponseHome.dart';
 
@@ -20,21 +20,26 @@ class LuxuryCardItem extends StatefulWidget {
 class _LuxuryCardItemState extends State<LuxuryCardItem>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _animation;
-  bool _hasAnimated = false;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _blurAnimation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 500),
     );
 
-    _animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutBack,
+    _scaleAnimation = Tween<double>(begin: 0.92, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
     );
+
+    _blurAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+
+    _controller.forward();
   }
 
   @override
@@ -45,126 +50,174 @@ class _LuxuryCardItemState extends State<LuxuryCardItem>
 
   @override
   Widget build(BuildContext context) {
-    return Builder(
-      builder: (context) {
-        Future.delayed(const Duration(milliseconds: 200), () {
-          if (mounted && !_hasAnimated) {
-            _controller.forward();
-            _hasAnimated = true;
-          }
-        });
-
-        return AnimatedBuilder(
-          animation: _animation,
-          builder: (context, child) {
-            return GestureDetector(
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return ScaleTransition(
+          scale: _scaleAnimation,
+          child: Opacity(
+            opacity: _blurAnimation.value,
+            child: GestureDetector(
               onTap: () {
                 Get.to(() => AllListingDetailScreen(listId: widget.product.id));
               },
               child: Container(
-                height: 200,
-                margin: const EdgeInsets.only(bottom: 30),
+                height: 190,
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF0D1B1E).withOpacity(0.12),
+                      blurRadius: 24,
+                      offset: const Offset(0, 12),
+                    ),
+                  ],
+                ),
                 child: Stack(
                   children: [
-                    Align(
-                      alignment: Alignment.centerRight,
+                    // 1. Full-Bleed Background Image with Curved Border
+                    Positioned.fill(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: CachedNetworkImage(
+                          imageUrl: widget.product.listingImage ?? "",
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => _shimmerBox(),
+                          errorWidget: (context, url, error) => Container(
+                            color: Colors.grey[900],
+                            child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // 2. Cinematic Luxury Gradient Overlay (Bottom-heavy dark mask)
+                    Positioned.fill(
                       child: Container(
-                        width: double.infinity,
-                        height: 160,
-                        padding: const EdgeInsets.only(
-                          left: 155,
-                          right: 20,
-                          top: 15,
-                          bottom: 15,
-                        ),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(30),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 30,
-                              offset: const Offset(0, 15),
-                            ),
-                          ],
+                          borderRadius: BorderRadius.circular(24),
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withOpacity(0),
+                              Colors.black.withOpacity(0.2),
+                              Colors.black.withOpacity(0.50),
+                            ],
+                            stops: const [0.0, 0.4, 1.0],
+                          ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
+                      ),
+                    ),
+
+                    // 3. Floating Top-Left City Tag (Premium Glass Look)
+                    Positioned(
+                      top: 14,
+                      left: 14,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Color(0xFF0D1B1E).withOpacity(0.80),
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.25),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                              widget.product.listingTitle!,
-                              style: GoogleFonts.montserrat(
-                                color: const Color(0xFF0D1B1E),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 1.2,
-                              ),
+                            const Icon(
+                              Icons.location_on_rounded,
+                              size: 12,
+                              color: Color(0xFF00ACC1),
                             ),
-                            const SizedBox(height: 12),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  widget.product.cityName!,
-                                  style: GoogleFonts.montserrat(
-                                    color: const Color(0xFF00ACC1),
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const Icon(
-                                  Icons.arrow_forward_ios_rounded,
-                                  size: 14,
-                                  color: Color(0xFF0D1B1E),
-                                ),
-                              ],
+                            const SizedBox(width: 4),
+                            Text(
+                              widget.product.cityName ?? "Explore",
+                              style: GoogleFonts.plusJakartaSans(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                           ],
                         ),
                       ),
                     ),
 
+                    // 4. Content Area (Title & Arrow Button at bottom)
                     Positioned(
+                      bottom: 0,
                       left: 0,
-                      top: 0,
-                      bottom: 20,
-                      child: Transform.translate(
-                        offset: Offset(-40 * (1 - _animation.value), 0),
-                        child: Transform.scale(
-                          scale: 0.8 + (0.2 * _animation.value),
-                          child: Opacity(
-                            opacity: _animation.value.clamp(0.0, 1.0),
-                            child: Container(
-                              width: 135,
+                      right: 0,
+                      child: Padding(
+                        padding: const EdgeInsets.all(18.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            // Listing Title
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    widget.product.listingTitle ?? "No Title",
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w800,
+                                      height: 1.25,
+                                      shadows: [
+                                        Shadow(
+                                          color: Color(0xFF0D1B1E).withOpacity(0.5),
+                                          offset: const Offset(0, 2),
+                                          blurRadius: 4,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+
+                            // Minimalist Premium Circle Action Button
+                            Container(
+                              height: 30,
+                              width: 30,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(25),
+                                color: const Color(0xFF00ACC1),
+                                shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.15),
-                                    blurRadius: 20,
-                                    offset: const Offset(5, 10),
+                                    color: const Color(0xFF00ACC1).withOpacity(0.4),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
                                   ),
                                 ],
                               ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(25),
-                                child: CachedNetworkImage(
-                                  imageUrl: widget.product.listingImage ?? "",
-                                  fit: BoxFit.cover,
-                                  placeholder: (context, url) => _shimmerBox(),
-                                ),
+                              child: const Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 14,
+                                color: Colors.white,
                               ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-            );
-          },
+            ),
+          ),
         );
       },
     );
@@ -172,9 +225,14 @@ class _LuxuryCardItemState extends State<LuxuryCardItem>
 
   Widget _shimmerBox() {
     return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Container(color: Colors.white),
+      baseColor: Colors.grey[900]!,
+      highlightColor: Colors.grey[800]!,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(24),
+        ),
+      ),
     );
   }
 }

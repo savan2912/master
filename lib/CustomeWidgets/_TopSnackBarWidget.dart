@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
 class TopSnackBarWidget extends StatefulWidget {
   final String message;
   final Duration duration;

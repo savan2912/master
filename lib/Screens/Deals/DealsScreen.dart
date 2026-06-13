@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
@@ -20,7 +19,8 @@ import '../HeritageHomeScreen.dart';
 import '../User/Deals/DealsScreen.dart';
 
 class DealsScreen extends StatefulWidget {
-  const DealsScreen({super.key});
+  bool? isHome = false;
+  DealsScreen({super.key, required this.isHome});
 
   @override
   State<DealsScreen> createState() => _DealsScreenState();
@@ -83,7 +83,7 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:ModernHeritageApp.appBg,
+      backgroundColor: ModernHeritageApp.appBg,
       body: CustomScrollView(
         controller: _scrollController,
         physics: const BouncingScrollPhysics(),
@@ -94,10 +94,10 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
             backgroundColor: const Color(0xFFFDFDFD),
             surfaceTintColor: const Color(0xFFFDFDFD),
             elevation: 0,
-            leading: IconButton(
+            leading: !widget.isHome! ? IconButton(
               icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF0D1B1E), size: 18),
               onPressed: () => Navigator.pop(context),
-            ),
+            ) : const SizedBox(),
             actions: [
               IconButton(
                 onPressed: () {
@@ -192,10 +192,11 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
     );
   }
 
+  // FIX: isHome true hoy tyre list end padding vadhi jase jethi data bottom bar ni upar dekhay
   Widget _buildDealsList(List<Deals> data) {
     if (data.isEmpty && isApiComplete.value) return const Center(child: Text("No Deals Found"));
     return ListView.builder(
-      padding: const EdgeInsets.only(top: 10, bottom: 30),
+      padding: EdgeInsets.only(top: 10, bottom: widget.isHome! ? 95 : 30),
       itemCount: data.length + 1,
       physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) {
@@ -205,10 +206,11 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
     );
   }
 
+  // FIX: Same dynamic spacing rule handled for Nearby deals
   Widget _buildNearByDealsList(List<NearbyDeals> data) {
     if (data.isEmpty && isApiComplete.value) return const Center(child: Text("No Nearby Deals Found"));
     return ListView.builder(
-      padding: const EdgeInsets.only(top: 10, bottom: 30),
+      padding: EdgeInsets.only(top: 10, bottom: widget.isHome! ? 95 : 30),
       itemCount: data.length + 1,
       physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) {
@@ -231,25 +233,25 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
 
   Widget _buildHighImpactDealCard(Deals deal) {
     return _baseDealCard(
-      imageUrl: deal.templateImage ?? "",
-      name: deal.dealName ?? "",
-      desc: deal.dealDesc ?? "",
-      date: deal.endDate ?? "",
+        imageUrl: deal.templateImage ?? "",
+        name: deal.dealName ?? "",
+        desc: deal.dealDesc ?? "",
+        date: deal.endDate ?? "",
         id: deal.id.toString()
     );
   }
 
   Widget _buildHighImpactNearByDealCard(NearbyDeals deal) {
     return _baseDealCard(
-      imageUrl: deal.templateImage ?? "",
-      name: deal.dealName ?? "",
-      desc: deal.dealDesc ?? "",
-      date: deal.endDate ?? "",
-      id: deal.id.toString() ?? ""
+        imageUrl: deal.templateImage ?? "",
+        name: deal.dealName ?? "",
+        desc: deal.dealDesc ?? "",
+        date: deal.endDate ?? "",
+        id: deal.id.toString() ?? ""
     );
   }
 
-  Widget _baseDealCard({required String imageUrl, required String name, required String desc, required String date,required String id}) {
+  Widget _baseDealCard({required String imageUrl, required String name, required String desc, required String date, required String id}) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
       decoration: BoxDecoration(
@@ -311,12 +313,12 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildCrackButton({String? dealId=""}) {
+  Widget _buildCrackButton({String? dealId = ""}) {
     return GestureDetector(
       onTap: () {
-        if(AppPrefs.userId != ""){
-          _callCrackDeal(dealId:dealId);
-        }else{
+        if (AppPrefs.userId != "") {
+          _callCrackDeal(dealId: dealId);
+        } else {
           SharedWidgets.showTopSnackBar(context, message: "Login First");
         }
       },
@@ -400,11 +402,10 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
     }
   }
 
-  Future<void> _callCrackDeal({String? dealId=""}) async {
+  Future<void> _callCrackDeal({String? dealId = ""}) async {
     try {
       bool internet = await MyApplication.checkInternet();
-      if(internet)
-      {
+      if (internet) {
         ResponseCrackDeal? response = await ApiCalls.callCrackDeal(RequestCrackDeal(
             userId: AppPrefs.userId,
             dealId: dealId
@@ -413,7 +414,7 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
             response.result != null &&
             response.result!.isNotEmpty &&
             response.result!.toLowerCase().contains("pass")) {
-          Get.to(()=> const UserDealsScreen());
+          Get.to(() => const UserDealsScreen());
           SharedWidgets.showTopSnackBar(context, message: response.message!);
         } else {
           SharedWidgets.showTopSnackBar(context, message: response!.message!);

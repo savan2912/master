@@ -13,6 +13,7 @@ import 'package:gotilo_new/Api/Request/AllListings/RequestAllListings.dart';
 import 'package:gotilo_new/Api/Request/AllListings/RequestSimilarListing.dart';
 import 'package:gotilo_new/Api/Request/AllNewlyAdded/RequestAllNewlyAdded.dart';
 import 'package:gotilo_new/Api/Request/AllService/RequestAllService.dart';
+import 'package:gotilo_new/Api/Request/BecomeVendor/RequestBecomeVendor.dart';
 import 'package:gotilo_new/Api/Request/Blog/RequestBlogDetail.dart';
 import 'package:gotilo_new/Api/Request/Cart/RequestAddCart.dart';
 import 'package:gotilo_new/Api/Request/Cart/RequestCartAddress.dart';
@@ -20,6 +21,7 @@ import 'package:gotilo_new/Api/Request/Cart/RequestCartDelete.dart';
 import 'package:gotilo_new/Api/Request/Cart/RequestCartItem.dart';
 import 'package:gotilo_new/Api/Request/Cart/RequestUpdateCart.dart';
 import 'package:gotilo_new/Api/Request/CrackDeal/RequestCrackDeal.dart';
+import 'package:gotilo_new/Api/Request/DeleteUser/RequestDeleteUser.dart';
 import 'package:gotilo_new/Api/Request/Enquiry/RequestAddEnquiry.dart';
 import 'package:gotilo_new/Api/Request/Fav/RequestAddFav.dart';
 import 'package:gotilo_new/Api/Request/Login/RequestLogin.dart';
@@ -74,6 +76,7 @@ import 'package:gotilo_new/Api/Response/AllListings/ResponseSimilarListing.dart'
 import 'package:gotilo_new/Api/Response/AllNewlyAdded/ResponseAllNewlyAdded.dart';
 import 'package:gotilo_new/Api/Response/AllService/ResponseAllService.dart';
 import 'package:gotilo_new/Api/Response/Banner/ResponseBanner.dart';
+import 'package:gotilo_new/Api/Response/BecomeVendor/ResponseBecomeVendor.dart';
 import 'package:gotilo_new/Api/Response/Blog/ResponseBlogData.dart';
 import 'package:gotilo_new/Api/Response/Blog/ResponseBlogDetail.dart';
 import 'package:gotilo_new/Api/Response/Cart/ResponseAddCart.dart';
@@ -139,6 +142,7 @@ import 'Request/Otp/RequestLoginOtp.dart';
 import 'Request/User/Menu/RequestMenu.dart';
 import 'Response/AboutUs/ResponseAboutUs.dart';
 import 'Response/City/ResponseCity.dart';
+import 'Response/DeleteUser/ResponseDeleteUser.dart';
 import 'Response/Home/ResponseHome.dart';
 import 'Response/Home/ResponseHomeDeal.dart';
 import 'Response/Otp/ResponseVerifyOtp.dart';
@@ -517,6 +521,39 @@ class ApiCalls {
           log("Response Data = ${response.data}", name: TAG);
           //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
           return ResponseAllCollection.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+  static Future<ResponseDeleteUser?> callDeleteUser(RequestDeleteUser model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlDeleteUser}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlDeleteUser, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseDeleteUser.fromJson(response.data);
         } else {
           log("Response data = null", name: TAG);
           return null;
@@ -958,6 +995,40 @@ class ApiCalls {
           log("Response Data = ${response.data}", name: TAG);
           //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
           return ResponseSimilarListing.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+
+  static Future<ResponseBecomeVendor?> callBecomeVendor (RequestBecomeVendor model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlBecomeVendor}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlBecomeVendor, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseBecomeVendor.fromJson(response.data);
         } else {
           log("Response data = null", name: TAG);
           return null;

@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Screens/HeritageHomeScreen.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../Api/ApiCalls.dart';
 import '../../Api/Request/AllCollection/RequestAllCollection.dart';
@@ -14,7 +16,8 @@ import '../../MyApplication/MyApplication.dart';
 import '../AllCollection/CollectionDetailScreen.dart';
 
 class AllCollectionScreen extends StatefulWidget {
-  const AllCollectionScreen({super.key});
+  bool? isHome=false;
+  AllCollectionScreen({super.key,required this.isHome});
 
   @override
   State<AllCollectionScreen> createState() => _AllCollectionScreenState();
@@ -27,22 +30,24 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
   bool isApiCalling = false;
   List<AllCollectionData> categories = [];
 
-
   final ScrollController _scrollController = ScrollController();
   int counter = 0;
   final int limit = 10;
   bool isLoadingMore = false;
   bool hasMoreData = true;
 
-  final List<Color> colorList = [
-    const Color(0xFFFF6B6B),
-    const Color(0xFF4ECDC4),
-    const Color(0xFFFFA94D),
-    const Color(0xFF6C5CE7),
-    const Color(0xFF00C853),
-    const Color(0xFFFF4081),
-    const Color(0xFF00B0FF),
-    const Color(0xFFFFC107),
+  // Premium Bento Box Gradients List
+  final List<List<Color>> gradients = [
+    [const Color(0xFF1E2640), const Color(0xFF0F1424)], // Cyber Midnight Blue
+    [const Color(0xFF281D3C), const Color(0xFF130A1E)], // Premium Dark Amethyst
+    [const Color(0xFF102A2D), const Color(0xFF051214)], // Deep Oceanic Teal
+    [const Color(0xFF232526), const Color(0xFF111111)], // Pure Obsidian / Onyx
+    [const Color(0xFF2D1F1F), const Color(0xFF160E0E)], // Dark Charcoal Maroon
+    [const Color(0xFF17252A), const Color(0xFF0B1316)], // Minimal Deep Slate
+    [const Color(0xFF1A2332), const Color(0xFF0D131A)], // Shadow Steel Blue
+    [const Color(0xFF1C2826), const Color(0xFF0E1413)], // Premium Forest Obsidian
+    [const Color(0xFF2D221E), const Color(0xFF17100E)], // Muted Luxury Espresso
+    [const Color(0xFF1E1E24), const Color(0xFF111115)], // Dark Titanium Gray
   ];
 
   bool isSearching = false;
@@ -116,6 +121,7 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
           response.data != null) {
 
         List<AllCollectionData> newData = response.data!;
+        print("New Data : - $newData");
 
         for (var item in newData) {
           if (!categories.any((e) => e.id == item.id)) {
@@ -138,6 +144,10 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
       if (mounted) setState(() {});
     }
   }
+
+// STEP 1: Pehla tamara class na constructor ma aa line verify/add kari lejo boss:
+// final bool isHome;
+// const AllCollectionScreen({super.key, this.isHome = false});
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +177,7 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
                   }
 
                   return SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
                     sliver: SliverList(
                       delegate: SliverChildListDelegate(
                         [
@@ -176,23 +186,25 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
                             physics: const NeverScrollableScrollPhysics(),
                             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
-                              mainAxisSpacing: 15,
-                              crossAxisSpacing: 15,
-                              mainAxisExtent: 190,
+                              mainAxisSpacing: 14,
+                              crossAxisSpacing: 14,
+                              childAspectRatio: 0.82, // Perfect Bento aspect ratio
                             ),
                             itemCount: categories.length,
                             itemBuilder: (context, index) {
                               final cat = categories[index];
-                              bool isEven = index % 2 == 0;
-                              Color color = colorList[index % colorList.length];
-                              return _buildLuxuryCompactCard(cat, isEven, color);
+                              final gradient = gradients[index % gradients.length];
+                              return _buildPremiumBentoCard(cat, gradient);
                             },
                           ),
+
+                          // Loader padding checklist block
                           if (isLoadingMore && hasMoreData)
                             const Padding(
                               padding: EdgeInsets.all(20),
                               child: Center(child: CircularProgressIndicator(color: Colors.black)),
                             ),
+                          SizedBox(height: widget.isHome! ? 90 : 0),
                         ],
                       ),
                     ),
@@ -215,7 +227,7 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
       backgroundColor: const Color(0xFFFDFDFD),
       elevation: 0,
       centerTitle: true,
-      leading: IconButton(
+      leading: !widget.isHome! ? IconButton(
         icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF0D1B1E), size: 18),
         onPressed: () {
           if (isSearching) {
@@ -229,7 +241,7 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
             Navigator.pop(context);
           }
         },
-      ),
+      ):SizedBox(),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 10),
@@ -308,67 +320,153 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
     );
   }
 
-  Widget _buildLuxuryCompactCard(AllCollectionData cat, bool isEven, Color color) {
-    String iconUrl = "";
-    if (cat.icon != null && cat.icon!.isNotEmpty) {
-      iconUrl = cat.icon!.startsWith("http") ? cat.icon! : "https://yourdomain.com/${cat.icon!}";
-    }
-
+  // New Premium Bento Box Card Method Integration
+  Widget _buildPremiumBentoCard(AllCollectionData cat, List<Color> gradient) {
     return GestureDetector(
-      onTap: () => Get.to(() => CollectionDetailScreen(categoryId: cat.id,title: cat.name,)),
+      onTap: () => Get.to(() => CollectionDetailScreen(categoryId: cat.id, title: cat.name)),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(35),
-            bottomRight: const Radius.circular(35),
-            topRight: Radius.circular(isEven ? 12 : 35),
-            bottomLeft: Radius.circular(isEven ? 35 : 12),
+          borderRadius: BorderRadius.circular(28),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: gradient,
           ),
           boxShadow: [
-            BoxShadow(color: const Color(0xFF0D1B1E).withOpacity(0.06), blurRadius: 15, offset: const Offset(0, 8)),
+            BoxShadow(
+              color: gradient.first.withOpacity(0.3),
+              blurRadius: 14,
+              spreadRadius: 1,
+              offset: const Offset(0, 8),
+            ),
           ],
         ),
-        child: Stack(
-          children: [
-            Positioned(
-              top: 0,
-              right: 0,
-              child: Container(
-                height: 90,
-                width: 90,
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.18),
-                  borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(90)),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(28),
+          child: Stack(
+            children: [
+              // Background Circle Effect (Top Right)
+              Positioned(
+                top: -35,
+                right: -20,
+                child: Container(
+                  height: 100,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withOpacity(0.12),
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 56,
-                    width: 56,
-                    decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(18)),
-                    alignment: Alignment.center,
-                    child: iconUrl.isNotEmpty
-                        ? SvgPicture.network(iconUrl, height: 26, width: 26,
-                        colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn))
-                        : const Icon(Icons.image_not_supported, color: Colors.white),
+
+              // Background Circle Effect (Bottom Left)
+              Positioned(
+                bottom: -20,
+                left: -15,
+                child: Container(
+                  height: 75,
+                  width: 75,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withOpacity(0.06),
                   ),
-                  const Spacer(),
-                  Text(
-                    cat.name ?? "",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.montserrat(fontSize: 14, fontWeight: FontWeight.w900),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+
+              // Card Main Internal Content Layout
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Icon Container Setup
+                    Container(
+                      height: 65,
+                      width: 65,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.15),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: (cat.icon != null && cat.icon!.contains('.svg'))
+                            ? SvgPicture.network(
+                          cat.icon!,
+                          colorFilter: const ColorFilter.mode(
+                            Colors.white,
+                            BlendMode.srcIn,
+                          ),
+                          placeholderBuilder: (_) => _shimmerCircle(),
+                        )
+                            : CachedNetworkImage(
+                          imageUrl: cat.icon ?? "",
+                          color: Colors.white,
+                          placeholder: (context, url) => _shimmerCircle(),
+                          errorWidget: (context, url, error) => const Icon(
+                            Icons.category,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const Spacer(),
+
+                    // Category Name Title
+                    Text(
+                      cat.name ?? "",
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.montserrat(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        height: 1.2,
+                      ),
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    // Bottom Explore Text Row
+                    Row(
+                      children: [
+                        Text(
+                          "Explore",
+                          style: GoogleFonts.montserrat(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(
+                          Icons.arrow_forward_rounded,
+                          color: Colors.white,
+                          size: 14,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _shimmerCircle() {
+    return Shimmer.fromColors(
+      baseColor: Colors.white.withOpacity(0.2),
+      highlightColor: Colors.white.withOpacity(0.4),
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
         ),
       ),
     );
