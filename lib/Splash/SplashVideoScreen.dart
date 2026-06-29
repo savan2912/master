@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
@@ -18,7 +19,7 @@ class _SplashVideoScreenState extends State<SplashVideoScreen> {
   void initState() {
     super.initState();
 
-    _controller = VideoPlayerController.asset("assets/videos/logo_splash1.mp4")
+    _controller = VideoPlayerController.asset("assets/videos/logo_splash2.mp4")
       ..initialize().then((_) {
         setState(() {});
         _controller.play();
@@ -44,7 +45,7 @@ class _SplashVideoScreenState extends State<SplashVideoScreen> {
         child: _controller.value.isInitialized
             ? SizedBox.expand(
                 child: FittedBox(
-                  fit: BoxFit.contain,
+                  fit: BoxFit.cover,
                   child: SizedBox(
                     width: _controller.value.size.width,
                     height: _controller.value.size.height,

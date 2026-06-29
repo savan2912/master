@@ -6,6 +6,7 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:marquee/marquee.dart'; // Marquee પેકેજ ઈમ્પોર્ટ કર્યું
 import 'package:gotilo_new/Api/Request/AllDeals/RequestAllDeals.dart';
 import 'package:gotilo_new/Api/Response/AllDeals/ResponseAllDeals.dart';
 import 'package:gotilo_new/Constant/Constants.dart';
@@ -17,6 +18,19 @@ import '../../CustomeWidgets/SharedWidgets.dart';
 import '../../MyApplication/MyApplication.dart';
 import '../HeritageHomeScreen.dart';
 import '../User/Deals/DealsScreen.dart';
+
+class _T {
+  static const Color white = Colors.white;
+  static const Color red = Color(0xFFFF2A44); // બ્રાઇટ રેડ ગ્લો કલર
+  static const Color border = Color(0xEAEAEAFF);
+  static const Color textHi = Color(0xFF0D1B1E);
+  static const Color textMid = Color(0xFF55666A);
+  static const Color textLow = Color(0xFF88999E);
+  static const Color bg = Color(0xFFF5F7F8);
+  static const Color cyan = Color(0xFF00B4D8);
+  static const Color cyanDim = Color(0xFF0077B6);
+  static const Color surface2 = Color(0xFFEEEEEE);
+}
 
 class DealsScreen extends StatefulWidget {
   bool? isHome = false;
@@ -83,7 +97,7 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ModernHeritageApp.appBg,
+      backgroundColor: const Color(0xFFFAFAFA),
       body: CustomScrollView(
         controller: _scrollController,
         physics: const BouncingScrollPhysics(),
@@ -138,8 +152,8 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
               )
                   : Text(
                 "EXCLUSIVE DEALS",
-                style: GoogleFonts.montserrat(
-                  letterSpacing: 2,
+                style: GoogleFonts.poppins(
+                  letterSpacing: 1,
                   fontWeight: FontWeight.w900,
                   fontSize: 14,
                   color: const Color(0xFF0D1B1E),
@@ -192,11 +206,10 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
     );
   }
 
-  // FIX: isHome true hoy tyre list end padding vadhi jase jethi data bottom bar ni upar dekhay
   Widget _buildDealsList(List<Deals> data) {
     if (data.isEmpty && isApiComplete.value) return const Center(child: Text("No Deals Found"));
     return ListView.builder(
-      padding: EdgeInsets.only(top: 10, bottom: widget.isHome! ? 95 : 30),
+      padding: EdgeInsets.only(top: 10, left: 16, right: 16, bottom: widget.isHome! ? 95 : 30),
       itemCount: data.length + 1,
       physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) {
@@ -206,11 +219,10 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
     );
   }
 
-  // FIX: Same dynamic spacing rule handled for Nearby deals
   Widget _buildNearByDealsList(List<NearbyDeals> data) {
     if (data.isEmpty && isApiComplete.value) return const Center(child: Text("No Nearby Deals Found"));
     return ListView.builder(
-      padding: EdgeInsets.only(top: 10, bottom: widget.isHome! ? 95 : 30),
+      padding: EdgeInsets.only(top: 10, left: 16, right: 16, bottom: widget.isHome! ? 95 : 30),
       itemCount: data.length + 1,
       physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) {
@@ -234,9 +246,12 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
   Widget _buildHighImpactDealCard(Deals deal) {
     return _baseDealCard(
         imageUrl: deal.templateImage ?? "",
-        name: deal.dealName ?? "",
+        name: deal.dealName ?? "OFFER",
         desc: deal.dealDesc ?? "",
-        date: deal.endDate ?? "",
+        startDate: deal.startDate ?? "-",
+        endDate: deal.endDate ?? "-",
+        cityName: deal.cityName ?? "Location",
+        listingTitle: deal.listingTitle ?? "Shop Name",
         id: deal.id.toString()
     );
   }
@@ -244,66 +259,259 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
   Widget _buildHighImpactNearByDealCard(NearbyDeals deal) {
     return _baseDealCard(
         imageUrl: deal.templateImage ?? "",
-        name: deal.dealName ?? "",
+        name: deal.dealName ?? "OFFER",
         desc: deal.dealDesc ?? "",
-        date: deal.endDate ?? "",
-        id: deal.id.toString() ?? ""
+        startDate: deal.startDate ?? "-",
+        endDate: deal.endDate ?? "-",
+        cityName: deal.cityName ?? "Location",
+        listingTitle: deal.listingTitle ?? "Shop Name",
+        id: deal.id.toString()
     );
   }
 
-  Widget _baseDealCard({required String imageUrl, required String name, required String desc, required String date, required String id}) {
+  // ════════════ COMPACT PREVENTING TEXT OVERFLOW CARD DESIGN ════════════
+  Widget _baseDealCard({
+    required String imageUrl,
+    required String name,
+    required String desc,
+    required String startDate,
+    required String endDate,
+    required String cityName,
+    required String listingTitle,
+    required String id
+  }) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(40),
-        boxShadow: [BoxShadow(color: const Color(0xFF0D1B1E).withOpacity(0.06), blurRadius: 30, offset: const Offset(0, 15))],
+        color: _T.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: _T.border.withOpacity(0.7)),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0D1117).withOpacity(0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          )
+        ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-                child: CachedNetworkImage(
+          // 1. IMAGE & HIGH-HIGHLIGHTED MARQUEE TAG
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            child: Stack(
+              children: [
+                CachedNetworkImage(
                   imageUrl: imageUrl,
-                  height: 230, width: double.infinity, fit: BoxFit.cover,
+                  height: 145, // કમ્પેક્ટ હાઇટ
+                  width: double.infinity,
+                  fit: BoxFit.cover,
                   memCacheWidth: 600,
                   placeholder: (context, url) => Shimmer.fromColors(
                     baseColor: Colors.grey[300]!,
                     highlightColor: Colors.grey[100]!,
                     child: Container(color: Colors.white),
                   ),
+                  errorWidget: (_, __, ___) => Container(height: 145, color: _T.surface2),
                 ),
-              ),
-              Positioned(
-                top: 20, left: 20,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [Color(0xFFFF5252), Color(0xFFFF1744)]),
-                    borderRadius: BorderRadius.circular(20),
+                Positioned(
+                  top: 10,
+                  left: 10,
+                  right: 10,
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: _T.red,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: _T.red.withOpacity(0.45),
+                            blurRadius: 10,
+                            offset: const Offset(0, 3),
+                          )
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.local_offer_rounded, color: Colors.white, size: 11),
+                          const SizedBox(width: 5),
+                          Flexible(
+                            child: SizedBox(
+                              height: 14,
+                              width: 140, // ટેક્સ્ટ કપાશે નહીં, મસ્ત મારક્યુ થશે
+                              child: Marquee(
+                                text: name.toUpperCase(),
+                                style: GoogleFonts.montserrat(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 1.2,
+                                ),
+                                scrollAxis: Axis.horizontal,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                blankSpace: 20.0,
+                                velocity: 30.0,
+                                pauseAfterRound: const Duration(seconds: 1),
+                                startPadding: 0.0,
+                                accelerationDuration: const Duration(seconds: 1),
+                                accelerationCurve: Curves.linear,
+                                decelerationDuration: const Duration(milliseconds: 500),
+                                decelerationCurve: Curves.easeOut,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  child: Text(name, style: GoogleFonts.montserrat(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900)),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+
+          // 2. CONTENT DETAILS SECTION
           Padding(
-            padding: const EdgeInsets.all(25),
+            padding: const EdgeInsets.all(14), // કમ્પેક્ટ પેડિંગ
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(desc, style: GoogleFonts.montserrat(color: const Color(0xFF0D1B1E), fontSize: 18, fontWeight: FontWeight.w900)),
-                const SizedBox(height: 8),
+                // ડીલ ડિસ્ક્રિપ્શન
+                Text(
+                  desc,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.roboto(
+                    color: _T.textHi,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    height: 1.3,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Container(height: 1, color: _T.border.withOpacity(0.5)),
+                const SizedBox(height: 10),
+
+                // શોપ નામ
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.timer_outlined, color: Colors.orange, size: 16),
+                    Container(
+                      margin: const EdgeInsets.only(top: 2),
+                      height: 16,
+                      width: 16,
+                      child: const Icon(Icons.storefront_rounded, color: _T.cyan, size: 16), // ઓલ્ટરનેટિવ જો એસેટ ના વાપરવો હોય
+                    ),
                     const SizedBox(width: 6),
-                    Text(date, style: GoogleFonts.montserrat(color: Colors.orange, fontSize: 12, fontWeight: FontWeight.w700)),
+                    Expanded(
+                      child: Text(
+                        listingTitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.montserrat(
+                          color: _T.textHi,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          height: 1.3,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 25),
+
+                const SizedBox(height: 10),
+                Container(height: 1, color: _T.border.withOpacity(0.5)),
+                const SizedBox(height: 10),
+
+                // ડેટ સેક્શન (સ્ટાર્ટ અને એન્ડ ડેટ)
+                Row(
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          const Icon(Icons.calendar_today_rounded, color: _T.textMid, size: 13),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("START DATE", style: GoogleFonts.montserrat(fontSize: 8, fontWeight: FontWeight.w700, color: _T.textLow, letterSpacing: 0.5)),
+                                Text(
+                                  startDate,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.montserrat(color: _T.textMid, fontSize: 11, fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(width: 1, height: 22, color: _T.border),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          const Icon(Icons.calendar_month_rounded, color: _T.red, size: 13),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("END DATE", style: GoogleFonts.montserrat(fontSize: 8, fontWeight: FontWeight.w700, color: _T.red.withOpacity(0.7), letterSpacing: 0.5)),
+                                Text(
+                                  endDate,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.montserrat(color: _T.textHi, fontSize: 11, fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                // સિટી / લોકેશન
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: _T.bg,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.location_on_rounded, color: _T.cyan, size: 12),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          cityName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.montserrat(
+                            color: _T.textMid,
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 14),
+
+                // CRACK THE DEAL BUTTON
                 _buildCrackButton(dealId: id),
               ],
             ),
@@ -323,22 +531,38 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
         }
       },
       child: Container(
-        width: double.infinity, height: 58,
-        decoration: BoxDecoration(color: const Color(0xFF1A1A1A), borderRadius: BorderRadius.circular(20)),
-        child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("CRACK THE DEAL", style: GoogleFonts.montserrat(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 1.5)),
-              const SizedBox(width: 10),
-              const Icon(Icons.local_fire_department_rounded, color: Colors.orangeAccent, size: 20),
-            ],
+        width: double.infinity,
+        height: 42, // કમ્પેક્ટ હાઇટ
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [_T.cyan, _T.cyanDim],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: _T.cyan.withOpacity(0.3),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ],
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          "CRACK THE DEAL",
+          style: GoogleFonts.montserrat(
+            color: Colors.white,
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.2,
           ),
         ),
       ),
     );
   }
 
+  // API Call લોજિક અગાઉ મુજબ યથાવત રાખેલું છે...
   Future<void> loadMoreData() async {
     isLoadingMore.value = true;
     currentCounter += 10;
@@ -376,7 +600,6 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
           ));
 
       if (response != null && response.result != null && response.result!.toLowerCase().contains("pass") && response.data != null) {
-
         var newDataDeals = response.data!.deals ?? [];
         var newDataNearby = response.data!.nearbyDealsData ?? [];
 
@@ -420,7 +643,6 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
           SharedWidgets.showTopSnackBar(context, message: response!.message!);
         }
       }
-
     } catch (e) {
       log("HomeBanner Error: $e");
     } finally {

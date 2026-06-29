@@ -200,6 +200,7 @@ class Categories {
 
 class NearbyListings {
   int? id;
+  String? dealName;
   int? liveMediaStatus;
   String? listingTitle;
   String? mobileNo;
@@ -251,6 +252,7 @@ class NearbyListings {
 
   NearbyListings({
     this.id,
+    this.dealName,
     this.liveMediaStatus,
     this.listingTitle,
     this.mobileNo,
@@ -303,6 +305,7 @@ class NearbyListings {
 
   NearbyListings.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    dealName = json['deal_name'];
     liveMediaStatus = json['live_media_status'];
     listingTitle = json['listing_title'];
     mobileNo = json['mobile_no'];
@@ -356,6 +359,7 @@ class NearbyListings {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
+    data['deal_name'] = dealName;
     data['live_media_status'] = liveMediaStatus;
     data['listing_title'] = listingTitle;
     data['mobile_no'] = mobileNo;
@@ -410,6 +414,7 @@ class NearbyListings {
 
 class LatestListings {
   int? id;
+
   int? liveMediaStatus;
   String? listingTitle;
   String? mobileNo;
@@ -658,6 +663,7 @@ class Services {
 
 class NearbyDeals {
   int? id;
+  String? listingTitle;
   int? vendorId;
   int? listingId;
   int? dealTempId;
@@ -686,6 +692,7 @@ class NearbyDeals {
 
   NearbyDeals({
     this.id,
+    this.listingTitle,
     this.vendorId,
     this.listingId,
     this.dealTempId,
@@ -715,6 +722,7 @@ class NearbyDeals {
 
   NearbyDeals.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    listingTitle = json['listing_title'];
     vendorId = json['vendor_id'];
     listingId = json['listing_id'];
     dealTempId = json['deal_temp_id'];
@@ -745,6 +753,7 @@ class NearbyDeals {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
+    data['listing_title'] = listingTitle;
     data['vendor_id'] = vendorId;
     data['listing_id'] = listingId;
     data['deal_temp_id'] = dealTempId;

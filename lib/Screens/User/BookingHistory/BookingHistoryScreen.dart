@@ -112,13 +112,7 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 20, offset: const Offset(0, 8)),
-        ],
-      ),
+      decoration: SharedWidgets.cardBoxDecoration(),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: Column(

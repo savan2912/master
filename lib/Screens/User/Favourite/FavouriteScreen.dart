@@ -213,11 +213,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 15, offset: const Offset(0, 5))],
-        ),
+        decoration: SharedWidgets.cardBoxDecoration(),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

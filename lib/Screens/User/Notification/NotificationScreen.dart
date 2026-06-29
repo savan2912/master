@@ -92,18 +92,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: ModernHeritageApp.cardColor,
-        borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: accentCyan.withOpacity(0.1), width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
+      decoration: SharedWidgets.cardBoxDecoration(),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(25),
         child: Column(

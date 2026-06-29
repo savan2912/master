@@ -57,6 +57,7 @@ class AllDeals {
 
 class Deals {
   int? id;
+  String? listingTitle;
   int? vendorId;
   int? listingId;
   int? dealTempId;
@@ -84,6 +85,7 @@ class Deals {
 
   Deals({
     this.id,
+    this.listingTitle,
     this.vendorId,
     this.listingId,
     this.dealTempId,
@@ -112,6 +114,7 @@ class Deals {
 
   Deals.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    listingTitle = json['listing_title'];
     vendorId = json['vendor_id'];
     listingId = json['listing_id'];
     dealTempId = json['deal_temp_id'];
@@ -141,6 +144,7 @@ class Deals {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
+    data['listing_title'] = listingTitle;
     data['vendor_id'] = vendorId;
     data['listing_id'] = listingId;
     data['deal_temp_id'] = dealTempId;
@@ -171,6 +175,7 @@ class Deals {
 
 class NearbyDeals {
   int? id;
+  String? listingTitle;
   int? vendorId;
   int? listingId;
   int? dealTempId;
@@ -199,6 +204,7 @@ class NearbyDeals {
 
   NearbyDeals({
     this.id,
+    this.listingTitle,
     this.vendorId,
     this.listingId,
     this.dealTempId,
@@ -228,6 +234,7 @@ class NearbyDeals {
 
   NearbyDeals.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    listingTitle = json['listing_title'];
     vendorId = json['vendor_id'];
     listingId = json['listing_id'];
     dealTempId = json['deal_temp_id'];
@@ -258,6 +265,7 @@ class NearbyDeals {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
+    data['listing_title'] = listingTitle;
     data['vendor_id'] = vendorId;
     data['listing_id'] = listingId;
     data['deal_temp_id'] = dealTempId;

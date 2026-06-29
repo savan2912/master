@@ -110,25 +110,15 @@ class _BillingScreenState extends State<BillingScreen> {
   Widget _buildBillingCard(UserBilling item) {
     return Container(
       margin: const EdgeInsets.only(bottom: 18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: primaryDark.withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          )
-        ],
-      ),
+      decoration: SharedWidgets.cardBoxDecoration(),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: Stack(
           children: [
-            Positioned(
-              left: 0, top: 0, bottom: 0,
-              child: Container(width: 5, color: primaryDark),
-            ),
+            // Positioned(
+            //   left: 0, top: 0, bottom: 0,
+            //   child: Container(width: 5, color: primaryDark),
+            // ),
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(

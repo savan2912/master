@@ -197,11 +197,7 @@ class _DealsScreenState extends State<UserDealsScreen> with SingleTickerProvider
   Widget _buildDealCard(String discount, String? title, String? dealName, String? date, String status) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: primaryDark.withOpacity(0.06), blurRadius: 20, offset: const Offset(0, 10))],
-      ),
+      decoration: SharedWidgets.cardBoxDecoration(),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: IntrinsicHeight(

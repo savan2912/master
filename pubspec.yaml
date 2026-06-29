@@ -75,6 +75,7 @@ dependencies:
   share_plus: ^12.0.2
   webview_flutter: ^4.13.1
   speech_to_text: ^7.4.0
+  upgrader: ^13.5.0
 
 
 dev_dependencies:
@@ -104,13 +105,21 @@ flutter:
     - assets/videos/logo_animation.mp4
     - assets/videos/logo_splash.mp4
     - assets/videos/logo_splash1.mp4
+    - assets/videos/logo_splash2.mp4
     - assets/amenities.svg
+    - assets/ic_calendar.svg
+    - assets/ic_location.svg
+    - assets/ic_shopper.svg
+    - assets/g_icon.png
     - assets/gotilo_logo.png
     - assets/app_icon.png
     - assets/g_logo.png
+    - assets/inquiry.svg
+    - assets/wp.svg
+    - assets/call.svg
 
 
-  # An image asset can refer to one or more resolution-specific "variants", see
+  # An image asset can refer to one or more resolution-specific \"variants", see
   # https://flutter.dev/to/resolution-aware-images
 
   # For details regarding adding assets from package dependencies, see

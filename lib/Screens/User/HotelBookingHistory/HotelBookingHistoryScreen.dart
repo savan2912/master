@@ -212,13 +212,7 @@ class _HotelBookingHistoryState extends State<HotelBookingHistory> {
   Widget _buildBookingCard(HotelBooking data) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4)),
-        ],
-      ),
+      decoration: SharedWidgets.cardBoxDecoration(),
       child: Column(
         children: [
           Padding(

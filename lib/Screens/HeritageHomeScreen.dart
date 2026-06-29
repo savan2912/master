@@ -1,10 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Screens/AllCollection/AllCollectionScreen.dart';
 import 'package:gotilo_new/Screens/Deals/DealsScreen.dart';
 import 'package:gotilo_new/Screens/HomeMain.dart';
 import 'dart:ui';
-
 import 'StoreWebView/StoreWebview.dart';
 
 class ModernHeritageApp extends StatefulWidget {
@@ -30,8 +30,7 @@ class _ModernHeritageAppState extends State<ModernHeritageApp> {
     _screens = [
       const HomeMainScreen(),
       DealsScreen(isHome: true,),
-      // aboutUs(),
-      AllCollectionScreen(isHome: true,),
+      const AllCollectionScreen(isHome: true,),
       const StoreWebview(),
     ];
     super.initState();
@@ -39,18 +38,22 @@ class _ModernHeritageAppState extends State<ModernHeritageApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ModernHeritageApp.appBg,
-      body: Stack(
-        children: [
-          IndexedStack(index: _selectedIndex, children: _screens),
-          Positioned(
-            bottom: 25,
-            left: 20,
-            right: 20,
-            child: _buildGlassBottomBar(),
-          ),
-        ],
+    return SafeArea(
+      top: false,
+      bottom: true,
+      child: Scaffold(
+        backgroundColor: ModernHeritageApp.appBg,
+        body: Stack(
+          children: [
+            IndexedStack(index: _selectedIndex, children: _screens),
+            Positioned(
+              bottom: 25,
+              left: 20,
+              right: 20,
+              child: _buildGlassBottomBar(),
+            ),
+          ],
+        ),
       ),
     );
   }

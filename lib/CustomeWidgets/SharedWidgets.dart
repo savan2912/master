@@ -463,6 +463,22 @@ class SharedWidgets {
     );
   }
 
+  static cardBoxDecoration({Color? bgColor}) {
+    return BoxDecoration(
+      color: bgColor ?? Colors.white,
+      borderRadius: BorderRadius.circular(18),
+      boxShadow: [
+        BoxShadow(
+          offset: const Offset(0, 1.5),
+          color: Colors.grey.withOpacity(0.4),
+          spreadRadius: 1.0,
+          blurRadius: 3.0,
+        )
+      ],
+    );
+  }
+
+
   static Widget gradientText({
     required String text,
     Gradient? gradient,

@@ -3,16 +3,23 @@ class ResponseCity {
   String? message;
   List<Cities>? cities;
 
-  ResponseCity({this.result, this.message, this.cities});
+  ResponseCity({
+    this.result,
+    this.message,
+    this.cities,
+  });
 
   ResponseCity.fromJson(Map<String, dynamic> json) {
-    result = json['result'];
-    message = json['message'];
-    if (json['cities'] != null) {
+    result = json['result']?.toString();
+    message = json['message']?.toString();
+
+    if (json['data'] != null && json['data'] is List) {
       cities = <Cities>[];
-      json['cities'].forEach((v) {
+      for (var v in json['data']) {
         cities!.add(Cities.fromJson(v));
-      });
+      }
+    } else {
+      cities = [];
     }
   }
 
@@ -21,7 +28,7 @@ class ResponseCity {
     data['result'] = result;
     data['message'] = message;
     if (cities != null) {
-      data['cities'] = cities!.map((v) => v.toJson()).toList();
+      data['data'] = cities!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -33,8 +40,8 @@ class Cities {
   String? slug;
   String? image;
   int? stateId;
-  String? longitude;
-  String? latitude;
+  dynamic longitude;
+  dynamic latitude;
   int? priority;
   int? status;
   String? createdAt;
@@ -55,32 +62,38 @@ class Cities {
   });
 
   Cities.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    slug = json['slug'];
-    image = json['image'];
-    stateId = json['state_id'];
+    id = json['id'] is int ? json['id'] : int.tryParse(json['id'].toString());
+    name = json['name']?.toString();
+    slug = json['slug']?.toString();
+    image = json['image']?.toString();
+    stateId = json['state_id'] is int
+        ? json['state_id']
+        : int.tryParse(json['state_id'].toString());
     longitude = json['longitude'];
     latitude = json['latitude'];
-    priority = json['priority'];
-    status = json['status'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
+    priority = json['priority'] is int
+        ? json['priority']
+        : int.tryParse(json['priority'].toString());
+    status = json['status'] is int
+        ? json['status']
+        : int.tryParse(json['status'].toString());
+    createdAt = json['created_at']?.toString();
+    updatedAt = json['updated_at']?.toString();
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['name'] = name;
-    data['slug'] = slug;
-    data['image'] = image;
-    data['state_id'] = stateId;
-    data['longitude'] = longitude;
-    data['latitude'] = latitude;
-    data['priority'] = priority;
-    data['status'] = status;
-    data['created_at'] = createdAt;
-    data['updated_at'] = updatedAt;
-    return data;
+    return {
+      'id': id,
+      'name': name,
+      'slug': slug,
+      'image': image,
+      'state_id': stateId,
+      'longitude': longitude,
+      'latitude': latitude,
+      'priority': priority,
+      'status': status,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
   }
 }

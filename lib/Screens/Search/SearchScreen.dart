@@ -6,6 +6,7 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:gotilo_new/Api/ApiCalls.dart';
 import 'package:gotilo_new/Api/Request/Search/RequestSearch.dart';
 import 'package:gotilo_new/Api/Response/Search/ResponseSearch.dart';
+import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/MyApplication/MyApplication.dart';
 import 'package:gotilo_new/Screens/AllListing/AllListingDetailScreen.dart';
 import 'package:shimmer/shimmer.dart';
@@ -416,17 +417,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
       child: Container(
         margin: const EdgeInsets.only(bottom: 15),
         height: 85,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            )
-          ],
-        ),
+        decoration: SharedWidgets.cardBoxDecoration(),
         child: Row(
           children: [
             Padding(

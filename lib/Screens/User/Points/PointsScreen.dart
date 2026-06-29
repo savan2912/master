@@ -185,13 +185,7 @@ class _PointsScreenState extends State<PointsScreen> {
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 15, offset: const Offset(0, 5)),
-          ],
-        ),
+        decoration: SharedWidgets.cardBoxDecoration(),
         child: Column(
           children: [
             Padding(

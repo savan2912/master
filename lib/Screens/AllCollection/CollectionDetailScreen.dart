@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Constant/AppPref.dart';
+import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/Screens/AllListing/AllList/AllListingsByCategory.dart';
 import 'package:gotilo_new/Screens/HeritageHomeScreen.dart';
 import 'package:marquee/marquee.dart';
@@ -132,25 +133,16 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
     return GestureDetector(
       onTap: () => Get.to(() => AllListingByCategory(categoryId: widget.categoryId)),
       child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            )
-          ],
-        ),
+        // color: Colors.cyan,
+        decoration:SharedWidgets.cardBoxDecoration(bgColor: const Color(0xFF192841)),
         child: Column(
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
                 child: Image.asset(
-                  "assets/gotilo_logo.png",
-                  fit: BoxFit.cover,
+                  "assets/g_icon.png",
+                  fit: BoxFit.contain,
                   width: double.infinity,
                 ),
               ),
@@ -161,6 +153,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                 "All Listings",
                 style: GoogleFonts.montserrat(
                   fontWeight: FontWeight.w900,
+                  color: Colors.white,
                   fontSize: 11,
                 ),
               ),
@@ -310,16 +303,12 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
     return GestureDetector(
       onTap: () => Get.to(() => AllListingScreen(subCategoryId: cat.id)),
       child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 5))],
-        ),
+        decoration: SharedWidgets.cardBoxDecoration(),
         child: Column(
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
                 child: CachedNetworkImage(
                   imageUrl: cat.imageLink ?? "",
                   fit: BoxFit.cover,

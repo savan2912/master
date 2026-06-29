@@ -1,3 +1,4 @@
+
 import 'dart:developer';
 import 'dart:ui';
 import 'dart:async';
@@ -39,9 +40,7 @@ import '../../MyApplication/MyApplication.dart';
 import '../HeritageHomeScreen.dart';
 import '../User/Deals/DealsScreen.dart';
 import '../cart/CartScreen.dart';
-
-
-const Color primaryColor = Color(0xFFF012BE);
+ const Color primaryColor = Color(0xFFF012BE);
 const Color darkBlue = Color(0xFF1B2E3F);
 
 class AllListingDetailScreen extends StatefulWidget {
