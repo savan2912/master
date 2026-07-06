@@ -9,16 +9,13 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Api/Request/BecomeVendor/RequestBecomeVendor.dart';
 import 'package:gotilo_new/Api/Request/CrackDeal/RequestCrackDeal.dart';
-import 'package:gotilo_new/Api/Response/BecomeVendor/ResponseBecomeVendor.dart';
 import 'package:gotilo_new/Api/Response/City/ResponseCity.dart';
-import 'package:gotilo_new/Api/Response/CrackDeal/ResponseCrackDeal.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/Screens/AllListing/AllListingDetailScreen.dart';
 import 'package:gotilo_new/Screens/Search/SearchScreen.dart';
 import 'package:gotilo_new/Screens/User/Dashboard/UserDashboardScreen.dart';
 import 'package:gotilo_new/Screens/User/Deals/DealsScreen.dart';
 import 'package:marquee/marquee.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../Api/ApiCalls.dart';
@@ -30,40 +27,33 @@ import '../MyApplication/MyApplication.dart';
 import 'AllCollection/AllCollectionScreen.dart';
 import 'AllCollection/CollectionDetailScreen.dart';
 import 'Deals/DealsScreen.dart';
-import 'HeritageHomeScreen.dart';
 import 'LatestRelease/LatestReleaseScreen.dart';
 import 'Login/view/LoginScreen.dart';
-import 'LuxuryCardItem.dart';
 import 'NewlyAddedListing/NewlyAddedListing.dart';
 import 'OurFeaturedServices/OurFeaturedServicesScreen.dart';
-import 'User/Account/AccountScreen.dart';
 
-// ─────────────────────────── WHITE MODE PREMIUM TOKENS ───────────────────────
 class _T {
-  // backgrounds
+
   static const bg       = Color(0xFFF5F6FA);
   static const white    = Color(0xFFFFFFFF);
   static const surface2 = Color(0xFFF0F2F8);
 
-  // brand
   static const cyan     = Color(0xFF7fabb9);
   static const cyanDim  = Color(0xFF00968C);
   static const cyanBg   = Color(0xFFE6F9F8);
 
-  // accents
   static const amber    = Color(0xFFF59E0B);
   static const red      = Color(0xFFEF4444);
   static const redBg    = Color(0xFFFFF0F0);
 
-  // text
   static const textHi   = Color(0xFF0D1117);
   static const textMid  = Color(0xFF6B7280);
   static const textLow  = Color(0xFFB0B8C8);
 
-  // borders
   static const border   = Color(0xFFE5E8EF);
   static const borderFocus = Color(0xFF00B8AD);
 }
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 class HomeMainScreen extends StatefulWidget {
@@ -182,37 +172,6 @@ class _HomeMainScreenState extends State<HomeMainScreen>
     });
   }
 
-
-
-  Widget _cityTile(int id, String name) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(12),
-      onTap: () async {
-        await AppPrefs.setCity(id, name);
-        setState(() { selectedCityId = id; selectedCityName = name; });
-        isCitySelected.value = true;
-        Get.back();
-        callHome();
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
-        child: Row(children: [
-          Container(
-            width: 36, height: 36,
-            decoration: BoxDecoration(
-                color: _T.cyanBg, shape: BoxShape.circle),
-            child: const Icon(Icons.location_city_rounded, color: _T.cyan, size: 17),
-          ),
-          const SizedBox(width: 14),
-          Expanded(child: Text(name, style: GoogleFonts.montserrat(
-              color: _T.textHi, fontSize: 14, fontWeight: FontWeight.w600))),
-          const Icon(Icons.chevron_right_rounded, size: 18, color: _T.textLow),
-        ]),
-      ),
-    );
-  }
-
-
   // ══════════════════════════════════════════════════════════════
   //  BUILD
   // ══════════════════════════════════════════════════════════════
@@ -248,10 +207,6 @@ class _HomeMainScreenState extends State<HomeMainScreen>
                 physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                 slivers: [
                   _buildAppBar(),
-                  // SliverPersistentHeader(
-                  //   pinned: true,
-                  //   delegate: _TickerDelegate(deals: homeDeal ?? []),
-                  // ),
                   if (!apiDone)
                     const SliverFillRemaining(
                         hasScrollBody: false,
@@ -265,7 +220,7 @@ class _HomeMainScreenState extends State<HomeMainScreen>
                             hasScrollBody: false,
                             child: Center(
                               child: Column(mainAxisSize: MainAxisSize.min, children: [
-                                Icon(Icons.cloud_off_rounded, color: _T.textLow, size: 52),
+                                const Icon(Icons.cloud_off_rounded, color: _T.textLow, size: 52),
                                 const SizedBox(height: 14),
                                 Text("No data for $selectedCityName",
                                     style: GoogleFonts.montserrat(
@@ -293,7 +248,7 @@ class _HomeMainScreenState extends State<HomeMainScreen>
         const SizedBox(height: 30),
         _buildBanner(),
         const SizedBox(height: 40),
-        _sectionHeader("COLLECTIONS", () => Get.to(() => AllCollectionScreen(isHome: false))),
+        _sectionHeader("COLLECTIONS", () => Get.to(() => const AllCollectionScreen(isHome: false))),
         _buildCollections(),
         const SizedBox(height: 40),
         _sectionHeader("HOT DEALS", () => Get.to(() => DealsScreen(isHome: false))),
@@ -319,6 +274,7 @@ class _HomeMainScreenState extends State<HomeMainScreen>
   // ══════════════════════════════════════════════════════════════
   //  APP BAR
   // ══════════════════════════════════════════════════════════════
+
   Widget _buildAppBar() {
     return SliverAppBar(
       expandedHeight: 130,
