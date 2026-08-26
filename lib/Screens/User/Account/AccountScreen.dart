@@ -118,13 +118,13 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
       finally { setState(() => isLoading = false); }
     } else {
       setState(() => isLoading = false);
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
     }
   }
 
   Future<void> _updateProfile() async {
     if (_fNameController.text.isEmpty) {
-      SharedWidgets.showTopSnackBar(context, message: "First name is required");
+      SharedWidgets.showTopSnackBar(context, message: "First name is required",title: "fail");
       return;
     }
 
@@ -142,7 +142,7 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
       );
 
       if (response != null && response.result!.toLowerCase().contains("pass")) {
-        SharedWidgets.showTopSnackBar(context, message: response.message ?? "Profile Updated!");
+        SharedWidgets.showTopSnackBar(context, message: response.message ?? "Profile Updated!",title: "pass");
         setState(() {
           isEditingProfile = false;
           imageFile = null;
@@ -180,8 +180,10 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
             RequestDeleteAddress(userId: AppPrefs.userId, addressId: addressId)
         );
         if (response != null && response.result!.toLowerCase().contains("pass")) {
-          SharedWidgets.showTopSnackBar(context, message: response.message!);
+          SharedWidgets.showTopSnackBar(context, message: response.message!,title: "pass");
           _callProfileAddress();
+        }else{
+          SharedWidgets.showTopSnackBar(context, message: response!.message!,title: "fail");
         }
       } catch (e) { log("Delete Error: $e"); }
     }
@@ -189,7 +191,7 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
 
   Future<void> _saveAddress() async {
     if (_addressController.text.isEmpty || _pincodeController.text.isEmpty) {
-      SharedWidgets.showTopSnackBar(context, message: "Please fill all details");
+      SharedWidgets.showTopSnackBar(context, message: "Please fill all details",title: "fail");
       return;
     }
 
@@ -206,12 +208,14 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
           )
       );
       if (response != null && response.result!.toLowerCase().contains("pass")) {
-        SharedWidgets.showTopSnackBar(context, message: response.message!);
+        SharedWidgets.showTopSnackBar(context, message: response.message!,title: "pass");
         setState(() {
           isEditingAddress = false;
           currentEditAddressId = "";
         });
         _callProfileAddress();
+      }else{
+        SharedWidgets.showTopSnackBar(context, message: response!.message!,title: "fail");
       }
     }
   }

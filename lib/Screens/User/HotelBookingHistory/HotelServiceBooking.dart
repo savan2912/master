@@ -238,7 +238,7 @@ class _HotelServiceBookingState extends State<HotelServiceBooking> {
         setState(() {});
       }
     } else {
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
     }
   }
 }

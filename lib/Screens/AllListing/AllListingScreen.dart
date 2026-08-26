@@ -501,8 +501,10 @@ class _AllListingScreenState extends State<AllListingScreen> {
           if(response != null){
             if(response.result!.isNotEmpty && response.result != null &&
                 response.result!.toLowerCase().contains("pass")){
-              SharedWidgets.showTopSnackBar(context, message: response.message!);
+              SharedWidgets.showTopSnackBar(context, message: response.message!,title: "pass");
               _callSubCategoryList(isFirstTime: true);
+            }else{
+              SharedWidgets.showTopSnackBar(context, message: response.message!,title: "fail");
             }
           }
         }on Exception catch(e){
@@ -513,7 +515,7 @@ class _AllListingScreenState extends State<AllListingScreen> {
 
         }
       }else{
-        SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+        SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
       }
     },);
   }

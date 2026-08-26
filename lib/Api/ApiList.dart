@@ -1,15 +1,11 @@
 
 class  ApiList {
-  static const String apiKey = "CjZOpa8ZMhwtSB5N";
-
+  // static const String apiKey = "CjZOpa8ZMhwtSB5N";
   //TODO: ----------------------------- Clint URL -----------------------------
-
   //TODO: Local URL
-  static String get baseURL => "http://192.168.1.43:8000/api/v1";
+  static String get baseURL => "http://192.168.1.65:8000/api/v1";
   // static String get baseURL => "https://gotilo.net/api/v1";
-
   //TODO: -------------------------------- App URL --------------------------------
-
   static String get urlHomeBanner => "$baseURL/get-slider";
   static String get urlHomeCollection => "$baseURL/explore-category";
   static String get urlHomeLatestListing => "$baseURL/latest-listings";
@@ -29,6 +25,16 @@ class  ApiList {
   static String get urlAllListings => "$baseURL/listing/list-api";
   static String get urlSubCategoryList => "$baseURL/categories/subcategorylist";
   static String get urlSubCategoryListDetails => "$baseURL/listing/listing-details";
+  static String get urlEventBookingList => "$baseURL/auth/auth-event-booking-data-api";
+  static String get urlReserveBook => "$baseURL/auth/reserve-room-details";
+  static String get urlReserveRoomAdd => "$baseURL/auth/booking-summary-api";
+  static String get urlHotelRoomAdd => "$baseURL/auth/hotel-booking-submit-api";
+  static String get urlFinalBillAdd => "$baseURL/auth/confirm-booking-api";
+  static String get urlServiceBookingList => "$baseURL/auth/user-booking-service-staff-list";
+  static String get urlBookingCalender => "$baseURL/auth/user-booking-slots-api";
+  static String get urlAddService => "$baseURL/auth/user-booking-submit-api";
+  static String get urlShowServiceList => "$baseURL/auth/user-booking-service-list";
+  static String get urlAdditionalServiceList => "$baseURL/auth/user-booking-service-api";
   static String get urlSubCategoryProductList => "$baseURL/listing/listing-products";
   static String get urlSearch => "$baseURL/listing/search";
   static String get urlBlogs => "$baseURL/blogs";
@@ -57,6 +63,7 @@ class  ApiList {
   static String get urlCrackDeal => "$baseURL/users/add-crack-deal";
   static String get urlSimilarListing => "$baseURL/listing/similar-nearby-listing";
   static String get urlBecomeVendor => "$baseURL/become-a-vendor";
+  static String get urlAppLogo => "$baseURL/vendor/index-logo-api";
 
   //TODO USER API LIST
   static String get urlUserDashboard => "$baseURL/auth/dashboard-overview";

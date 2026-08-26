@@ -213,7 +213,7 @@ class _HotelRoomPricePlanState extends State<HotelRoomPricePlan> {
         setState(() {});
       }
     } else {
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
     }
   }
 }

@@ -70,7 +70,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
     String enteredOtp = _controllers.map((c) => c.text).join();
 
     if (enteredOtp.length < 4) {
-      SharedWidgets.showTopSnackBar(context, message: "Please enter full OTP");
+      SharedWidgets.showTopSnackBar(context, message: "Please enter full OTP",title: "fail");
       return;
     }
 
@@ -93,7 +93,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                 Get.off(() => ResetPasswordScreen(number: widget.number,));
 
             } else {
-              SharedWidgets.showTopSnackBar(context, message: "Invalid OTP, please try again.");
+              SharedWidgets.showTopSnackBar(context, message: "Invalid OTP, please try again.",title: "fail");
             }
           }
         } on Exception catch (e) {
@@ -102,7 +102,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
           log("Error: $e");
         }
       } else {
-        SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+        SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
       }
     });
   }
@@ -112,7 +112,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
     String enteredOtp = _controllers.map((c) => c.text).join();
 
     if (enteredOtp.length < 4) {
-      SharedWidgets.showTopSnackBar(context, message: "Please enter full OTP");
+      SharedWidgets.showTopSnackBar(context, message: "Please enter full OTP",title: "fail");
       return;
     }
 
@@ -132,7 +132,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                 response.result!.toLowerCase().contains("pass")) {
                 Get.off(() =>const Userdashboardscreen());
             } else {
-              SharedWidgets.showTopSnackBar(context, message: "Invalid OTP, please try again.");
+              SharedWidgets.showTopSnackBar(context, message: "Invalid OTP, please try again.",title: "fail");
             }
           }
         } on Exception catch (e) {
@@ -141,7 +141,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
           log("Error: $e");
         }
       } else {
-        SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+        SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
       }
     });
   }

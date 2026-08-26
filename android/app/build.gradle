@@ -8,10 +8,7 @@ plugins {
 android {
 
     namespace "com.gotilodigital"
-
-    // REQUIRED by plugins
     compileSdk 36
-
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -28,10 +25,10 @@ android {
 
         applicationId "com.gotilodigital"
         minSdkVersion flutter.minSdkVersion
-        targetSdk = 35
+        targetSdk = 36
 
-        versionCode = 33
-        versionName = "2.33"
+        versionCode = 36
+        versionName = "2.36"
 
         multiDexEnabled true
     }

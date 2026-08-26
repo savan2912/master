@@ -79,7 +79,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 if(_newPass.text != "" && _confirmPass.text != ""){
                   _resetPassword();
                 }else{
-                  SharedWidgets.showTopSnackBar(context, message: "Try Again");
+                  SharedWidgets.showTopSnackBar(context, message: "Try Again",title: "fail");
                 }
 
               },
@@ -151,8 +151,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               if(response != null){
                 if(response.result!.isNotEmpty && response.result != null &&
                 response.result!.toLowerCase().contains("pass")){
-                  SharedWidgets.showTopSnackBar(context, message: response.message!);
+                  SharedWidgets.showTopSnackBar(context, message: response.message!,title: "pass");
                   Get.off(()=>const ModernLoginScreen());
+                }else{
+                  SharedWidgets.showTopSnackBar(context, message: response.message!,title: "fail");
                 }
               }
             }on Exception catch(e){
@@ -161,7 +163,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               log("$e");
             }
           }else{
-            SharedWidgets.showTopSnackBar(context, message: "No Internet Connection");
+            SharedWidgets.showTopSnackBar(context, message: "No Internet Connection",title: "fail");
           }
     },);
   }

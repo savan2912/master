@@ -250,7 +250,7 @@ class _CartScreenState extends State<CartScreen> {
 
   void _saveAddress() async {
     if (_addressController.text.isEmpty || _pincodeController.text.isEmpty) {
-      SharedWidgets.showTopSnackBar(context, message: "Please enter all details");
+      SharedWidgets.showTopSnackBar(context, message: "Please enter all details", title: "fail");
       return;
     }
     _addAddress();
@@ -432,7 +432,7 @@ class _CartScreenState extends State<CartScreen> {
                   if (_dragPosition > maxDrag * 0.75) {
                     if (selectedAddress == null) {
                       safeSetState(() => _dragPosition = 0);
-                      SharedWidgets.showTopSnackBar(context, message: "Please select an address first");
+                      SharedWidgets.showTopSnackBar(context, message: "Please select an address first",title: "fail");
                       return;
                     }
 
@@ -526,10 +526,12 @@ class _CartScreenState extends State<CartScreen> {
           )
       );
       if (response != null && response.result!.toLowerCase().contains("pass")) {
-        SharedWidgets.showTopSnackBar(context, message: response.message!);
+        SharedWidgets.showTopSnackBar(context, message: response.message!,title: "pass");
         safeSetState(() => isEditingAddress = false);
         _addressController.clear(); _pincodeController.clear(); _lngController.clear(); _latController.clear();
         callGetAddress();
+      }else{
+        SharedWidgets.showTopSnackBar(context, message: response!.message!,title: "fail");
       }
     }
   }
@@ -539,12 +541,14 @@ class _CartScreenState extends State<CartScreen> {
       try {
         ResponseCartDelete? response = await ApiCalls.callCartDelete(RequestCartDelete(userId: AppPrefs.userId, id: addressId));
         if (response != null && response.result!.toLowerCase().contains("pass")) {
-          SharedWidgets.showTopSnackBar(context, message: response.message!);
+          SharedWidgets.showTopSnackBar(context, message: response.message!,title: "pass");
           callCartItem();
+        }else{
+          SharedWidgets.showTopSnackBar(context, message: response!.message!,title: "fail");
         }
       } catch (e) { log("$e"); }
     } else {
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
     }
   }
 }

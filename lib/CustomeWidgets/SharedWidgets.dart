@@ -214,16 +214,16 @@ class SharedWidgets {
   static void showTopSnackBar(
       BuildContext context, {
         required String message,
+        String? title="",
         Duration duration = const Duration(seconds: 3),
       })
   {
     final overlay = Overlay.of(context);
-
     late OverlayEntry overlayEntry;
-
     overlayEntry = OverlayEntry(
       builder: (context) {
         return TopSnackBarWidget(
+          title:title!,
           message: message,
           duration: duration,
           onDismissed: () {
@@ -232,7 +232,6 @@ class SharedWidgets {
         );
       },
     );
-
     overlay.insert(overlayEntry);
   }
 

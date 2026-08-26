@@ -415,7 +415,7 @@ class _PrisePlanScreenState extends State<PrisePlanScreen> {
           email = response.email;
         } else {
           setState(() => isLoading = false);
-          SharedWidgets.showTopSnackBar(context, message: response?.message ?? "Failed to load plans");
+          SharedWidgets.showTopSnackBar(context, message: response?.message ?? "Failed to load plans",title: "fail");
         }
       } catch (e) {
         log("Error: $e");
@@ -423,7 +423,7 @@ class _PrisePlanScreenState extends State<PrisePlanScreen> {
       }
     } else {
       setState(() => isLoading = false);
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
     }
   }
 }

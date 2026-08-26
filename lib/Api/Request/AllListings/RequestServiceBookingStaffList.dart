@@ -1,0 +1,15 @@
+class RequestServiceBookingStaffList {
+  String? listingId;
+
+  RequestServiceBookingStaffList({this.listingId});
+
+  RequestServiceBookingStaffList.fromJson(Map<String, dynamic> json) {
+    listingId = json['listing_id'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['listing_id'] = this.listingId;
+    return data;
+  }
+}

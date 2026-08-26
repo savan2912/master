@@ -527,7 +527,7 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
         if (AppPrefs.userId != "") {
           _callCrackDeal(dealId: dealId);
         } else {
-          SharedWidgets.showTopSnackBar(context, message: "Login First");
+          SharedWidgets.showTopSnackBar(context, message: "Login First",title: "fail");
         }
       },
       child: Container(
@@ -638,9 +638,9 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
             response.result!.isNotEmpty &&
             response.result!.toLowerCase().contains("pass")) {
           Get.to(() => const UserDealsScreen());
-          SharedWidgets.showTopSnackBar(context, message: response.message!);
+          SharedWidgets.showTopSnackBar(context, message: response.message!,title: "pass");
         } else {
-          SharedWidgets.showTopSnackBar(context, message: response!.message!);
+          SharedWidgets.showTopSnackBar(context, message: response!.message!,title: "fail");
         }
       }
     } catch (e) {

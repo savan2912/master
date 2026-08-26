@@ -10,6 +10,7 @@ import 'StoreWebView/StoreWebview.dart';
 class ModernHeritageApp extends StatefulWidget {
   const ModernHeritageApp({super.key});
 
+
   static const Color appBg = Color(0xFFF0F4F7);
   static const Color cardColor = Colors.white;
   static const Color primaryCyan = Color(0xFF00ACC1);

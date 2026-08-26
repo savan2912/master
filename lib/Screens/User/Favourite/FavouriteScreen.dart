@@ -161,7 +161,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
         setState(() {});
       }
     } else {
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
       isApiComplete.value = true;
     }
   }
@@ -174,8 +174,10 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
         ResponseFavDelete? response = await ApiCalls.callFavDelete(
             RequestFavDelete(userId: AppPrefs.userId, listingId: itemId));
         if (response != null && response.result!.toLowerCase().contains("pass")) {
-          SharedWidgets.showTopSnackBar(context, message: response.message!);
+          SharedWidgets.showTopSnackBar(context, message: response.message!,title: "pass");
           callFavData(); // ડિલીટ થયા પછી લિસ્ટ રીફ્રેશ કરો
+        }else{
+          SharedWidgets.showTopSnackBar(context, message: response!.message!,title: "fail");
         }
       } catch (e) {
         log("Delete Error: $e");

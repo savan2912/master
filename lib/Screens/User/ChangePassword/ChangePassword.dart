@@ -148,7 +148,7 @@ class _ChangePasswordState extends State<ChangePassword> {
         if(_confirmPassword.text.isNotEmpty && (_newPassword.text == _confirmPassword.text)){
           _callChangePassword();
         }else{
-          SharedWidgets.showTopSnackBar(context, message: "Try Again");
+          SharedWidgets.showTopSnackBar(context, message: "Try Again",title: "fail");
         }
 
       },
@@ -192,8 +192,10 @@ class _ChangePasswordState extends State<ChangePassword> {
             if(response != null){
               if(response.result!.isNotEmpty && response.result != null &&
               response.result!.toLowerCase().contains("pass")){
-                SharedWidgets.showTopSnackBar(context, message: response.message!);
+                SharedWidgets.showTopSnackBar(context, message: response.message!,title: "pass");
                 Get.back();
+              }else{
+                SharedWidgets.showTopSnackBar(context, message: response.message!,title: "fail");
               }
             }
           }on Exception catch(e){
@@ -202,7 +204,7 @@ class _ChangePasswordState extends State<ChangePassword> {
             log("$e");
           }
         }else{
-          SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+          SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
         }
     },);
   }

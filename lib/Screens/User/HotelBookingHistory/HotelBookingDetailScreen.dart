@@ -345,7 +345,7 @@ class _HotelBookingDetailScreenState extends State<HotelBookingDetailScreen> {
           isApiComplete.value=true;
         }
       }else{
-        SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+        SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
       }
     },);
   }

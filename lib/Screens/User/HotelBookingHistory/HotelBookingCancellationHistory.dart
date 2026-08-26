@@ -165,7 +165,7 @@ class _HotelBookingCancellationHistoryState extends State<HotelBookingCancellati
         if (mounted) setState(() {});
       }
     } else {
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
       isApiComplete.value = true;
       isLoadingMore.value = false;
     }

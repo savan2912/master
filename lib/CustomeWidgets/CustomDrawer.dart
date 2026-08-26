@@ -414,7 +414,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
               response.result!.toLowerCase().contains("pass")){
                 AppPrefs.setUserId("");
                 Get.offAll(()=> const ModernHeritageApp());
-                SharedWidgets.showTopSnackBar(context, message: response.message!);
+                SharedWidgets.showTopSnackBar(context, message: response.message!,title: "pass");
+              }else{
+                SharedWidgets.showTopSnackBar(context, message: response.message!,title: "fail");
               }
             }
           }on Exception catch(e){

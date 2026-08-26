@@ -164,7 +164,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
     } else {
       setState(() => _isFetching = false);
       isInitialLoading.value = false;
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Connection");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Connection",title: "fail");
     }
   }
 

@@ -273,7 +273,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
         isApiAvailable.value = true;
       }
     } else {
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
       isApiAvailable.value = true;
     }
   }

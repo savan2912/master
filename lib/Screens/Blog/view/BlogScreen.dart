@@ -102,7 +102,7 @@ class _BlogScreenState extends State<BlogScreen> {
         _isFetching = false;
         _isInitialLoading = false;
       });
-      SharedWidgets.showTopSnackBar(context, message: "No Internet! Please check your connection.");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet! Please check your connection.", title: "fail");
     }
   }
 

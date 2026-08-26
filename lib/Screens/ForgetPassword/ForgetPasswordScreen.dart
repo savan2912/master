@@ -103,12 +103,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Future<void> _sendOtp(BuildContext c) async {
     if (_number.text.isEmpty || _number.text.length < 10) {
-      SharedWidgets.showTopSnackBar(c, message: "Please enter a valid 10-digit mobile number");
+      SharedWidgets.showTopSnackBar(c, message: "Please enter a valid 10-digit mobile number",title: "fail");
       return;
     }
     bool internet = await MyApplication.checkInternet();
     if (!internet) {
-      SharedWidgets.showTopSnackBar(c, message: "No Internet Available");
+      SharedWidgets.showTopSnackBar(c, message: "No Internet Available",title: "fail");
       return;
     }
 
@@ -123,18 +123,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       if (response != null) {
 
         if (response.result != null && response.result!.toLowerCase().contains("pass")) {
-          SharedWidgets.showTopSnackBar(c, message: response.message ?? "OTP sent successfully");
+          SharedWidgets.showTopSnackBar(c, message: response.message ?? "OTP sent successfully",title: "pass");
           Get.to(() => OtpVerificationScreen(number: _number.text,isLogin: false,));
 
         } else {
-          SharedWidgets.showTopSnackBar(c, message: response.message ?? "Failed to send OTP");
+          SharedWidgets.showTopSnackBar(c, message: response.message ?? "Failed to send OTP",title: "fail");
         }
       } else {
-        SharedWidgets.showTopSnackBar(c, message: "Something went wrong!");
+        SharedWidgets.showTopSnackBar(c, message: "Something went wrong!",title: "fail");
       }
     } catch (e) {
       log("Error in _sendOtp: $e");
-      SharedWidgets.showTopSnackBar(c, message: "Server Error!");
+      SharedWidgets.showTopSnackBar(c, message: "Server Error!",title: "fail");
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

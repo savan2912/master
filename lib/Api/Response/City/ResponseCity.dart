@@ -13,9 +13,9 @@ class ResponseCity {
     result = json['result']?.toString();
     message = json['message']?.toString();
 
-    if (json['data'] != null && json['data'] is List) {
+    if (json['cities'] != null && json['cities'] is List) {
       cities = <Cities>[];
-      for (var v in json['data']) {
+      for (var v in json['cities']) {
         cities!.add(Cities.fromJson(v));
       }
     } else {
@@ -28,7 +28,7 @@ class ResponseCity {
     data['result'] = result;
     data['message'] = message;
     if (cities != null) {
-      data['data'] = cities!.map((v) => v.toJson()).toList();
+      data['cities'] = cities!.map((v) => v.toJson()).toList();
     }
     return data;
   }

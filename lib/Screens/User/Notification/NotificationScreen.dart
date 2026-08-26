@@ -207,7 +207,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         isApiComplete.value = true;
       }
     } else {
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
       isApiComplete.value = true;
     }
   }

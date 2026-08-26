@@ -311,7 +311,7 @@ class _PointsScreenState extends State<PointsScreen> {
         if(mounted) setState(() {});
       }
     } else {
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Connection");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Connection",title: "fail");
       isApiComplete.value = true;
     }
   }

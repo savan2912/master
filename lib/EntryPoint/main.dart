@@ -8,7 +8,7 @@ import 'package:get/get.dart'; // GetX માટે
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:gotilo_new/Routes/app_pages.dart';
 import 'package:gotilo_new/Routes/app_routes.dart';
-import 'package:upgrader/upgrader.dart'; // Upgrader Import કરો
+import 'package:upgrader/upgrader.dart';
 
 import '../Constant/AppPref.dart';
 import '../Notifications/PushNotificationService.dart';

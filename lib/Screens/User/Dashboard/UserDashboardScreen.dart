@@ -731,7 +731,7 @@ class _UserdashboardscreenState extends State<Userdashboardscreen> {
         isApiComplete.value = true;
       }
     } else {
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
       isApiComplete.value = true;
     }
   }

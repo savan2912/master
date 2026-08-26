@@ -228,7 +228,7 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
   Future<void> fetchData({bool isLoadMore = false}) async {
     bool internet = await MyApplication.checkInternet();
     if (!internet) {
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Connection");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Connection",title: "fail");
       return;
     }
     try {
@@ -264,7 +264,7 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
       }
     } else {
       Navigator.pop(context);
-      SharedWidgets.showTopSnackBar(context, message: "No Internet");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet",title: "fail");
     }
   }
 

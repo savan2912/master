@@ -29,6 +29,10 @@ class Data {
   List<Lisitngdeals>? lisitngdeals;
   List<Keywords>? keywords;
   List<Amenities>? amenities;
+  List<Events>? events;
+  int? isServiceBooking;
+  int? isHotelBooking;
+  int? isEvent;
 
   Data({
     this.listDetail,
@@ -37,9 +41,16 @@ class Data {
     this.lisitngdeals,
     this.keywords,
     this.amenities,
+    this.isHotelBooking,
+    this.isServiceBooking,
+    this.isEvent,
+    this.events,
   });
 
   Data.fromJson(Map<String, dynamic> json) {
+    isServiceBooking = json['service_booking_available'];
+    isHotelBooking = json['hotel_booking_available'];
+    isEvent = json['event_available'];
     listDetail = json['listDetail'] != null
         ? ListDetail.fromJson(json['listDetail'])
         : null;
@@ -69,6 +80,12 @@ class Data {
           .toList();
     } else {
       keywords = [];
+    }
+    if (json['events'] != null) {
+      events = <Events>[];
+      json['events'].forEach((v) {
+        events!.add(new Events.fromJson(v));
+      });
     }
 
     if (json['amenities'] != null && json['amenities'] is List) {
@@ -100,6 +117,12 @@ class Data {
     if (amenities != null) {
       data['amenities'] = amenities!.map((v) => v.toJson()).toList();
     }
+    if (this.events != null) {
+      data['events'] = this.events!.map((v) => v.toJson()).toList();
+    }
+    data['hotel_booking_available'] = isHotelBooking;
+    data['service_booking_available'] = isServiceBooking;
+    data['event_available'] = isEvent;
     return data;
   }
 }
@@ -795,6 +818,151 @@ class Amenities {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['name'] = name;
+    return data;
+  }
+}
+
+class Events {
+  String? eventId;
+  String? listingId;
+  String? title;
+  String? description;
+  String? address;
+  int? status;
+  int? deleteStatus;
+  List<Slots>? slots;
+
+  Events(
+      {this.eventId,
+        this.listingId,
+        this.title,
+        this.description,
+        this.address,
+        this.status,
+        this.deleteStatus,
+        this.slots});
+
+  Events.fromJson(Map<String, dynamic> json) {
+    eventId = json['event_id'];
+    listingId = json['listing_id'];
+    title = json['title'];
+    description = json['description'];
+    address = json['address'];
+    status = json['status'];
+    deleteStatus = json['delete_status'];
+    if (json['slots'] != null) {
+      slots = <Slots>[];
+      json['slots'].forEach((v) {
+        slots!.add(new Slots.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['event_id'] = this.eventId;
+    data['listing_id'] = this.listingId;
+    data['title'] = this.title;
+    data['description'] = this.description;
+    data['address'] = this.address;
+    data['status'] = this.status;
+    data['delete_status'] = this.deleteStatus;
+    if (this.slots != null) {
+      data['slots'] = this.slots!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Slots {
+  String? slotId;
+  String? slotName;
+  String? slotDate;
+  String? startTime;
+  String? endTime;
+  int? totalQuantity;
+  int? remainingQuantity;
+  List<Categories>? categories;
+
+  Slots(
+      {this.slotId,
+        this.slotName,
+        this.slotDate,
+        this.startTime,
+        this.endTime,
+        this.totalQuantity,
+        this.remainingQuantity,
+        this.categories});
+
+  Slots.fromJson(Map<String, dynamic> json) {
+    slotId = json['slot_id'];
+    slotName = json['slot_name'];
+    slotDate = json['slot_date'];
+    startTime = json['start_time'];
+    endTime = json['end_time'];
+    totalQuantity = json['total_quantity'];
+    remainingQuantity = json['remaining_quantity'];
+    if (json['categories'] != null) {
+      categories = <Categories>[];
+      json['categories'].forEach((v) {
+        categories!.add(new Categories.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['slot_id'] = this.slotId;
+    data['slot_name'] = this.slotName;
+    data['slot_date'] = this.slotDate;
+    data['start_time'] = this.startTime;
+    data['end_time'] = this.endTime;
+    data['total_quantity'] = this.totalQuantity;
+    data['remaining_quantity'] = this.remainingQuantity;
+    if (this.categories != null) {
+      data['categories'] = this.categories!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Categories {
+  String? categoryId;
+  String? categoryName;
+  int? price;
+  int? totalQuantity;
+  int? remainingQuantity;
+  int? quantity;
+  int? maxPerUser;
+
+  Categories(
+      {this.categoryId,
+        this.categoryName,
+        this.price,
+        this.totalQuantity,
+        this.remainingQuantity,
+        this.quantity,
+        this.maxPerUser});
+
+  Categories.fromJson(Map<String, dynamic> json) {
+    categoryId = json['category_id'];
+    categoryName = json['category_name'];
+    price = json['price'];
+    totalQuantity = json['total_quantity'];
+    remainingQuantity = json['remaining_quantity'];
+    quantity = json['quantity'];
+    maxPerUser = json['max_per_user'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['category_id'] = this.categoryId;
+    data['category_name'] = this.categoryName;
+    data['price'] = this.price;
+    data['total_quantity'] = this.totalQuantity;
+    data['remaining_quantity'] = this.remainingQuantity;
+    data['quantity'] = this.quantity;
+    data['max_per_user'] = this.maxPerUser;
     return data;
   }
 }

@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Api/Request/BecomeVendor/RequestBecomeVendor.dart';
 import 'package:gotilo_new/Api/Request/CrackDeal/RequestCrackDeal.dart';
 import 'package:gotilo_new/Api/Response/City/ResponseCity.dart';
+import 'package:gotilo_new/Api/Response/Home/ResponseAppLogo.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/Screens/AllListing/AllListingDetailScreen.dart';
 import 'package:gotilo_new/Screens/Search/SearchScreen.dart';
@@ -90,9 +91,12 @@ class _HomeMainScreenState extends State<HomeMainScreen>
   final TextEditingController _fNameController  = TextEditingController();
   final TextEditingController _lNameController  = TextEditingController();
 
+  String? _appLogo;
+
   @override
   void initState() {
     super.initState();
+    callAppLogo();
     MyApplication.determinePosition();
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkInitialCity());
   }
@@ -138,12 +142,12 @@ class _HomeMainScreenState extends State<HomeMainScreen>
     if (allCities.isNotEmpty) {
       _showCitySheet();
     } else {
-      SharedWidgets.showTopSnackBar(context, message: "City list not found");
+      SharedWidgets.showTopSnackBar(context, message: "City list not found",title: "fail");
     }
   }
   void _showCitySheet() {
     if (allCities.isEmpty) {
-      SharedWidgets.showTopSnackBar(context, message: "City list not found");
+      SharedWidgets.showTopSnackBar(context, message: "City list not found",title: "fail");
       return;
     }
 
@@ -314,7 +318,39 @@ class _HomeMainScreenState extends State<HomeMainScreen>
         background: Container(color: _T.white),
         title: SizedBox(
           height: 34,
-          child: Image.asset("assets/g_logo.png", fit: BoxFit.contain),
+          child: _appLogo != null && _appLogo!.isNotEmpty
+              ? CachedNetworkImage(
+            imageUrl: _appLogo!,
+            fit: BoxFit.contain,
+            placeholder: (context, url) => Shimmer.fromColors(
+              baseColor: _T.surface2,
+              highlightColor: _T.white,
+              child: Container(
+                width: 100,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: _T.surface2,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+            ),
+            errorWidget: (context, url, error) => Image.asset(
+              "assets/g_logo.png",
+              fit: BoxFit.contain,
+            ),
+          )
+              : Shimmer.fromColors(
+            baseColor: _T.surface2,
+            highlightColor: _T.white,
+            child: Container(
+              width: 100,
+              height: 34,
+              decoration: BoxDecoration(
+                color: _T.surface2,
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+          ),
         ),
       ),
       actions: [
@@ -353,17 +389,18 @@ class _HomeMainScreenState extends State<HomeMainScreen>
   // ══════════════════════════════════════════════════════════════
   //  BANNER
   // ══════════════════════════════════════════════════════════════
-  Widget _buildBanner() {
+
+  /*Widget _buildBanner() {
     if (banner == null || banner!.isEmpty) {
       return Shimmer.fromColors(
         baseColor: _T.surface2,
         highlightColor: _T.white,
         child: Container(
-          height: 200,
+          height: 280,
           margin: const EdgeInsets.symmetric(horizontal: 18),
           decoration: BoxDecoration(
             color: _T.surface2,
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(24),
           ),
         ),
       );
@@ -372,78 +409,223 @@ class _HomeMainScreenState extends State<HomeMainScreen>
     return Column(
       children: [
         SizedBox(
-          height: 200,
+          height: 280,
           child: PageView.builder(
             controller: _bannerCtrl,
-            onPageChanged: (i) => setState(() => _bannerPage = i),
+            onPageChanged: (i) {
+              setState(() => _bannerPage = i);
+            },
             physics: const BouncingScrollPhysics(),
             clipBehavior: Clip.none,
             itemCount: banner!.length,
             itemBuilder: (_, i) {
               final active = i == _bannerPage;
-              return Padding(
-                padding: EdgeInsets.only(
-                  left: i == 0 ? 18 : 10,
-                  right: 10,
-                  top: active ? 0 : 10,
-                  bottom: active ? 0 : 10,
-                ),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOutCubic,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(22),
-                    boxShadow: active
-                        ? [BoxShadow(
-                      color: Colors.black.withOpacity(0.20),
-                      blurRadius: 22,
-                      offset: const Offset(0, 8),
-                    )]
-                        : [],
+
+              return AnimatedBuilder(
+                animation: _bannerCtrl,
+                builder: (context, child) {
+                  double page = i.toDouble();
+
+                  if (_bannerCtrl.position.haveDimensions) {
+                    page = _bannerCtrl.page ?? _bannerPage.toDouble();
+                  }
+
+                  final delta = (page - i).clamp(-1.0, 1.0);
+
+                  // Smooth modern carousel effect
+                  final scale = 1.0 - (delta.abs() * 0.055);
+                  final opacity = 1.0 - (delta.abs() * 0.10);
+
+                  return Transform.scale(
+                    scale: scale,
+                    child: Opacity(
+                      opacity: opacity,
+                      child: child,
+                    ),
+                  );
+                },
+
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: i == 0 ? 18 : 7,
+                    right: i == banner!.length - 1 ? 18 : 7,
                   ),
+
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(22),
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        // ── IMAGE ──
-                        CachedNetworkImage(
-                          imageUrl: banner![i].image ?? "",
-                          fit: BoxFit.cover,
-                          alignment: Alignment.center,
-                          placeholder: (_, __) => _shimmerBox(),
-                          errorWidget: (_, __, ___) => Container(
-                            color: _T.surface2,
-                            child: const Icon(
-                              Icons.image_not_supported_outlined,
-                              color: _T.textLow,
-                              size: 32,
+                    borderRadius: BorderRadius.circular(24),
+
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
+
+                        // NO BLACK SHADOW
+                        border: Border.all(
+                          color: active
+                              ? _T.cyan.withOpacity(0.65)
+                              : Colors.white.withOpacity(0.10),
+                          width: active ? 1.4 : 1,
+                        ),
+                      ),
+
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+
+                          // =====================================================
+                          // FULL IMAGE
+                          // =====================================================
+                          Hero(
+                            tag: 'banner_${banner![i].image}',
+
+                            child: CachedNetworkImage(
+                              imageUrl: banner![i].image ?? "",
+
+                              // IMPORTANT:
+                              // Full image visible inside banner
+                              fit: BoxFit.cover,
+
+                              alignment: Alignment.center,
+
+                              placeholder: (_, __) => _shimmerBox(),
+
+                              errorWidget: (_, __, ___) {
+                                return Container(
+                                  color: _T.surface2,
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.image_not_supported_outlined,
+                                      color: _T.textLow,
+                                      size: 36,
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ),
-                        ),
 
-                        // ── PAGE NUMBER CHIP ──
-                        Positioned(
-                          top: 12,
-                          right: 12,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.35),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              "${i + 1}/${banner!.length}",
-                              style: GoogleFonts.montserrat(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
+                          // =====================================================
+                          // VERY LIGHT TOP GLASS EFFECT
+                          // No dark bottom overlay
+                          // =====================================================
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: Container(
+                              height: 75,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.black.withOpacity(0.20),
+                                    Colors.transparent,
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+
+                          // =====================================================
+                          // TOP RIGHT PAGE INDICATOR
+                          // =====================================================
+                          Positioned(
+                            top: 14,
+                            right: 14,
+
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 11,
+                                vertical: 6,
+                              ),
+
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.28),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.25),
+                                  width: 0.8,
+                                ),
+                              ),
+
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.photo_outlined,
+                                    size: 13,
+                                    color: Colors.white.withOpacity(0.95),
+                                  ),
+
+                                  const SizedBox(width: 5),
+
+                                  Text(
+                                    "${i + 1}/${banner!.length}",
+                                    style: GoogleFonts.montserrat(
+                                      color: Colors.white,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          // =====================================================
+                          // TITLE
+                          // Light glass container instead of black gradient
+                          // =====================================================
+                          if (banner![i].title != null &&
+                              banner![i].title!.isNotEmpty)
+                            Positioned(
+                              left: 16,
+                              right: 16,
+                              bottom: 14,
+
+                              child: Align(
+                                alignment: Alignment.bottomLeft,
+
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 13,
+                                    vertical: 9,
+                                  ),
+
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.25),
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.14),
+                                      width: 0.7,
+                                    ),
+                                  ),
+
+                                  child: Text(
+                                    banner![i].title!,
+
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+
+                                    style: GoogleFonts.montserrat(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                      height: 1.2,
+
+                                      shadows: const [
+                                        Shadow(
+                                          color: Colors.black54,
+                                          blurRadius: 5,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -452,31 +634,110 @@ class _HomeMainScreenState extends State<HomeMainScreen>
           ),
         ),
 
-        // ── DOT INDICATORS ──
-        const SizedBox(height: 12),
+        // ===============================================================
+        // MODERN PAGE INDICATORS
+        // ===============================================================
+        const SizedBox(height: 13),
+
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(banner!.length, (i) {
-            final active = i == _bannerPage;
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              margin: const EdgeInsets.symmetric(horizontal: 3),
-              height: 5,
-              width: active ? 22 : 6,
-              decoration: BoxDecoration(
-                color: active ? _T.cyan : _T.border,
-                borderRadius: BorderRadius.circular(10),
+          children: List.generate(
+            banner!.length,
+                (i) {
+              final active = i == _bannerPage;
+
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+
+                height: 6,
+                width: active ? 24 : 6,
+
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+
+                  gradient: active
+                      ? LinearGradient(
+                    colors: [
+                      _T.cyan,
+                      _T.cyan.withOpacity(0.55),
+                    ],
+                  )
+                      : null,
+
+                  color: active ? null : _T.border,
+
+                  // Small glow only on indicator
+                  boxShadow: active
+                      ? [
+                    BoxShadow(
+                      color: _T.cyan.withOpacity(0.35),
+                      blurRadius: 7,
+                      spreadRadius: 0,
+                    ),
+                  ]
+                      : [],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }*/
+  Widget _buildBanner() {
+    return Column(
+      children: [
+        SizedBox(
+          height: 400,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 9),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: _T.cyan.withOpacity(0.65),
+                    width: 1.4,
+                  ),
+                ),
+                child: Image.asset(
+                  'assets/banner.png',
+                  fit: BoxFit.fill,
+                  alignment: Alignment.center,
+                ),
               ),
-            );
-          }),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 13),
+
+        // Static indicator for testing
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: 6,
+              width: 24,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: _T.cyan,
+              ),
+            ),
+          ],
         ),
       ],
     );
   }
-
   // ══════════════════════════════════════════════════════════════
   //  SECTION HEADER
   // ══════════════════════════════════════════════════════════════
+
   Widget _sectionHeader(String title, VoidCallback onViewAll) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
@@ -764,7 +1025,7 @@ class _HomeMainScreenState extends State<HomeMainScreen>
                           if (AppPrefs.userId != "") {
                             _callCrackDeal(dealId: deal.id.toString());
                           } else {
-                            SharedWidgets.showTopSnackBar(context, message: "Login First");
+                            SharedWidgets.showTopSnackBar(context, message: "Login First",title: "fail");
                           }
                         },
                         child: Container(
@@ -1787,7 +2048,7 @@ class _HomeMainScreenState extends State<HomeMainScreen>
                   && _emailController.text != "" && _messageController.text != ""){
                     callAddEnquiry(listId:listId);
                   }else{
-                    SharedWidgets.showTopSnackBar(context, message:"Please Fill All the filed");
+                    SharedWidgets.showTopSnackBar(context, message:"Please Fill All the filed",title: "fail");
                   }
                   },
               child: Container(
@@ -2133,6 +2394,7 @@ class _HomeMainScreenState extends State<HomeMainScreen>
   // ══════════════════════════════════════════════════════════════
   //  API CALLS
   // ══════════════════════════════════════════════════════════════
+
   Future<void> callHome() async {
     isDataAvailable.value = false;
     isApiComplete.value = false;
@@ -2177,19 +2439,20 @@ class _HomeMainScreenState extends State<HomeMainScreen>
     try {
       if (!await MyApplication.checkInternet()) return;
 
-      final response = await ApiCalls.callCity();
+      ResponseCity? response = await ApiCalls.callCity();
 
       log("CITY RESPONSE => $response");
       log("CITY RESULT => ${response?.result}");
       log("CITY COUNT => ${response?.cities?.length}");
 
-      if (response != null &&
-          (response.result ?? "").toLowerCase().contains("pass")) {
-        setState(() {
-          allCities = List<Cities>.from(response.cities ?? []);
-        });
-
-        log("FINAL allCities => ${allCities.length}");
+      if (response != null ) {
+        if(response.result!.isNotEmpty && response.result != null &&
+        response.result!.toLowerCase().contains("pass")){
+          setState(() {
+            allCities.addAll(response.cities!);
+          });
+          log("FINAL allCities => ${response.cities!.length}");
+        }
       }
     } catch (e) {
       log("_callCity: $e");
@@ -2204,9 +2467,9 @@ class _HomeMainScreenState extends State<HomeMainScreen>
       if (response != null &&
           (response.result ?? "").toLowerCase().contains("pass")) {
         Get.to(() => const UserDealsScreen());
-        SharedWidgets.showTopSnackBar(context, message: response.message!);
+        SharedWidgets.showTopSnackBar(context, message: response.message!,title: "pass");
       } else {
-        SharedWidgets.showTopSnackBar(context, message: response?.message ?? "");
+        SharedWidgets.showTopSnackBar(context, message: response!.message!,title: "fail");
       }
     } catch (e) {
       log("_callCrackDeal: $e");
@@ -2223,7 +2486,9 @@ class _HomeMainScreenState extends State<HomeMainScreen>
           RequestBecomeVendor(phone: number, name: name, email: email));
       if (response != null &&
           (response.result ?? "").toLowerCase().contains("pass")) {
-        SharedWidgets.showTopSnackBar(context, message: response.message!);
+        SharedWidgets.showTopSnackBar(context, message: response.message!,title: "pass");
+      }else{
+        SharedWidgets.showTopSnackBar(context, message: response!.message!,title: "fail");
       }
     } catch (e) {
       log("_callBecomeVendor: $e");
@@ -2246,8 +2511,10 @@ class _HomeMainScreenState extends State<HomeMainScreen>
           if(response != null){
             if(response.result!.isNotEmpty && response.result != null &&
                 response.result!.toLowerCase().contains("pass")){
-              SharedWidgets.showTopSnackBar(context, message: response.message!);
+              SharedWidgets.showTopSnackBar(context, message: response.message!,title: "pass");
               Navigator.pop(context);
+            }else{
+              SharedWidgets.showTopSnackBar(context, message: response.message!,title: "fail");
             }
           }
         }on Exception catch(e){
@@ -2258,7 +2525,34 @@ class _HomeMainScreenState extends State<HomeMainScreen>
 
         }
       }else{
-        SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+        SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
+      }
+    },);
+  }
+
+  Future<void> callAppLogo() async {
+    MyApplication.checkInternet().then((internet) async {
+      if(internet){
+        try{
+          ResponseAppLogo? response= await ApiCalls.callAppLogo();
+          if(response != null){
+            if(response.result!.isNotEmpty && response.result != null &&
+                response.result!.toLowerCase().contains("pass")){
+              _appLogo = response.data![0].logo;
+              setState(() {});
+            }else{
+              SharedWidgets.showTopSnackBar(context, message: response.message!,title: "fail");
+            }
+          }
+        }on Exception catch(e){
+          log("$e");
+        }catch(e){
+          log("$e");
+        }finally{
+
+        }
+      }else{
+        SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
       }
     },);
   }

@@ -396,7 +396,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   if (!_agreedToTerms) {
                     SharedWidgets.showTopSnackBar(
                       context,
-                      message: "Please agree to Terms & Conditions",
+                      message: "Please agree to Terms & Conditions",title: "fail"
                     );
                     return;
                   }
@@ -405,35 +405,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   if (_firstNameController.text.isEmpty) {
                     SharedWidgets.showTopSnackBar(
                       context,
-                      message: "Enter First Name",
+                      message: "Enter First Name",title: "fail"
                     );
                   } else if (_lastNameController.text.isEmpty)
                     {
                       SharedWidgets.showTopSnackBar(
                         context,
-                        message: "Enter Last Name",
+                        message: "Enter Last Name",title: "fail"
                       );
                     }
 
                   else if (_emailController.text.isEmpty) {
                     SharedWidgets.showTopSnackBar(
                       context,
-                      message: "Enter Email",
+                      message: "Enter Email",title: "fail"
                     );
                   } else if (_mobileController.text.isEmpty) {
                     SharedWidgets.showTopSnackBar(
                       context,
-                      message: "Enter Mobile Number",
+                      message: "Enter Mobile Number",title: "fail"
                     );
                   } else if (_passwordController.text.isEmpty) {
                     SharedWidgets.showTopSnackBar(
                       context,
-                      message: "Enter Password",
+                      message: "Enter Password",title: "fail"
                     );
                   } else if (_confirmPasswordController.text.isEmpty) {
                     SharedWidgets.showTopSnackBar(
                       context,
-                      message: "Enter Confirm Password",
+                      message: "Enter Confirm Password",title: "fail"
                     );
                   }
                 }
@@ -550,14 +550,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
             if (context.mounted) {
               SharedWidgets.showTopSnackBar(
                 context,
-                message: response.message!,
+                message: response.message!,title: "pass"
               );
             }
           } else {
             if (context.mounted) {
               SharedWidgets.showTopSnackBar(
                 context,
-                message: response.message ?? "Registration failed",
+                message: response.message ?? "Registration failed",title: "fail"
               );
             }
           }
@@ -570,7 +570,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
       }
     } else {
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
     }
   }
 }

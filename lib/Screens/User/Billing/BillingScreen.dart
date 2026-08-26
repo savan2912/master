@@ -396,7 +396,7 @@ class _BillingScreenState extends State<BillingScreen> {
         }
       } catch (e) { log("$e"); }
     } else {
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
     }
   }
 

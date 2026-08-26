@@ -382,12 +382,12 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
                 } else if (_mobileController.text.isEmpty) {
                   SharedWidgets.showTopSnackBar(
                     context,
-                    message: "Please Enter Mobile Number",
+                    message: "Please Enter Mobile Number",title: "fail"
                   );
                 } else if (_passwordController.text.isEmpty) {
                   SharedWidgets.showTopSnackBar(
                     context,
-                    message: "Please Enter Password",
+                    message: "Please Enter Password",title: "fail"
                   );
                 }
               },
@@ -500,7 +500,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
             if (context.mounted) {
               SharedWidgets.showTopSnackBar(
                 context,
-                message: response.message!,
+                message: response.message!,title: "pass"
               );
             }
 
@@ -517,7 +517,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
             if (context.mounted) {
               SharedWidgets.showTopSnackBar(
                 context,
-                message: response.message ?? "Login Failed",
+                message: response.message ?? "Login Failed",title: "fail"
               );
             }
           }
@@ -532,7 +532,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
         }
       }
     } else {
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Available");
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
     }
   }
 }
