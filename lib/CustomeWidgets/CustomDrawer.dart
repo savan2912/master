@@ -21,6 +21,7 @@ import '../Screens/User/Account/AccountScreen.dart';
 import '../Screens/User/Billing/BillingScreen.dart';
 import '../Screens/User/BookingHistory/BookingHistoryScreen.dart';
 import '../Screens/User/Deals/DealsScreen.dart';
+import '../Screens/User/Event/EventBookingHistoryScreen.dart';
 import '../Screens/User/Favourite/FavouriteScreen.dart';
 import '../Screens/User/HotelBookingHistory/HotelBookingCancellationHistory.dart';
 import '../Screens/User/HotelBookingHistory/HotelBookingHistoryScreen.dart';
@@ -134,6 +135,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
         case "user.billing": Get.off(() => const BillingScreen()); break;
         case "booking-history": Get.off(() => const BookingHistoryScreen()); break;
         case "hotel.booking-history": Get.off(() => const HotelBookingHistory()); break;
+        case "event.booking.history": Get.off(() => const EventBookingHistoryScreen()); break;
         case "user.point": Get.off(() => const PointsScreen()); break;
         case "user.favourite": Get.off(() => const FavouriteScreen()); break;
         case "hotel.booking-cancel-hstory": Get.off(()=>const HotelBookingCancellationHistory()); break;

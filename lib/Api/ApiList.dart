@@ -26,6 +26,15 @@ class  ApiList {
   static String get urlSubCategoryList => "$baseURL/categories/subcategorylist";
   static String get urlSubCategoryListDetails => "$baseURL/listing/listing-details";
   static String get urlEventBookingList => "$baseURL/auth/auth-event-booking-data-api";
+  static String get urlEventFinalBooking => "$baseURL/auth/auth-event-final-booking-api";
+
+  static String get urlEventBookingHistory => "$baseURL/auth/event-booking-history-api";
+  static String get urlEventTicketView => "$baseURL/auth/auth-event-ticket-api";
+  static String get urlEventBookingInvoice => "$baseURL/auth/auth-event-receipt-api";
+  static String get urlEventBookingItem => "$baseURL/auth/auth-booking-item-history-api";
+  static String get urlEventTicketDownload => "$baseURL/auth/auth-download-event-ticket-api";
+  static String get urlAssignTicketName => "$baseURL/auth/auth-assign-user-ticket-api";
+
   static String get urlReserveBook => "$baseURL/auth/reserve-room-details";
   static String get urlReserveRoomAdd => "$baseURL/auth/booking-summary-api";
   static String get urlHotelRoomAdd => "$baseURL/auth/hotel-booking-submit-api";

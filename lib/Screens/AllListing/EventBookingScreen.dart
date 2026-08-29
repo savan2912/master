@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:gotilo_new/Api/Request/AllListings/RequestEventFinalBooking.dart';
+import 'package:gotilo_new/Api/Response/AllListings/ResponseEventFinalBooking.dart';
 import 'package:gotilo_new/Constant/AppPref.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
@@ -9,6 +12,7 @@ import 'package:gotilo_new/Api/Request/AllListings/RequestEventBookingList.dart'
 import 'package:gotilo_new/Api/Response/AllListings/ResponseEventBookingList.dart';
 import 'package:gotilo_new/CustomeWidgets/CustomAppbar.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../MyApplication/MyApplication.dart';
 
 class EventBookingScreen extends StatefulWidget {
@@ -29,6 +33,10 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
 
   // Track Selected Quantities per Category ID (categoryId: quantity)
   Map<int, int> selectedQuantities = {};
+
+  // Temporary Payment Calculation Variables for API Call
+  double tempSubTotal = 0.0;
+  double tempFinalAmount = 0.0;
 
   // Razorpay Instance
   late Razorpay _razorpay;
@@ -53,13 +61,27 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
     super.dispose();
   }
 
+  // Payment Success Handler
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
-    SharedWidgets.showTopSnackBar(context, message: "Payment Successful: ${response.paymentId}",title: "pass");
-    // Handle Backend API confirmation here
+    SharedWidgets.showTopSnackBar(
+        context,
+        message: "Payment Successful: ${response.paymentId}",
+        title: "pass"
+    );
+
+    // Final Booking API call on payment success
+    _callEventFinalBooking(
+      paymentId: response.paymentId ?? "",
+      signature: response.signature ?? "",
+    );
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
-    SharedWidgets.showTopSnackBar(context, message: "Payment Failed: ${response.message}",title: "fail");
+    SharedWidgets.showTopSnackBar(
+        context,
+        message: "Payment Failed: ${response.message}",
+        title: "fail"
+    );
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
@@ -340,7 +362,7 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
 
                   const SizedBox(height: 20),
 
-                  // NEW BOTTOM BAR UI ACCORDING TO DESIGN
+                  // BOTTOM BAR UI
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -546,7 +568,7 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
     );
   }
 
-  // BOTTOM SHEET IMPLEMENTATION BASED ON DESIGN IMAGE
+  // BOTTOM SHEET IMPLEMENTATION
   void _showCheckoutBottomSheet({
     required Events event,
     required int selectedTicketsCount,
@@ -555,6 +577,10 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
     double taxPercent = double.tryParse(bookingData?.taxPercent ?? "0.0") ?? 0.0;
     double taxAmount = (basePrice * taxPercent) / 100;
     double finalAmount = basePrice + taxAmount;
+
+    // Temporary values stored for Final API Payload
+    tempSubTotal = basePrice;
+    tempFinalAmount = finalAmount;
 
     // Filter out selected categories breakdown
     List<Map<String, dynamic>> selectedCategoryDetails = [];
@@ -590,7 +616,6 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Bottomsheet Header handle bar
               Center(
                 child: Container(
                   width: 40,
@@ -609,7 +634,6 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Breakdown Selected Categories
               const Text("Selected Tickets", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF64748B))),
               const SizedBox(height: 8),
 
@@ -626,7 +650,6 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
 
               const Divider(height: 24),
 
-              // Price Calculation Detail
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -653,7 +676,6 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Pay / Confirm Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -680,8 +702,6 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
   // RAZORPAY GATEWAY CALL
   void _openRazorpayCheckout(double amount) {
     String? apiKey = bookingData?.listingPayment?.apiKey;
-
-    // Model માંથી Dynamic Razorpay Logo મેળવવું
     String? logoUrl = bookingData?.razorpayLogo;
 
     if (apiKey == null || apiKey.isEmpty) {
@@ -691,25 +711,16 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
 
     var options = {
       'key': apiKey,
-      'amount': (amount * 100).toInt(), // Amount in paise
+      'amount': (amount * 100).toInt(),
       'name': bookingData?.listingTitle ?? "${AppPrefs.profileName}",
       'description': 'Booking Tickets',
       if (logoUrl != null && logoUrl.isNotEmpty) 'image': logoUrl,
-
-      // 1. Prefill Phone & Email (UPI Show કરવા માટે Dynamic/Static Phone-Email આવશ્યક છે)
-      'prefill': {
-        'contact': '7046874851', // User no phone number yahan pass karo
-        'email': 'user@example.com', // User no email yahan pass karo
-      },
-
-      // 2. Multi-method support enablement
       'method': {
         'netbanking': true,
         'card': true,
-        'upi': true, // Explicitly enabling UPI
+        'upi': true,
         'wallet': true,
       },
-
       'external': {
         'wallets': ['paytm']
       }
@@ -743,6 +754,81 @@ class _EventBookingScreenState extends State<EventBookingScreen> {
         isLoading = false;
       });
       SharedWidgets.showTopSnackBar(context, message: "No Internet Connection");
+    }
+  }
+
+  // DYNAMICALLY PREPARE PAYLOAD & CALL FINAL BOOKING API
+  Future<void> _callEventFinalBooking({required String paymentId, required String signature}) async {
+    bool internet = await MyApplication.checkInternet();
+    if (!internet) {
+      SharedWidgets.showTopSnackBar(context, message: "No Internet Connection");
+      return;
+    }
+
+    // Dynamic list preparation for booking_data array
+    List<BookingData> listBookingData = [];
+
+    if (bookingData != null && bookingData!.events != null) {
+      for (var event in bookingData!.events!) {
+        int eventId = event.id ?? 0;
+        int? selectedSlotId = selectedSlots[eventId];
+
+        if (event.vendorEventSlot != null) {
+          for (var slot in event.vendorEventSlot!) {
+            if (slot.id == selectedSlotId && slot.vendorEventCategory != null) {
+              for (var cat in slot.vendorEventCategory!) {
+                int catId = cat.id ?? 0;
+                int qty = selectedQuantities[catId] ?? 0;
+
+                if (qty > 0) {
+                  listBookingData.add(
+                    BookingData(
+                      eventId: eventId.toString(),
+                      slotId: slot.id.toString(),
+                      slotName: slot.slotName ?? "",
+                      categoryId: catId.toString(),
+                      categoryName: cat.name ?? "",
+                      categoryPrice: int.tryParse(cat.price ?? "0") ?? 0,
+                      quantity: qty,
+                    ),
+                  );
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Gateway response JSON String Format
+    String gatewayResponseJson = jsonEncode({
+      "razorpay_payment_id": paymentId,
+      "razorpay_signature": signature,
+    });
+
+    RequestEventFinalBooking requestModel = RequestEventFinalBooking(
+      userId: AppPrefs.userId,
+      listingId: widget.listingId ?? bookingData?.listingId,
+      bookingData: listBookingData,
+      subTotal: tempSubTotal.toInt(),
+      finalAmount: tempFinalAmount.toInt(),
+      razorpayPaymentId: paymentId,
+      razorpaySignature: signature,
+      paymentStatus: "success",
+      paymentMethod: "Razorpay",
+      amount: tempFinalAmount.toInt(),
+      gatewayResponse: gatewayResponseJson,
+    );
+
+    try {
+      ResponseEventFinalBooking? response = await ApiCalls.callEventFinalBooking(requestModel);
+      if (response != null) {
+        SharedWidgets.showTopSnackBar(context, message: response.message ?? "Booking Success!", title: "pass");
+        // Navigation or screen pop after successful booking
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      log("Final Booking API Exception: $e");
     }
   }
 }

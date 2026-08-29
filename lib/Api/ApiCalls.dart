@@ -15,6 +15,7 @@ import 'package:gotilo_new/Api/Request/AllListings/RequestAllListings.dart';
 import 'package:gotilo_new/Api/Request/AllListings/RequestBookHotelRoom.dart';
 import 'package:gotilo_new/Api/Request/AllListings/RequestBookingCalender.dart';
 import 'package:gotilo_new/Api/Request/AllListings/RequestEventBookingList.dart';
+import 'package:gotilo_new/Api/Request/AllListings/RequestEventFinalBooking.dart';
 import 'package:gotilo_new/Api/Request/AllListings/RequestFinalBillAdd.dart';
 import 'package:gotilo_new/Api/Request/AllListings/RequestReserveBook.dart';
 import 'package:gotilo_new/Api/Request/AllListings/RequestReserveRoomAdd.dart';
@@ -55,6 +56,12 @@ import 'package:gotilo_new/Api/Request/User/BookingHistory/RequestBookingHistory
 import 'package:gotilo_new/Api/Request/User/Dashboard/RequestUserDashboard.dart';
 import 'package:gotilo_new/Api/Request/User/Deal/RequestCrackedDeal.dart';
 import 'package:gotilo_new/Api/Request/User/Deal/RequestUserDeal.dart';
+import 'package:gotilo_new/Api/Request/User/Event/RequestAssignTicketName.dart';
+import 'package:gotilo_new/Api/Request/User/Event/RequestEventBookingHistory.dart';
+import 'package:gotilo_new/Api/Request/User/Event/RequestEventBookingInvoice.dart';
+import 'package:gotilo_new/Api/Request/User/Event/RequestEventBookingItem.dart';
+import 'package:gotilo_new/Api/Request/User/Event/RequestEventTicketDownload.dart';
+import 'package:gotilo_new/Api/Request/User/Event/RequestEventTicketView.dart';
 import 'package:gotilo_new/Api/Request/User/Fav/RequestFavData.dart';
 import 'package:gotilo_new/Api/Request/User/Fav/RequestFavDelete.dart';
 import 'package:gotilo_new/Api/Request/User/HotelBooking/RequestHotelBooking.dart';
@@ -86,6 +93,7 @@ import 'package:gotilo_new/Api/Response/AllListings/ResponseAllListings.dart';
 import 'package:gotilo_new/Api/Response/AllListings/ResponseBookHotelRoom.dart';
 import 'package:gotilo_new/Api/Response/AllListings/ResponseBookingCalender.dart';
 import 'package:gotilo_new/Api/Response/AllListings/ResponseEventBookingList.dart';
+import 'package:gotilo_new/Api/Response/AllListings/ResponseEventFinalBooking.dart';
 import 'package:gotilo_new/Api/Response/AllListings/ResponseFinalBillAdd.dart';
 import 'package:gotilo_new/Api/Response/AllListings/ResponseReserveBook.dart';
 import 'package:gotilo_new/Api/Response/AllListings/ResponseReserveRoomAdd.dart';
@@ -132,6 +140,11 @@ import 'package:gotilo_new/Api/Response/User/BookingHistory/ResponseBookingHisto
 import 'package:gotilo_new/Api/Response/User/Dashboard/ResponseUserDashboard.dart';
 import 'package:gotilo_new/Api/Response/User/Deal/ResponseCrackedDeal.dart';
 import 'package:gotilo_new/Api/Response/User/Deal/ResponseUserDeal.dart';
+import 'package:gotilo_new/Api/Response/User/Event/ResponseAssignTicketName.dart';
+import 'package:gotilo_new/Api/Response/User/Event/ResponseEventBookingHistory.dart';
+import 'package:gotilo_new/Api/Response/User/Event/ResponseEventBookingInvoice.dart';
+import 'package:gotilo_new/Api/Response/User/Event/ResponseEventBookingItem.dart';
+import 'package:gotilo_new/Api/Response/User/Event/ResponseEventTicketDownload.dart';
 import 'package:gotilo_new/Api/Response/User/Fav/ResponseFavData.dart';
 import 'package:gotilo_new/Api/Response/User/Fav/ResponseFavDelete.dart';
 import 'package:gotilo_new/Api/Response/User/HotelBooking/ResponseHotelBooking.dart';
@@ -167,6 +180,7 @@ import 'Response/Home/ResponseAppLogo.dart';
 import 'Response/Home/ResponseHome.dart';
 import 'Response/Home/ResponseHomeDeal.dart';
 import 'Response/Otp/ResponseVerifyOtp.dart';
+import 'Response/User/Event/ResponseEventTicketView.dart';
 import 'Response/User/HotelBooking/ResponseHotelBookingServiceHistory.dart';
 import 'Response/User/Menu/ResponseMenu.dart';
 import 'Response/User/Profile/ResponseProfile.dart';
@@ -946,6 +960,244 @@ class ApiCalls {
           log("Response Data = ${response.data}", name: TAG);
           //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
           return ResponseEventBookingList.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+
+  static Future<ResponseEventFinalBooking?> callEventFinalBooking (RequestEventFinalBooking model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlEventFinalBooking}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlEventFinalBooking, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseEventFinalBooking.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+
+  static Future<ResponseEventBookingHistory?> callEventBookingHistory (RequestEventBookingHistory model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlEventBookingHistory}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlEventBookingHistory, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseEventBookingHistory.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+
+  static Future<ResponseEventTicketView?> callEventTicketView (RequestEventTicketView model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlEventTicketView}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlEventTicketView, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseEventTicketView.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+
+  static Future<ResponseEventBookingInvoice?> callEventBookingInvoice (RequestEventBookingInvoice model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlEventBookingInvoice}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlEventBookingInvoice, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseEventBookingInvoice.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+
+  static Future<ResponseEventBookingItem?> callEventBookingItem (RequestEventBookingItem model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlEventBookingItem}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlEventBookingItem, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseEventBookingItem.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+
+  static Future<ResponseEventTicketDownload?> callEventTicketDownload (RequestEventTicketDownload model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlEventTicketDownload}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlEventTicketDownload, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseEventTicketDownload.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+
+  static Future<ResponseAssignTicketName?> callAssignTicketName (RequestAssignTicketName model)
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio(requestString: jsonEncode(model)));
+    try {
+      log("Request URL = ${ApiList.urlAssignTicketName}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlAssignTicketName, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseAssignTicketName.fromJson(response.data);
         } else {
           log("Response data = null", name: TAG);
           return null;

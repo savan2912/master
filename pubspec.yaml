@@ -76,6 +76,9 @@ dependencies:
   webview_flutter: ^4.13.1
   speech_to_text: ^7.4.0
   upgrader: ^13.5.0
+  pdf: ^3.12.0
+  printing: ^5.14.3
+  qr_flutter: ^4.1.0
 
 
 dev_dependencies:
