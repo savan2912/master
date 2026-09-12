@@ -109,7 +109,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: cardColor.withOpacity(0.1),
+                          color: cardColor.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(Icons.notifications_active_outlined, color: primaryDark, size: 20),
@@ -143,7 +143,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     data.notificationDesc ?? "No description available.",
                     style: GoogleFonts.poppins(
                       fontSize: 13,
-                      color: Colors.black.withOpacity(0.7),
+                      color: Colors.black.withValues(alpha: 0.7),
                       height: 1.5,
                     ),
                   ),
@@ -163,7 +163,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.notifications_none_rounded, size: 80, color: accentCyan.withOpacity(0.2)),
+          Icon(Icons.notifications_none_rounded, size: 80, color: accentCyan.withValues(alpha: 0.2)),
           const SizedBox(height: 20),
           Text(
             "NO NOTIFICATIONS YET",

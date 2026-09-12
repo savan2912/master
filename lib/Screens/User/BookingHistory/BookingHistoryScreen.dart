@@ -50,6 +50,21 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+    final bool isDesktop = screenWidth >= 1024;
+
+    int crossAxisCount = 1;
+    if (isDesktop) {
+      crossAxisCount = 3;
+    } else if (isTablet) {
+      crossAxisCount = 2;
+    }
+
+    double horizontalPadding = screenWidth * 0.05;
+    if (horizontalPadding < 16) horizontalPadding = 16;
+    if (horizontalPadding > 60) horizontalPadding = 60;
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: bgLight,
@@ -64,32 +79,48 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
         onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
       ),
       drawer: const CustomDrawer(initialRoute: 'booking-history'),
-      body: ValueListenableBuilder(
-        valueListenable: isApiComplete,
-        builder: (context, value, child) {
-          if (!value) return const Center(child: CustomLoader(message: "Loading Booking History..",));
+      body: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 1440),
+          child: RefreshIndicator(
+            onRefresh: () async => callBookingHistory(),
+            color: primaryDark,
+            child: ValueListenableBuilder(
+              valueListenable: isApiComplete,
+              builder: (context, value, child) {
+                if (!value) return const Center(child: CustomLoader(message: "Loading Booking History..",));
 
-          return ValueListenableBuilder(
-            valueListenable: isDataAvailable,
-            builder: (context, available, child) {
-              if (!available) return _buildEmptyState();
+                return ValueListenableBuilder(
+                  valueListenable: isDataAvailable,
+                  builder: (context, available, child) {
+                    if (!available) return _buildEmptyState();
 
-              return ListView.builder(
-                controller: scrollController,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                itemCount: bookingHistory.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == bookingHistory.length) {
-                    return isLoadingMore ? const Center(child: CircularProgressIndicator()) : const SizedBox(height: 50);
-                  }
+                    return GridView.builder(
+                      controller: scrollController,
+                      padding: EdgeInsets.fromLTRB(horizontalPadding, 15, horizontalPadding, 30),
+                      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        mainAxisSpacing: 15,
+                        crossAxisSpacing: 15,
+                        mainAxisExtent: 290,
+                      ),
+                      itemCount: bookingHistory.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == bookingHistory.length) {
+                          return isLoadingMore ? const Center(child: CircularProgressIndicator()) : const SizedBox.shrink();
+                        }
 
-                  final data = bookingHistory[index];
-                  return _buildBookingCard(data);
-                },
-              );
-            },
-          );
-        },
+                        final data = bookingHistory[index];
+                        return _buildBookingCard(data);
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -111,83 +142,96 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
     bool isConfirmed = data.statusText == "Confirmed";
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: SharedWidgets.cardBoxDecoration(),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               color: isConfirmed ? Colors.green[50] : Colors.orange[50],
               child: Row(
                 children: [
-                  CircleAvatar(
-                    backgroundColor: isConfirmed ? Colors.green : Colors.orange,
-                    radius: 4,
+                  Container(
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: isConfirmed ? Colors.green : Colors.orange,
+                      shape: BoxShape.circle,
+                    ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 10),
                   Text(
                     data.statusText?.toUpperCase() ?? "",
                     style: GoogleFonts.montserrat(
-                      fontSize: 11,
+                      fontSize: 10,
                       fontWeight: FontWeight.w800,
                       color: isConfirmed ? Colors.green[700] : Colors.orange[700],
-                      letterSpacing: 1,
+                      letterSpacing: 0.5,
                     ),
                   ),
                 ],
               ),
             ),
 
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(data.listingTitle ?? "",
-                      style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.w700, color: primaryDark)),
-                  const SizedBox(height: 15),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(data.listingTitle ?? "",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.montserrat(fontSize: 15, fontWeight: FontWeight.w800, color: primaryDark)),
+                    const SizedBox(height: 12),
 
-                  Column(
-                    children: [
-                      _iconInfo(Icons.event_available, data.bookingDate ?? ""),
-                      const SizedBox(width: 20),
-                      _iconInfo(Icons.schedule, data.time ?? ""),
-                      _iconInfo(Icons.phone, data.phone ?? ""),
-                      _iconInfo(Icons.mail_outline, data.email ?? ""),
-                    ],
-                  ),
+                    _iconInfo(Icons.event_available, data.bookingDate ?? ""),
+                    _iconInfo(Icons.schedule, data.time ?? ""),
+                    _iconInfo(Icons.phone, data.phone ?? ""),
+                    _iconInfo(Icons.mail_outline, data.email ?? ""),
 
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 15),
-                    child: Divider(height: 1, thickness: 0.5),
-                  ),
+                    const Spacer(),
+                    const Divider(height: 1, thickness: 0.5),
+                    const SizedBox(height: 12),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Total Payable", style: GoogleFonts.montserrat(fontSize: 12, color: Colors.grey[500])),
-                          Text("₹${data.amount}", style: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.w800, color: primaryDark)),
-                        ],
-                      ),
-                      ElevatedButton(
-                        onPressed: () => callBookingHistoryDetail(bookingId: data.id.toString()),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: darkBlue,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text("Total Payable", style: GoogleFonts.montserrat(fontSize: 9, color: Colors.grey[500], fontWeight: FontWeight.w600)),
+                              const SizedBox(height: 2),
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text("₹${data.amount}", style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.w900, color: primaryDark)),
+                              ),
+                            ],
+                          ),
                         ),
-                        child: Text("Details", style: GoogleFonts.montserrat(fontWeight: FontWeight.w600)),
-                      ),
-                    ],
-                  ),
-                ],
+                        const SizedBox(width: 12),
+                        SizedBox(
+                          height: 38,
+                          child: ElevatedButton(
+                            onPressed: () => callBookingHistoryDetail(bookingId: data.id.toString()),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: darkBlue,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                            child: Text("Details", style: GoogleFonts.montserrat(fontWeight: FontWeight.w700, fontSize: 11)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -198,12 +242,18 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
 
   Widget _iconInfo(IconData icon, String text) {
     return Padding(
-      padding: const EdgeInsets.all(4.0),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(icon, size: 16, color: darkBlue),
-          const SizedBox(width: 6),
-          Text(text, style: GoogleFonts.montserrat(fontSize: 13, color: Colors.grey[700], fontWeight: FontWeight.w500)),
+          Icon(icon, size: 15, color: darkBlue.withOpacity(0.7)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(text,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.montserrat(fontSize: 11.5, color: Colors.grey[700], fontWeight: FontWeight.w500, height: 1.1)),
+          ),
         ],
       ),
     );

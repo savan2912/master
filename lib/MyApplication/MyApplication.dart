@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
@@ -21,6 +22,10 @@ class MyApplication {
 
   static Future<bool> checkInternet() async {
     try {
+
+      if(kIsWeb){
+        return true;
+      }
       final List<ConnectivityResult> results =
       await Connectivity().checkConnectivity();
 

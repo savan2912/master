@@ -79,6 +79,9 @@ dependencies:
   pdf: ^3.12.0
   printing: ^5.14.3
   qr_flutter: ^4.1.0
+  http: ^1.6.0
+  flutter_polyline_points: ^3.1.0
+  firebase_database: ^12.5.0
 
 
 dev_dependencies:
@@ -121,6 +124,11 @@ flutter:
     - assets/wp.svg
     - assets/call.svg
     - assets/banner.png
+    - assets/order/store.svg
+    - assets/order/store1.svg
+    - assets/order/store2.svg
+    - assets/order/store3.svg
+    - assets/order/store_clean.svg
 
 
   # An image asset can refer to one or more resolution-specific \"variants", see

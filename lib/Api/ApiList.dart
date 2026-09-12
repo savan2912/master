@@ -7,6 +7,9 @@ class  ApiList {
   // static String get baseURL => "https://gotilo.net/api/v1";
   //TODO: -------------------------------- App URL --------------------------------
   static String get urlHomeBanner => "$baseURL/get-slider";
+  static String get urlHomeHotelAvailable => "$baseURL/listing/all-listings-hotel-booking-status-api";
+  static String get urlHomeServiceAvailable => "$baseURL/listing/all-listings-service-booking-status-api";
+  static String get urlHomeEventAvailable => "$baseURL/listing/all-listings-service-event-status-api";
   static String get urlHomeCollection => "$baseURL/explore-category";
   static String get urlHomeLatestListing => "$baseURL/latest-listings";
   static String get urlHomeLatestRelease => "$baseURL/nearby-listings";

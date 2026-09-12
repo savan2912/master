@@ -106,7 +106,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           "Simplified Discovery",
           style: GoogleFonts.montserrat(
             fontSize: 10,
-            color: RegisterScreen.textDark.withOpacity(0.6),
+            color: RegisterScreen.textDark.withValues(alpha: 0.6),
             letterSpacing: 2,
             fontWeight: FontWeight.w600,
           ),
@@ -122,10 +122,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.grey.withOpacity(0.05)),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.05)),
         boxShadow: [
           BoxShadow(
-            color: RegisterScreen.textDark.withOpacity(0.04),
+            color: RegisterScreen.textDark.withValues(alpha: 0.04),
             blurRadius: 30,
             offset: const Offset(0, 10),
           ),
@@ -216,7 +216,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Container(
                   height: 20,
                   width: 1,
-                  color: Colors.grey.withOpacity(0.3),
+                  color: Colors.grey.withValues(alpha: 0.3),
                 ),
                 const SizedBox(width: 10),
               ],
@@ -279,9 +279,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: RegisterScreen.appBg.withOpacity(0.3),
+        color: RegisterScreen.appBg.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey.withOpacity(0.1)),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
       ),
       child: TextField(
         controller: controller,
@@ -325,7 +325,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(5),
             ),
-            side: BorderSide(color: Colors.grey.withOpacity(0.5)),
+            side: BorderSide(color: Colors.grey.withValues(alpha: 0.5)),
             onChanged: (val) => setState(() => _agreedToTerms = val!),
           ),
         ),
@@ -377,7 +377,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: RegisterScreen.primaryCyan.withOpacity(0.3),
+            color: RegisterScreen.primaryCyan.withValues(alpha: 0.3),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -470,7 +470,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _buildOrDivider() {
     return Row(
       children: [
-        Expanded(child: Divider(color: Colors.grey.withOpacity(0.2))),
+        Expanded(child: Divider(color: Colors.grey.withValues(alpha: 0.2))),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Text(
@@ -482,7 +482,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
         ),
-        Expanded(child: Divider(color: Colors.grey.withOpacity(0.2))),
+        Expanded(child: Divider(color: Colors.grey.withValues(alpha: 0.2))),
       ],
     );
   }

@@ -1,15 +1,15 @@
-
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Screens/AllCollection/AllCollectionScreen.dart';
 import 'package:gotilo_new/Screens/Deals/DealsScreen.dart';
 import 'package:gotilo_new/Screens/HomeMain.dart';
-import 'dart:ui';
-import 'StoreWebView/StoreWebview.dart';
+import 'package:gotilo_new/Screens/HotelHomeScreen.dart';
+import '../OrderScreen/UserOrderTrackScreen.dart';
 
 class ModernHeritageApp extends StatefulWidget {
   const ModernHeritageApp({super.key});
-
 
   static const Color appBg = Color(0xFFF0F4F7);
   static const Color cardColor = Colors.white;
@@ -24,18 +24,6 @@ class ModernHeritageApp extends StatefulWidget {
 
 class _ModernHeritageAppState extends State<ModernHeritageApp> {
   int _selectedIndex = 0;
-  late final List<Widget> _screens;
-
-  @override
-  void initState() {
-    _screens = [
-      const HomeMainScreen(),
-      DealsScreen(isHome: true,),
-      const AllCollectionScreen(isHome: true,),
-      const StoreWebview(),
-    ];
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +34,18 @@ class _ModernHeritageAppState extends State<ModernHeritageApp> {
         backgroundColor: ModernHeritageApp.appBg,
         body: Stack(
           children: [
-            IndexedStack(index: _selectedIndex, children: _screens),
+            // 4 Core Screen Pages (Event removed)
+            IndexedStack(
+              index: _selectedIndex,
+              children: [
+                const HomeMainScreen(),
+                DealsScreen(isHome: true),
+                const AllCollectionScreen(isHome: true),
+                const HotelHomeScreen(),
+              ],
+            ),
+
+            // Glass Bottom Navigation Bar with Center Floating Action Button
             Positioned(
               bottom: 25,
               left: 20,
@@ -60,28 +59,76 @@ class _ModernHeritageAppState extends State<ModernHeritageApp> {
   }
 
   Widget _buildGlassBottomBar() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(35),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          height: 80,
-          decoration: BoxDecoration(
-            color: ModernHeritageApp.textDark.withOpacity(0.85),
-            borderRadius: BorderRadius.circular(35),
-            border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _navIcon(Icons.home_filled, "Home", 0),
-              _navIcon(Icons.local_offer_outlined, "deal", 1),
-              _navIcon(Icons.category_outlined, "category", 2),
-              _navIcon(Icons.storefront, "Store", 3),
-            ],
+    return Stack(
+      alignment: Alignment.center,
+      clipBehavior: Clip.none,
+      children: [
+        // Glass Nav Bar Container
+        ClipRRect(
+          borderRadius: BorderRadius.circular(35),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              height: 75,
+              decoration: BoxDecoration(
+                color: ModernHeritageApp.textDark.withValues(alpha: 0.88),
+                borderRadius: BorderRadius.circular(35),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.12), width: 1),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  // Left 2 Icons
+                  _navIcon(Icons.home_filled, "Home", 0),
+                  _navIcon(Icons.local_offer_outlined, "Deals", 1),
+
+                  // Center Gap for Floating Action Button
+                  const SizedBox(width: 50),
+
+                  // Right 2 Icons
+                  _navIcon(Icons.category_outlined, "Category", 2),
+                  _navIcon(Icons.hotel, "Hotel", 3),
+                ],
+              ),
+            ),
           ),
         ),
-      ),
+
+        // Center Floating Action Button (Live Order Bike FAB)
+        Positioned(
+          top: -18,
+          child: GestureDetector(
+            onTap: () {
+              Get.to(() => const UserOrderTrackScreen());
+            },
+            child: Container(
+              width: 65,
+              height: 65,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF26C6DA), Color(0xFF00ACC1)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                border: Border.all(color: Colors.white, width: 3),
+                // boxShadow: [
+                //   BoxShadow(
+                //     color: const Color(0xFF00ACC1).withValues(alpha: 0.45),
+                //     blurRadius: 12,
+                //     offset: const Offset(0, 4),
+                //   ),
+                // ],
+              ),
+              child: const Icon(
+                Icons.fastfood_rounded,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -96,7 +143,7 @@ class _ModernHeritageAppState extends State<ModernHeritageApp> {
             icon,
             color: active
                 ? ModernHeritageApp.accentCyan
-                : Colors.white.withOpacity(0.4),
+                : Colors.white.withValues(alpha: 0.4),
             size: 24,
           ),
           const SizedBox(height: 4),
@@ -105,7 +152,7 @@ class _ModernHeritageAppState extends State<ModernHeritageApp> {
             style: GoogleFonts.montserrat(
               color: active
                   ? ModernHeritageApp.accentCyan
-                  : Colors.white.withOpacity(0.4),
+                  : Colors.white.withValues(alpha: 0.4),
               fontSize: 10,
               fontWeight: active ? FontWeight.bold : FontWeight.w500,
             ),
@@ -304,7 +351,7 @@ class _ModernHeritageAppState extends State<ModernHeritageApp> {
             style: GoogleFonts.montserrat(
               fontSize: 30,
               fontWeight: FontWeight.w900,
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
             ),
           ),
           const SizedBox(width: 15),
@@ -345,7 +392,7 @@ class _ModernHeritageAppState extends State<ModernHeritageApp> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 20),
         ],
       ),
       child: SingleChildScrollView(

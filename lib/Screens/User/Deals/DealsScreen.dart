@@ -21,7 +21,8 @@ class UserDealsScreen extends StatefulWidget {
   State<UserDealsScreen> createState() => _DealsScreenState();
 }
 
-class _DealsScreenState extends State<UserDealsScreen> with SingleTickerProviderStateMixin {
+class _DealsScreenState extends State<UserDealsScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<UserDeal> userDeal = [];
@@ -49,7 +50,6 @@ class _DealsScreenState extends State<UserDealsScreen> with SingleTickerProvider
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
 
-
     _tabController.addListener(() {
       setState(() {
         showSearch = _tabController.index == 0;
@@ -59,16 +59,16 @@ class _DealsScreenState extends State<UserDealsScreen> with SingleTickerProvider
     callUserDeal();
     callCrackedDeal();
 
-
     _scrollControllerActive.addListener(() {
-      if (_scrollControllerActive.position.pixels >= _scrollControllerActive.position.maxScrollExtent - 50) {
+      if (_scrollControllerActive.position.pixels >=
+          _scrollControllerActive.position.maxScrollExtent - 200) {
         if (!isLoadingActive && hasMoreActive) _loadMoreActive();
       }
     });
 
-
     _scrollControllerCracked.addListener(() {
-      if (_scrollControllerCracked.position.pixels >= _scrollControllerCracked.position.maxScrollExtent - 50) {
+      if (_scrollControllerCracked.position.pixels >=
+          _scrollControllerCracked.position.maxScrollExtent - 200) {
         if (!isLoadingCracked && hasMoreCracked) _loadMoreCracked();
       }
     });
@@ -84,6 +84,20 @@ class _DealsScreenState extends State<UserDealsScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+
+    int crossAxisCount = 1;
+    if (screenWidth >= 1200) {
+      crossAxisCount = 3;
+    } else if (isTablet) {
+      crossAxisCount = 2;
+    }
+
+    double horizontalPadding = screenWidth * 0.05;
+    if (horizontalPadding < 16) horizontalPadding = 16;
+    if (horizontalPadding > 60) horizontalPadding = 60;
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: surfaceLight,
@@ -98,53 +112,62 @@ class _DealsScreenState extends State<UserDealsScreen> with SingleTickerProvider
         onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
       ),
       drawer: const CustomDrawer(initialRoute: 'user.deals'),
-      body: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: primaryDark.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              indicatorSize: TabBarIndicatorSize.tab,
-              indicator: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: primaryDark,
+      body: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 1440),
+          child: Column(
+            children: [
+              Container(
+                margin: EdgeInsets.symmetric(
+                  horizontal: horizontalPadding,
+                  vertical: 8,
+                ),
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: primaryDark.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: TabBar(
+                  controller: _tabController,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicator: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: primaryDark,
+                  ),
+                  labelColor: Colors.white,
+                  unselectedLabelColor: primaryDark.withValues(alpha: 0.5),
+                  labelStyle: GoogleFonts.montserrat(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                  ),
+                  unselectedLabelStyle: GoogleFonts.montserrat(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                  dividerColor: Colors.transparent,
+                  tabs: const [
+                    Tab(text: "Active Deals"),
+                    Tab(text: "Cracked Deals"),
+                  ],
+                ),
               ),
-              labelColor: Colors.white,
-              unselectedLabelColor: primaryDark.withOpacity(0.5),
-              labelStyle: GoogleFonts.montserrat(
-                fontWeight: FontWeight.w700,
-                fontSize: 13,
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildActiveDealsTab(crossAxisCount, horizontalPadding),
+                    _buildCrackedDealsTab(crossAxisCount, horizontalPadding),
+                  ],
+                ),
               ),
-              unselectedLabelStyle: GoogleFonts.montserrat(
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-              ),
-              dividerColor: Colors.transparent,
-              tabs: const [
-                Tab(text: "Active Deals"),
-                Tab(text: "Cracked Deals"),
-              ],
-            ),
+            ],
           ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildActiveDealsTab(),
-                _buildCrackedDealsTab(),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
-  Widget _buildActiveDealsTab() {
+
+  Widget _buildActiveDealsTab(int crossAxisCount, double horizontalPadding) {
     return RefreshIndicator(
       onRefresh: () async => callUserDeal(),
       color: primaryDark,
@@ -152,19 +175,39 @@ class _DealsScreenState extends State<UserDealsScreen> with SingleTickerProvider
         valueListenable: isApiComplete,
         builder: (context, apiDone, child) {
           if (!apiDone && counterActive == 0) {
-            return const Center(child: CustomLoader(message: "Loading Deals..",));
+            return const Center(
+              child: CustomLoader(message: "Loading Deals.."),
+            );
           }
           if (userDeal.isEmpty) return _buildEmptyState();
 
-          return ListView.builder(
+          return GridView.builder(
             controller: _scrollControllerActive,
-            padding: const EdgeInsets.only(bottom: 20),
+            padding: EdgeInsets.fromLTRB(
+              horizontalPadding,
+              10,
+              horizontalPadding,
+              20,
+            ),
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              mainAxisExtent: 135,
+            ),
             itemCount: userDeal.length + (hasMoreActive ? 1 : 0),
             itemBuilder: (context, index) {
               if (index < userDeal.length) {
-                return _buildDealCard(userDeal[index].discountValue ?? "0",
-                    userDeal[index].listingTitle, userDeal[index].dealName,
-                    userDeal[index].endDate, userDeal[index].status == 0 ? "Pending" : "Complete");
+                return _buildDealCard(
+                  userDeal[index].discountValue ?? "0",
+                  userDeal[index].listingTitle,
+                  userDeal[index].dealName,
+                  userDeal[index].endDate,
+                  userDeal[index].status == 0 ? "Pending" : "Complete",
+                );
               }
               return _buildLoader();
             },
@@ -173,30 +216,55 @@ class _DealsScreenState extends State<UserDealsScreen> with SingleTickerProvider
       ),
     );
   }
-  Widget _buildCrackedDealsTab() {
+
+  Widget _buildCrackedDealsTab(int crossAxisCount, double horizontalPadding) {
     return RefreshIndicator(
       onRefresh: () async => callCrackedDeal(),
       color: primaryDark,
       child: crackedDeal.isEmpty && !isLoadingCracked
           ? _buildEmptyState()
-          : ListView.builder(
-        controller: _scrollControllerCracked,
-        padding: const EdgeInsets.only(bottom: 20),
-        itemCount: crackedDeal.length + (hasMoreCracked ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index < crackedDeal.length) {
-            return _buildDealCard(crackedDeal[index].discountValue ?? "0",
-                crackedDeal[index].listingTitle, crackedDeal[index].dealName,
-                crackedDeal[index].endDate, "Cracked");
-          }
-          return _buildLoader();
-        },
-      ),
+          : GridView.builder(
+              controller: _scrollControllerCracked,
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                10,
+                horizontalPadding,
+                20,
+              ),
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                mainAxisExtent: 135,
+              ),
+              itemCount: crackedDeal.length + (hasMoreCracked ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index < crackedDeal.length) {
+                  return _buildDealCard(
+                    crackedDeal[index].discountValue ?? "0",
+                    crackedDeal[index].listingTitle,
+                    crackedDeal[index].dealName,
+                    crackedDeal[index].endDate,
+                    "Cracked",
+                  );
+                }
+                return _buildLoader();
+              },
+            ),
     );
   }
-  Widget _buildDealCard(String discount, String? title, String? dealName, String? date, String status) {
+
+  Widget _buildDealCard(
+    String discount,
+    String? title,
+    String? dealName,
+    String? date,
+    String status,
+  ) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: SharedWidgets.cardBoxDecoration(),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
@@ -204,27 +272,50 @@ class _DealsScreenState extends State<UserDealsScreen> with SingleTickerProvider
           child: Row(
             children: [
               Container(
-                width: 85,
+                width: 80,
                 decoration: BoxDecoration(color: primaryDark),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
-                        child: Text("$discount%", style: GoogleFonts.montserrat(color: accentGold, fontWeight: FontWeight.w900, fontSize: 20)),
+                        child: Text(
+                          "$discount%",
+                          style: GoogleFonts.montserrat(
+                            color: accentGold,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 18,
+                          ),
+                        ),
                       ),
                     ),
-                    Text("OFF", style: GoogleFonts.montserrat(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 10, letterSpacing: 1)),
-                    const SizedBox(height: 10),
-                    ...List.generate(5, (i) => Container(margin: const EdgeInsets.symmetric(vertical: 2), width: 2, height: 8, color: Colors.white24)),
+                    Text(
+                      "OFF",
+                      style: GoogleFonts.montserrat(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 9,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    ...List.generate(
+                      3,
+                      (i) => Container(
+                        margin: const EdgeInsets.symmetric(vertical: 2),
+                        width: 2,
+                        height: 6,
+                        color: Colors.white24,
+                      ),
+                    ),
                   ],
                 ),
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(12.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -233,21 +324,55 @@ class _DealsScreenState extends State<UserDealsScreen> with SingleTickerProvider
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
-                            child: Text(title?.toUpperCase() ?? "SHOP NAME", style: GoogleFonts.montserrat(color: Colors.teal, fontWeight: FontWeight.w800, fontSize: 10, letterSpacing: 1), maxLines: 1, overflow: TextOverflow.ellipsis),
+                            child: Text(
+                              title?.toUpperCase() ?? "SHOP NAME",
+                              style: GoogleFonts.montserrat(
+                                color: Colors.teal,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 9,
+                                letterSpacing: 1,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           _statusTag(status),
                         ],
                       ),
+                      const SizedBox(height: 4),
+                      Text(
+                        dealName ?? "Special Deal",
+                        style: GoogleFonts.montserrat(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                          color: primaryDark,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       const SizedBox(height: 8),
-                      Text(dealName ?? "Special Deal", style: GoogleFonts.montserrat(fontWeight: FontWeight.w700, fontSize: 15, color: primaryDark), maxLines: 2, overflow: TextOverflow.ellipsis),
-                      const SizedBox(height: 12),
                       Row(
                         children: [
-                          if(date != "" && date != null)
-                          Icon(Icons.access_time_rounded, size: 14, color: Colors.grey[400]),
-                          const SizedBox(width: 5),
-                          if(date != "" && date != null)
-                          Text("Valid: $date", style: GoogleFonts.montserrat(color: Colors.grey[600], fontSize: 11, fontWeight: FontWeight.w500)),
+                          if (date != "" && date != null)
+                            Icon(
+                              Icons.access_time_rounded,
+                              size: 12,
+                              color: Colors.grey[400],
+                            ),
+                          const SizedBox(width: 4),
+                          if (date != "" && date != null)
+                            Expanded(
+                              child: Text(
+                                "Valid: $date",
+                                style: GoogleFonts.montserrat(
+                                  color: Colors.grey[600],
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                         ],
                       ),
                     ],
@@ -260,6 +385,7 @@ class _DealsScreenState extends State<UserDealsScreen> with SingleTickerProvider
       ),
     );
   }
+
   Future<void> callUserDeal() async {
     counterActive = 0;
     hasMoreActive = true;
@@ -280,9 +406,15 @@ class _DealsScreenState extends State<UserDealsScreen> with SingleTickerProvider
     bool internet = await MyApplication.checkInternet();
     if (internet) {
       try {
-        ResponseUserDeal? response = await ApiCalls.callUserDeal(RequestUserDeal(
-            userId: AppPrefs.userId, counter: counterActive.toString(), search: searchQuery));
-        if (response != null && response.result!.toLowerCase().contains("pass")) {
+        ResponseUserDeal? response = await ApiCalls.callUserDeal(
+          RequestUserDeal(
+            userId: AppPrefs.userId,
+            counter: counterActive.toString(),
+            search: searchQuery,
+          ),
+        );
+        if (response != null &&
+            response.result!.toLowerCase().contains("pass")) {
           if (response.data != null && response.data!.isNotEmpty) {
             userDeal.addAll(response.data!);
             if (response.data!.length < 10) hasMoreActive = false;
@@ -290,6 +422,16 @@ class _DealsScreenState extends State<UserDealsScreen> with SingleTickerProvider
             hasMoreActive = false;
           }
         }
+
+        // Auto-load more if content doesn't fill screen (common on large screens/tablets)
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollControllerActive.hasClients &&
+              _scrollControllerActive.position.maxScrollExtent < 100 &&
+              hasMoreActive &&
+              !isLoadingActive) {
+            _loadMoreActive();
+          }
+        });
       } finally {
         isApiComplete.value = true;
       }
@@ -315,9 +457,11 @@ class _DealsScreenState extends State<UserDealsScreen> with SingleTickerProvider
     bool internet = await MyApplication.checkInternet();
     if (internet) {
       try {
-        ResponseCrackedDeal? response = await ApiCalls.callCrackedDeal(RequestCrackedDeal(
-            userId: AppPrefs.userId, counter: counterCracked));
-        if (response != null && response.result!.toLowerCase().contains("pass")) {
+        ResponseCrackedDeal? response = await ApiCalls.callCrackedDeal(
+          RequestCrackedDeal(userId: AppPrefs.userId, counter: counterCracked),
+        );
+        if (response != null &&
+            response.result!.toLowerCase().contains("pass")) {
           if (response.data != null && response.data!.isNotEmpty) {
             crackedDeal.addAll(response.data!);
             if (response.data!.length < 10) hasMoreCracked = false;
@@ -325,13 +469,33 @@ class _DealsScreenState extends State<UserDealsScreen> with SingleTickerProvider
             hasMoreCracked = false;
           }
         }
+
+        // Auto-load more if content doesn't fill screen (common on large screens/tablets)
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollControllerCracked.hasClients &&
+              _scrollControllerCracked.position.maxScrollExtent < 100 &&
+              hasMoreCracked &&
+              !isLoadingCracked) {
+            _loadMoreCracked();
+          }
+        });
       } finally {
         setState(() {});
       }
     }
   }
 
-  Widget _buildLoader() => hasMoreActive || hasMoreCracked ? Padding(padding: const EdgeInsets.all(20), child: Center(child: CircularProgressIndicator(strokeWidth: 3, color: primaryDark))) : const SizedBox();
+  Widget _buildLoader() => hasMoreActive || hasMoreCracked
+      ? Padding(
+          padding: const EdgeInsets.all(20),
+          child: Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 3,
+              color: primaryDark,
+            ),
+          ),
+        )
+      : const SizedBox();
 
   Widget _statusTag(String status) {
     bool isPending = status.toLowerCase() == "pending";
@@ -339,12 +503,44 @@ class _DealsScreenState extends State<UserDealsScreen> with SingleTickerProvider
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: isCracked ? accentGold.withOpacity(0.1) : (isPending ? Colors.orange.withOpacity(0.1) : Colors.green.withOpacity(0.1)),
+        color: isCracked
+            ? accentGold.withValues(alpha: 0.1)
+            : (isPending
+                  ? Colors.orange.withValues(alpha: 0.1)
+                  : Colors.green.withValues(alpha: 0.1)),
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Text(status.toUpperCase(), style: GoogleFonts.montserrat(color: isCracked ? Colors.teal : (isPending ? Colors.orange[800] : Colors.green[800]), fontSize: 8, fontWeight: FontWeight.w800)),
+      child: Text(
+        status.toUpperCase(),
+        style: GoogleFonts.montserrat(
+          color: isCracked
+              ? Colors.teal
+              : (isPending ? Colors.orange[800] : Colors.green[800]),
+          fontSize: 8,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
     );
   }
 
-  Widget _buildEmptyState() => Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.confirmation_number_outlined, size: 70, color: accentGold.withOpacity(0.2)), const SizedBox(height: 16), Text("No deals found", style: GoogleFonts.montserrat(color: primaryDark.withOpacity(0.5), fontWeight: FontWeight.w600))]));
+  Widget _buildEmptyState() => Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.confirmation_number_outlined,
+          size: 70,
+          color: accentGold.withValues(alpha: 0.2),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          "No deals found",
+          style: GoogleFonts.montserrat(
+            color: primaryDark.withValues(alpha: 0.5),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    ),
+  );
 }

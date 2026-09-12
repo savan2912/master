@@ -69,6 +69,21 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+    final bool isDesktop = screenWidth >= 1024;
+
+    int crossAxisCount = 1;
+    if (isDesktop) {
+      crossAxisCount = 3;
+    } else if (isTablet) {
+      crossAxisCount = 2;
+    }
+
+    double horizontalPadding = screenWidth * 0.05;
+    if (horizontalPadding < 16) horizontalPadding = 16;
+    if (horizontalPadding > 60) horizontalPadding = 60;
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: surfaceLight,
@@ -78,46 +93,59 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
         showAction: false,
         onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          setState(() {
-            _counter = 0;
-            _myOrdersList.clear();
-            _hasMore = true;
-            isInitialLoading.value = true;
-          });
-          await _fetchOrders();
-        },
-        color: icon,
-        child: ValueListenableBuilder(
-          valueListenable: isInitialLoading,
-          builder: (context, loading, child) {
-            if (loading) {
-              return const Center(child: CustomLoader(message: "Loading My Orders.."));
-            }
-
-            if (_myOrdersList.isEmpty) {
-              return _buildEmptyState();
-            }
-
-            return ListView.builder(
-              controller: _scrollController, // કંટ્રોલર એટેચ કર્યું
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-              itemCount: _myOrdersList.length + (_hasMore ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index < _myOrdersList.length) {
-                  return myOrderDesign(_myOrdersList[index]);
-                } else {
-                  // નીચે લોડર બતાવવા માટે
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 30),
-                    child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                  );
+      body: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 1440),
+          child: RefreshIndicator(
+            onRefresh: () async {
+              setState(() {
+                _counter = 0;
+                _myOrdersList.clear();
+                _hasMore = true;
+                isInitialLoading.value = true;
+              });
+              await _fetchOrders();
+            },
+            color: icon,
+            child: ValueListenableBuilder(
+              valueListenable: isInitialLoading,
+              builder: (context, loading, child) {
+                if (loading) {
+                  return const Center(child: CustomLoader(message: "Loading My Orders.."));
                 }
+
+                if (_myOrdersList.isEmpty) {
+                  return _buildEmptyState();
+                }
+
+                return GridView.builder(
+                  shrinkWrap: true,
+                  controller: _scrollController,
+                  padding: EdgeInsets.fromLTRB(horizontalPadding, 12, horizontalPadding, 30),
+                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 15,
+                    mainAxisExtent: 180,
+                  ),
+                  itemCount: _myOrdersList.length + (_hasMore ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index < _myOrdersList.length) {
+                      return myOrderDesign(_myOrdersList[index]);
+                    } else {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      );
+                    }
+                  },
+                );
               },
-            );
-          },
+            ),
+          ),
         ),
       ),
     );
@@ -177,14 +205,13 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
     } catch (_) {}
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: SharedWidgets.cardBoxDecoration(),
       child: Column(
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: primaryDark.withOpacity(0.02),
+              color: primaryDark.withValues(alpha: 0.02),
               borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
             ),
             child: Row(
@@ -195,7 +222,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                     Icon(Icons.calendar_month_outlined, size: 16, color: iconBg),
                     const SizedBox(width: 8),
                     Text(displayDate,
-                        style: GoogleFonts.montserrat(fontWeight: FontWeight.w600, fontSize: 12, color: primaryDark.withOpacity(0.7))),
+                        style: GoogleFonts.montserrat(fontWeight: FontWeight.w600, fontSize: 12, color: primaryDark.withValues(alpha: 0.7))),
                   ],
                 ),
                 _statusTag(item.status ?? "Pending"),
@@ -204,29 +231,31 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
           ),
 
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(12.0),
             child: Column(
               children: [
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: iconBg,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Icon(Icons.restaurant_menu_rounded, color: surfaceLight, size: 22),
+                      child: Icon(Icons.restaurant_menu_rounded, color: surfaceLight, size: 20),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             item.listingTitle ?? "Cafe/Restaurant",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.montserrat(
                                 fontWeight: FontWeight.w700,
-                                fontSize: 15,
+                                fontSize: 14,
                                 color: primaryDark
                             ),
                           ),
@@ -236,22 +265,22 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                             style: GoogleFonts.montserrat(
                                 color: iconBg,
                                 fontWeight: FontWeight.w600,
-                                fontSize: 13
+                                fontSize: 12
                             ),
                           ),
                         ],
                       ),
                     ),
                     SizedBox(
-                      height: 40,
-                      width: 40,
+                      height: 35,
+                      width: 35,
                       child: loadingToken == item.tokenNumber
                           ? Center(
                         child: SizedBox(
-                          height: 20,
-                          width: 20,
+                          height: 18,
+                          width: 18,
                           child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
+                            strokeWidth: 2,
                             color: icon,
                           ),
                         ),
@@ -266,7 +295,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                         child: Icon(
                           CupertinoIcons.eye_fill,
                           color: icon,
-                          size: 26,
+                          size: 24,
                         ),
                       ),
                     ),
@@ -274,7 +303,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
                 ),
 
                 const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                  padding: EdgeInsets.symmetric(vertical: 10),
                   child: Divider(height: 1, thickness: 0.5),
                 ),
 
@@ -309,7 +338,7 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
       decoration: BoxDecoration(
-        color: isDone ? statusGreen.withOpacity(0.1) : accentGold.withOpacity(0.1),
+        color: isDone ? statusGreen.withValues(alpha: 0.1) : accentGold.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
@@ -410,9 +439,9 @@ class _MyOrderScreenState extends State<MyOrderScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.receipt_long_outlined, size: 80, color: accentGold.withOpacity(0.2)),
+          Icon(Icons.receipt_long_outlined, size: 80, color: accentGold.withValues(alpha: 0.2)),
           const SizedBox(height: 16),
-          Text("No orders yet", style: GoogleFonts.montserrat(color: primaryDark.withOpacity(0.5), fontWeight: FontWeight.w600)),
+          Text("No orders yet", style: GoogleFonts.montserrat(color: primaryDark.withValues(alpha: 0.5), fontWeight: FontWeight.w600)),
         ],
       ),
     );

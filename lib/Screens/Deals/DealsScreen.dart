@@ -96,6 +96,20 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+
+    int crossAxisCount = 1;
+    if (screenWidth >= 1200) {
+      crossAxisCount = 3;
+    } else if (isTablet) {
+      crossAxisCount = 2;
+    }
+
+    double horizontalPadding = screenWidth * 0.05;
+    if (horizontalPadding < 16) horizontalPadding = 16;
+    if (horizontalPadding > 60) horizontalPadding = 60;
+
     return Scaffold(
       backgroundColor: const Color(0xFFFAFAFA),
       body: CustomScrollView(
@@ -103,7 +117,6 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
         physics: const BouncingScrollPhysics(),
         slivers: [
           SliverAppBar(
-            expandedHeight: 180,
             pinned: true,
             backgroundColor: const Color(0xFFFDFDFD),
             surfaceTintColor: const Color(0xFFFDFDFD),
@@ -112,6 +125,41 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
               icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF0D1B1E), size: 18),
               onPressed: () => Navigator.pop(context),
             ) : const SizedBox(),
+            centerTitle: true,
+            title: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: isSearchActive
+                  ? Container(
+                key: const ValueKey("SearchBar"),
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: TextField(
+                  controller: searchController,
+                  onChanged: onSearchChanged,
+                  autofocus: true,
+                  style: GoogleFonts.montserrat(fontSize: 13, color: Colors.black),
+                  decoration: InputDecoration(
+                    hintText: "Search deals...",
+                    hintStyle: GoogleFonts.montserrat(fontSize: 11, color: Colors.grey),
+                    border: InputBorder.none,
+                    prefixIcon: const Icon(Icons.search, size: 18),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  ),
+                ),
+              )
+                  : Text(
+                "EXCLUSIVE DEALS",
+                style: GoogleFonts.poppins(
+                  letterSpacing: 1,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 16,
+                  color: const Color(0xFF0D1B1E),
+                ),
+              ),
+            ),
             actions: [
               IconButton(
                 onPressed: () {
@@ -124,46 +172,13 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
                   });
                 },
                 icon: Icon(isSearchActive ? Icons.close : Icons.search, color: const Color(0xFF0D1B1E)),
-              )
-            ],
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              titlePadding: EdgeInsets.only(bottom: isSearchActive ? 85 : 75),
-              title: isSearchActive
-                  ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50),
-                child: SizedBox(
-                  height: 35,
-                  child: TextField(
-                    controller: searchController,
-                    onChanged: onSearchChanged,
-                    autofocus: true,
-                    style: GoogleFonts.montserrat(fontSize: 13, color: Colors.black),
-                    decoration: InputDecoration(
-                      hintText: "Search deals...",
-                      hintStyle: GoogleFonts.montserrat(fontSize: 11, color: Colors.grey),
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 15),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
-                    ),
-                  ),
-                ),
-              )
-                  : Text(
-                "EXCLUSIVE DEALS",
-                style: GoogleFonts.poppins(
-                  letterSpacing: 1,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 14,
-                  color: const Color(0xFF0D1B1E),
-                ),
               ),
-            ),
+              const SizedBox(width: 5),
+            ],
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(70),
               child: Container(
-                margin: const EdgeInsets.fromLTRB(25, 0, 25, 15),
+                margin: EdgeInsets.fromLTRB(horizontalPadding, 0, horizontalPadding, 15),
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(color: const Color(0xFFF1F1F1), borderRadius: BorderRadius.circular(25)),
                 child: TabBar(
@@ -194,8 +209,8 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    _buildDealsList(allDeals),
-                    _buildNearByDealsList(nearbyDeals),
+                    _buildDealsList(allDeals, crossAxisCount, horizontalPadding),
+                    _buildNearByDealsList(nearbyDeals, crossAxisCount, horizontalPadding),
                   ],
                 ),
               );
@@ -206,11 +221,17 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildDealsList(List<Deals> data) {
+  Widget _buildDealsList(List<Deals> data, int crossAxisCount, double horizontalPadding) {
     if (data.isEmpty && isApiComplete.value) return const Center(child: Text("No Deals Found"));
-    return ListView.builder(
-      padding: EdgeInsets.only(top: 10, left: 16, right: 16, bottom: widget.isHome! ? 95 : 30),
-      itemCount: data.length + 1,
+    return GridView.builder(
+      padding: EdgeInsets.only(top: 10, left: horizontalPadding, right: horizontalPadding, bottom: widget.isHome! ? 95 : 30),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        childAspectRatio: crossAxisCount == 1 ? 0.95 : 0.82,
+      ),
+      itemCount: data.length + (hasMoreData ? 1 : 0),
       physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) {
         if (index == data.length) return _buildLoadMoreIndicator();
@@ -219,11 +240,17 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildNearByDealsList(List<NearbyDeals> data) {
+  Widget _buildNearByDealsList(List<NearbyDeals> data, int crossAxisCount, double horizontalPadding) {
     if (data.isEmpty && isApiComplete.value) return const Center(child: Text("No Nearby Deals Found"));
-    return ListView.builder(
-      padding: EdgeInsets.only(top: 10, left: 16, right: 16, bottom: widget.isHome! ? 95 : 30),
-      itemCount: data.length + 1,
+    return GridView.builder(
+      padding: EdgeInsets.only(top: 10, left: horizontalPadding, right: horizontalPadding, bottom: widget.isHome! ? 95 : 30),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        childAspectRatio: crossAxisCount == 1 ? 0.95 : 0.82,
+      ),
+      itemCount: data.length + (hasMoreData ? 1 : 0),
       physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) {
         if (index == data.length) return _buildLoadMoreIndicator();
@@ -282,7 +309,6 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
   }) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: _T.white,
         borderRadius: BorderRadius.circular(20),
@@ -298,114 +324,104 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. IMAGE & HIGH-HIGHLIGHTED MARQUEE TAG
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            child: Stack(
-              children: [
-                CachedNetworkImage(
-                  imageUrl: imageUrl,
-                  height: 145, // કમ્પેક્ટ હાઇટ
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  memCacheWidth: 600,
-                  placeholder: (context, url) => Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Container(color: Colors.white),
+          Expanded(
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              child: Stack(
+                children: [
+                  CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    height: double.infinity,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    memCacheWidth: 600,
+                    placeholder: (context, url) => Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Container(color: Colors.white),
+                    ),
+                    errorWidget: (_, __, ___) => Container(color: _T.surface2),
                   ),
-                  errorWidget: (_, __, ___) => Container(height: 145, color: _T.surface2),
-                ),
-                Positioned(
-                  top: 10,
-                  left: 10,
-                  right: 10,
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: _T.red,
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: [
-                          BoxShadow(
-                            color: _T.red.withOpacity(0.45),
-                            blurRadius: 10,
-                            offset: const Offset(0, 3),
-                          )
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.local_offer_rounded, color: Colors.white, size: 11),
-                          const SizedBox(width: 5),
-                          Flexible(
-                            child: SizedBox(
-                              height: 14,
-                              width: 140, // ટેક્સ્ટ કપાશે નહીં, મસ્ત મારક્યુ થશે
-                              child: Marquee(
-                                text: name.toUpperCase(),
-                                style: GoogleFonts.montserrat(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 1.2,
+                  Positioned(
+                    top: 10,
+                    left: 10,
+                    right: 10,
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: _T.red,
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: _T.red.withOpacity(0.45),
+                              blurRadius: 10,
+                              offset: const Offset(0, 3),
+                            )
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.local_offer_rounded, color: Colors.white, size: 11),
+                            const SizedBox(width: 5),
+                            Flexible(
+                              child: SizedBox(
+                                height: 14,
+                                width: 140,
+                                child: Marquee(
+                                  text: name.toUpperCase(),
+                                  style: GoogleFonts.montserrat(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.2,
+                                  ),
+                                  scrollAxis: Axis.horizontal,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  blankSpace: 20.0,
+                                  velocity: 30.0,
+                                  pauseAfterRound: const Duration(seconds: 1),
+                                  startPadding: 0.0,
+                                  accelerationDuration: const Duration(seconds: 1),
+                                  accelerationCurve: Curves.linear,
+                                  decelerationDuration: const Duration(milliseconds: 500),
+                                  decelerationCurve: Curves.easeOut,
                                 ),
-                                scrollAxis: Axis.horizontal,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                blankSpace: 20.0,
-                                velocity: 30.0,
-                                pauseAfterRound: const Duration(seconds: 1),
-                                startPadding: 0.0,
-                                accelerationDuration: const Duration(seconds: 1),
-                                accelerationCurve: Curves.linear,
-                                decelerationDuration: const Duration(milliseconds: 500),
-                                decelerationCurve: Curves.easeOut,
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
 
-          // 2. CONTENT DETAILS SECTION
           Padding(
-            padding: const EdgeInsets.all(14), // કમ્પેક્ટ પેડિંગ
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // ડીલ ડિસ્ક્રિપ્શન
                 Text(
                   desc,
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.roboto(
                     color: _T.textHi,
-                    fontSize: 15,
+                    fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    height: 1.3,
+                    height: 1.2,
                   ),
                 ),
-                const SizedBox(height: 10),
-                Container(height: 1, color: _T.border.withOpacity(0.5)),
-                const SizedBox(height: 10),
-
-                // શોપ નામ
+                const SizedBox(height: 6),
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 2),
-                      height: 16,
-                      width: 16,
-                      child: const Icon(Icons.storefront_rounded, color: _T.cyan, size: 16), // ઓલ્ટરનેટિવ જો એસેટ ના વાપરવો હોય
-                    ),
+                    const Icon(Icons.storefront_rounded, color: _T.cyan, size: 14),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
@@ -414,63 +430,54 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.montserrat(
                           color: _T.textHi,
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          height: 1.3,
                         ),
                       ),
                     ),
                   ],
                 ),
-
-                const SizedBox(height: 10),
-                Container(height: 1, color: _T.border.withOpacity(0.5)),
-                const SizedBox(height: 10),
-
-                // ડેટ સેક્શન (સ્ટાર્ટ અને એન્ડ ડેટ)
+                const SizedBox(height: 6),
                 Row(
                   children: [
                     Expanded(
                       child: Row(
                         children: [
-                          const Icon(Icons.calendar_today_rounded, color: _T.textMid, size: 13),
-                          const SizedBox(width: 6),
+                          const Icon(Icons.calendar_month_rounded, color: _T.red, size: 12),
+                          const SizedBox(width: 4),
                           Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("START DATE", style: GoogleFonts.montserrat(fontSize: 8, fontWeight: FontWeight.w700, color: _T.textLow, letterSpacing: 0.5)),
-                                Text(
-                                  startDate,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.montserrat(color: _T.textMid, fontSize: 11, fontWeight: FontWeight.w600),
-                                ),
-                              ],
+                            child: Text(
+                              "Ends: $endDate",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.montserrat(color: _T.textHi, fontSize: 10, fontWeight: FontWeight.w600),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    Container(width: 1, height: 22, color: _T.border),
-                    const SizedBox(width: 10),
-                    Expanded(
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: _T.bg,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.calendar_month_rounded, color: _T.red, size: 13),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("END DATE", style: GoogleFonts.montserrat(fontSize: 8, fontWeight: FontWeight.w700, color: _T.red.withOpacity(0.7), letterSpacing: 0.5)),
-                                Text(
-                                  endDate,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.montserrat(color: _T.textHi, fontSize: 11, fontWeight: FontWeight.w600),
-                                ),
-                              ],
+                          const Icon(Icons.location_on_rounded, color: _T.cyan, size: 10),
+                          const SizedBox(width: 2),
+                          Flexible(
+                            child: Text(
+                              cityName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.montserrat(
+                                color: _T.textMid,
+                                fontSize: 9,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ],
@@ -478,40 +485,7 @@ class _DealsScreenState extends State<DealsScreen> with SingleTickerProviderStat
                     ),
                   ],
                 ),
-
-                const SizedBox(height: 12),
-
-                // સિટી / લોકેશન
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _T.bg,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.location_on_rounded, color: _T.cyan, size: 12),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          cityName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.montserrat(
-                            color: _T.textMid,
-                            fontSize: 10.5,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 14),
-
-                // CRACK THE DEAL BUTTON
+                const SizedBox(height: 10),
                 _buildCrackButton(dealId: id),
               ],
             ),

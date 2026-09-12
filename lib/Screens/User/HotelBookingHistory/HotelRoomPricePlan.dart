@@ -12,7 +12,7 @@ import '../../../MyApplication/MyApplication.dart';
 class HotelRoomPricePlan extends StatefulWidget {
   final String? bookingId;
   final String? roomId;
-  HotelRoomPricePlan({super.key, this.bookingId, this.roomId});
+  const HotelRoomPricePlan({super.key, this.bookingId, this.roomId});
 
   @override
   State<HotelRoomPricePlan> createState() => _HotelRoomPricePlanState();
@@ -62,7 +62,7 @@ class _HotelRoomPricePlanState extends State<HotelRoomPricePlan> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: bgLight,
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: "Room Price Plan",
         showAction: false,
         showBackButton: true,

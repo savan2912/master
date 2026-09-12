@@ -7,7 +7,6 @@ import 'package:gotilo_new/Constant/AppPref.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/Screens/AllListing/AllList/AllListingsByCategory.dart';
 import 'package:gotilo_new/Screens/HeritageHomeScreen.dart';
-import 'package:marquee/marquee.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:gotilo_new/Api/Request/AllCollection/RequestCollectionDetails.dart';
 import 'package:gotilo_new/Api/Request/AllCollection/RequestCollectionProductListings.dart';
@@ -51,6 +50,33 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+    final bool isDesktop = screenWidth >= 1024;
+
+    int categoryCrossAxisCount = 2;
+    if (screenWidth >= 1200) {
+      categoryCrossAxisCount = 6;
+    } else if (screenWidth >= 900) {
+      categoryCrossAxisCount = 4;
+    } else if (isTablet) {
+      categoryCrossAxisCount = 3;
+    }
+
+    int listingCrossAxisCount = 1;
+    if (screenWidth >= 1024) {
+      listingCrossAxisCount = 3;
+    } else if (isTablet) {
+      listingCrossAxisCount = 2;
+    }
+
+    double horizontalPadding = screenWidth * 0.05;
+    if (horizontalPadding < 20) horizontalPadding = 20;
+    if (horizontalPadding > 60) horizontalPadding = 60;
+
+    double categoryAspectRatio = 0.85;
+    double listingAspectRatio = listingCrossAxisCount == 1 ? 1.1 : 0.85;
+
     return Scaffold(
       backgroundColor: ModernHeritageApp.appBg,
       body: CustomScrollView(
@@ -85,13 +111,13 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                 slivers: [
                   if (categories.isNotEmpty)
                     SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 10),
                       sliver: SliverGrid(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: categoryCrossAxisCount,
                           mainAxisSpacing: 15,
                           crossAxisSpacing: 15,
-                          mainAxisExtent: 180,
+                          childAspectRatio: categoryAspectRatio,
                         ),
                         delegate: SliverChildBuilderDelegate(
                               (context, index) {
@@ -107,12 +133,18 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                     ),
 
                   if (popularListings.isNotEmpty) ...[
-                    _buildSectionHeader(),
+                    _buildSectionHeader(horizontalPadding),
                     SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      sliver: SliverList(
+                      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                      sliver: SliverGrid(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: listingCrossAxisCount,
+                          mainAxisSpacing: 20,
+                          crossAxisSpacing: 20,
+                          childAspectRatio: listingAspectRatio,
+                        ),
                         delegate: SliverChildBuilderDelegate(
-                              (context, index) => _buildVerticalListingCard(popularListings[index]),
+                              (context, index) => _buildVerticalListingCard(popularListings[index], listingCrossAxisCount > 1),
                           childCount: popularListings.length,
                         ),
                       ),
@@ -197,7 +229,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
             });
           },
         ),
-        const SizedBox(width: 10),
+        // const SizedBox(width: 10),
       ],
       // ટાઈટલને FlexibleSpaceBar માંથી હટાવીને ડાયરેક્ટ title પ્રોપર્ટીમાં સેટ કર્યું જેથી ઓવરફ્લો ન થાય
       title: AnimatedSwitcher(
@@ -246,46 +278,35 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         // આજુબાજુના આઈકોન્સને ન નડે એ રીતે વિડ્થ સેટ કરી (સ્ક્રીનની 60% જગ્યા જ રોકશે)
-        double availableWidth = MediaQuery.of(context).size.width * 0.6;
+        // double availableWidth = MediaQuery.of(context).size.width * 0.6;
 
         return SizedBox(
           key: const ValueKey("TitleText"),
-          width: availableWidth,
+          // width: availableWidth,
           height: 22,
-          child: Marquee(
-            text: widget.title!,
-            style: titleStyle,
-            scrollAxis: Axis.horizontal,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            blankSpace: 40.0,
-            velocity: 30.0,
-            pauseAfterRound: const Duration(seconds: 2),
-            startPadding: 0.0,
-            accelerationDuration: const Duration(seconds: 1),
-            accelerationCurve: Curves.linear,
-            decelerationDuration: const Duration(milliseconds: 500),
-            decelerationCurve: Curves.easeOut,
-          ),
+          child: Text(widget.title!)
         );
       },
     );
   }
 
-  Widget _buildSectionHeader() {
+  Widget _buildSectionHeader(double horizontalPadding) {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(25, 45, 25, 15),
+        padding: EdgeInsets.fromLTRB(horizontalPadding + 5, 45, horizontalPadding + 5, 15),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Our Popular Listings",
-                    style: GoogleFonts.montserrat(color: const Color(0xFF0D1B1E), fontSize: 20, fontWeight: FontWeight.w900)),
-                Text("Explore the best places in town",
-                    style: GoogleFonts.montserrat(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.w500)),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Our Popular Listings",
+                      style: GoogleFonts.montserrat(color: const Color(0xFF0D1B1E), fontSize: 18, fontWeight: FontWeight.w900)),
+                  Text("Explore the best places in town",
+                      style: GoogleFonts.montserrat(color: Colors.grey, fontSize: 11, fontWeight: FontWeight.w500)),
+                ],
+              ),
             ),
             TextButton(
               onPressed: () {
@@ -330,61 +351,67 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
     );
   }
 
-  Widget _buildVerticalListingCard(CollectionProductList item) {
+  Widget _buildVerticalListingCard(CollectionProductList item, bool isGrid) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(25),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 20, offset: const Offset(0, 8))],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
-                child: CachedNetworkImage(
-                  imageUrl: item.path ?? "",
-                  height: 210,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => _shimmerBox(height: 210),
-                  errorWidget: (context, url, error) => Container(height: 210, color: Colors.grey[200], child: const Icon(Icons.broken_image)),
-                ),
-              ),
-              if (item.rating != null)
-                Positioned(
-                  bottom: 15,
-                  right: 15,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.star, color: Colors.orange, size: 16),
-                        const SizedBox(width: 4),
-                        Text(item.rating!, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13)),
-                      ],
-                    ),
+          Expanded(
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                  child: CachedNetworkImage(
+                    imageUrl: item.path ?? "",
+                    height: double.infinity,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => _shimmerBox(height: double.infinity),
+                    errorWidget: (context, url, error) => Container(color: Colors.grey[200], child: const Icon(Icons.broken_image)),
                   ),
                 ),
-            ],
+                if (item.rating != null)
+                  Positioned(
+                    bottom: 12,
+                    right: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.star, color: Colors.orange, size: 14),
+                          const SizedBox(width: 4),
+                          Text(item.rating!, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11)),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
           Padding(
-            padding: const EdgeInsets.all(18),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(item.listingTitle ?? "", style: GoogleFonts.montserrat(fontWeight: FontWeight.w800, fontSize: 17)),
-                const SizedBox(height: 6),
+                Text(item.listingTitle ?? "", 
+                    style: GoogleFonts.montserrat(fontWeight: FontWeight.w800, fontSize: 14),
+                    maxLines: 1, overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 14, color: Colors.grey),
+                    const Icon(Icons.location_on_outlined, size: 12, color: Colors.grey),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(item.address ?? "", maxLines: 1, overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                          style: const TextStyle(color: Colors.grey, fontSize: 10)),
                     ),
                   ],
                 ),

@@ -130,7 +130,7 @@ class _PointDetailScreenState extends State<PointDetailScreen> {
                   color: accentBlue,
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: [BoxShadow(color: accentBlue.withOpacity(0.3), blurRadius: 4)],
+                  boxShadow: [BoxShadow(color: accentBlue.withValues(alpha: 0.3), blurRadius: 4)],
                 ),
               ),
               Expanded(
@@ -150,7 +150,7 @@ class _PointDetailScreenState extends State<PointDetailScreen> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4)),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4)),
                 ],
               ),
               child: Column(
@@ -188,7 +188,7 @@ class _PointDetailScreenState extends State<PointDetailScreen> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.amber.withOpacity(0.08),
+                        color: Colors.amber.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -218,7 +218,7 @@ class _PointDetailScreenState extends State<PointDetailScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Row(

@@ -1,7 +1,7 @@
 import 'dart:developer';
-import 'dart:io';
+import 'dart:io' as io;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Api/ApiCalls.dart';
@@ -43,7 +43,7 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
 
   ProfileData? profileData;
   late TabController _tabController;
-  File? imageFile;
+  XFile? imageFile;
   bool isLoading = true;
   bool isEditingAddress = false;
   bool isEditingProfile = false;
@@ -300,8 +300,8 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
       decoration: BoxDecoration(
         color: bgWhite,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: isEditable ? premiumGold.withOpacity(0.4) : Colors.transparent),
-        boxShadow: [BoxShadow(color: softShadow.withOpacity(0.3), blurRadius: 10)],
+        border: Border.all(color: isEditable ? premiumGold.withValues(alpha: 0.4) : Colors.transparent),
+        boxShadow: [BoxShadow(color: softShadow.withValues(alpha: 0.3), blurRadius: 10)],
       ),
       child: Row(
         children: [
@@ -346,22 +346,24 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
                 height: 150, width: 150,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: RadialGradient(colors: [premiumGold.withOpacity(0.12), Colors.transparent]),
+                  gradient: RadialGradient(colors: [premiumGold.withValues(alpha: 0.12), Colors.transparent]),
                 ),
               ),
               Container(
                 padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: premiumGold.withOpacity(0.3))),
+                decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: premiumGold.withValues(alpha: 0.3))),
                 child: CircleAvatar(
                   radius: 60,
                   backgroundColor: surfaceWhite,
                   backgroundImage: imageFile != null
-                      ? FileImage(imageFile!)
+                      ? (kIsWeb
+                          ? NetworkImage(imageFile!.path)
+                          : FileImage(io.File(imageFile!.path))) as ImageProvider
                       : (profileData?.image != null && profileData!.image!.isNotEmpty)
                       ? NetworkImage(profileData!.image!) as ImageProvider
                       : null,
                   child: (imageFile == null && (profileData?.image == null || profileData!.image!.isEmpty))
-                      ? Icon(Icons.person_outline_rounded, size: 50, color: textBlack.withOpacity(0.1))
+                      ? Icon(Icons.person_outline_rounded, size: 50, color: textBlack.withValues(alpha: 0.1))
                       : null,
                 ),
               ),
@@ -456,7 +458,7 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
                       style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 14)),
                   subtitle: Text("Pincode: ${addr.pincode ?? "-"}", style: TextStyle(fontSize: 12)),
                   trailing: PopupMenuButton(
-                    icon: Icon(Icons.more_vert_rounded, color: textBlack.withOpacity(0.3)),
+                    icon: Icon(Icons.more_vert_rounded, color: textBlack.withValues(alpha: 0.3)),
                     itemBuilder: (context) => [
                       PopupMenuItem(
                         onTap: () {
@@ -648,14 +650,18 @@ class _AccountScreenState extends State<AccountScreen> with SingleTickerProvider
 
   Future<void> _getFromCamera() async {
     Navigator.pop(context);
-    final File? img = await Navigator.push(context, MaterialPageRoute(builder: (_) => const CustomCameraScreen()));
-    if (img != null) setState(() => imageFile = img);
+    final dynamic img = await Navigator.push(context, MaterialPageRoute(builder: (_) => const CustomCameraScreen()));
+    if (img != null && img is XFile) {
+      setState(() => imageFile = img);
+    } else if (img != null && !kIsWeb && img is io.File) {
+      setState(() => imageFile = XFile(img.path));
+    }
   }
 
   Future<void> _getFromGallery() async {
     Navigator.pop(context);
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) setState(() => imageFile = File(pickedFile.path));
+    if (pickedFile != null) setState(() => imageFile = pickedFile);
   }
 
   Future<void> _pickAddressFromMap() async {

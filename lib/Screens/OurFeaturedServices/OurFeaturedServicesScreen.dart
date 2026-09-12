@@ -71,141 +71,166 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+
+    int crossAxisCount = 1;
+    if (screenWidth >= 1200) {
+      crossAxisCount = 3;
+    } else if (isTablet) {
+      crossAxisCount = 2;
+    }
+
+    double horizontalPadding = screenWidth * 0.05;
+    if (horizontalPadding < 16) horizontalPadding = 16;
+    if (horizontalPadding > 60) horizontalPadding = 60;
+
+    // The overlapping design requires a specific left padding for the list items
+    // to make room for the floating image on the left.
+    double leftPadding = crossAxisCount == 1 ? 45 : horizontalPadding + 35;
+
     return Scaffold(
       backgroundColor: ModernHeritageApp.appBg,
-      body: CustomScrollView(
-        controller: _scrollController,
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 120,
-            pinned: true,
-            elevation: 0,
-            backgroundColor: const Color(0xFFFDFDFD),
-            surfaceTintColor: const Color(0xFFFDFDFD),
-            leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Color(0xFF0D1B1E),
-                size: 18,
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-            actions: [
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    isSearchActive = !isSearchActive;
-                    if (!isSearchActive) {
-                      searchController.clear();
-                      callAllService(isFirstLoad: true);
-                    }
-                  });
-                },
-                icon: Icon(
-                  isSearchActive ? Icons.close : Icons.search,
-                  color: const Color(0xFF0D1B1E),
+      body: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 1440),
+          child: CustomScrollView(
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+            slivers: [
+              SliverAppBar(
+                pinned: true,
+                elevation: 0,
+                backgroundColor: const Color(0xFFFDFDFD),
+                surfaceTintColor: const Color(0xFFFDFDFD),
+                leading: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new,
+                    color: Color(0xFF0D1B1E),
+                    size: 18,
+                  ),
+                  onPressed: () => Navigator.pop(context),
                 ),
-              ),
-            ],
-            centerTitle: true,
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              titlePadding: const EdgeInsets.only(bottom: 15),
-              title: isSearchActive
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 50),
-                      child: SizedBox(
-                        height: 32,
-                        child: TextField(
-                          controller: searchController,
-                          onChanged: onSearchChanged,
-                          autofocus: true,
-                          cursorColor: const Color(0xFF00ACC1),
-                          cursorHeight: 16,
-                          style: GoogleFonts.montserrat(
-                            fontSize: 13,
-                            color: Colors.black,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: "Search services...",
-                            hintStyle: GoogleFonts.montserrat(
-                              fontSize: 11,
-                              color: Colors.grey,
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 0,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  : Text(
-                      "FEATURED SERVICES",
+                centerTitle: true,
+                title: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: isSearchActive
+                      ? Container(
+                    key: const ValueKey("SearchBar"),
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: TextField(
+                      controller: searchController,
+                      onChanged: onSearchChanged,
+                      autofocus: true,
+                      cursorColor: const Color(0xFF00ACC1),
+                      cursorHeight: 16,
                       style: GoogleFonts.montserrat(
-                        color: const Color(0xFF0D1B1E),
-                        fontWeight: FontWeight.w900,
-                        fontSize: 14,
-                        letterSpacing: 2,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: "Search services...",
+                        hintStyle: GoogleFonts.montserrat(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                        border: InputBorder.none,
+                        prefixIcon: const Icon(Icons.search, size: 18, color: Colors.grey),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 10),
                       ),
                     ),
-            ),
-          ),
-
-          ValueListenableBuilder(
-            valueListenable: isSearching,
-            builder: (context, loading, child) {
-              if (loading) {
-                return const SliverFillRemaining(
-                  child: Center(
-                    child: CircularProgressIndicator(color: Color(0xFF00ACC1)),
+                  )
+                      : Text(
+                    "FEATURED SERVICES",
+                    key: const ValueKey("TitleText"),
+                    style: GoogleFonts.montserrat(
+                      color: const Color(0xFF0D1B1E),
+                      fontWeight: FontWeight.w900,
+                      fontSize: 16,
+                      letterSpacing: 2,
+                    ),
                   ),
-                );
-              }
-
-              if (services.isEmpty && isApiComplete.value) {
-                return const SliverFillRemaining(
-                  child: Center(child: Text("No services found.")),
-                );
-              }
-
-              return SliverPadding(
-                padding: const EdgeInsets.only(left: 45, right: 20, top: 20),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    if (index == services.length) {
-                      return ValueListenableBuilder(
-                        valueListenable: isLoadingMore,
-                        builder: (context, loadingMore, child) {
-                          return loadingMore
-                              ? const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 20),
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      color: Color(0xFF00ACC1),
-                                      strokeWidth: 2,
-                                    ),
-                                  ),
-                                )
-                              : const SizedBox.shrink();
-                        },
-                      );
-                    }
-                    return _buildModernServiceCard(services[index]);
-                  }, childCount: services.length + 1),
                 ),
-              );
-            },
+                actions: [
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isSearchActive = !isSearchActive;
+                        if (!isSearchActive) {
+                          searchController.clear();
+                          callAllService(isFirstLoad: true);
+                        }
+                      });
+                    },
+                    icon: Icon(
+                      isSearchActive ? Icons.close : Icons.search,
+                      color: const Color(0xFF0D1B1E),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+              ),
+
+              ValueListenableBuilder(
+                valueListenable: isSearching,
+                builder: (context, loading, child) {
+                  if (loading) {
+                    return const SliverFillRemaining(
+                      child: Center(
+                        child: CircularProgressIndicator(color: Color(0xFF00ACC1)),
+                      ),
+                    );
+                  }
+
+                  if (services.isEmpty && isApiComplete.value) {
+                    return const SliverFillRemaining(
+                      child: Center(child: Text("No services found.")),
+                    );
+                  }
+
+                  return SliverPadding(
+                    padding: EdgeInsets.only(
+                      left: leftPadding,
+                      right: horizontalPadding,
+                      top: 20,
+                    ),
+                    sliver: SliverGrid(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: crossAxisCount == 1 ? 0 : 45,
+                        mainAxisExtent: 130, // Increased slightly for comfort
+                      ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        if (index == services.length) {
+                          return ValueListenableBuilder(
+                            valueListenable: isLoadingMore,
+                            builder: (context, loadingMore, child) {
+                              return loadingMore
+                                  ? const Center(
+                                child: CircularProgressIndicator(
+                                  color: Color(0xFF00ACC1),
+                                  strokeWidth: 2,
+                                ),
+                              )
+                                  : const SizedBox.shrink();
+                            },
+                          );
+                        }
+                        return _buildModernServiceCard(services[index]);
+                      }, childCount: services.length + (hasMoreData ? 1 : 0)),
+                    ),
+                  );
+                },
+              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 50)),
+            ],
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 50)),
-        ],
+        ),
       ),
     );
   }
@@ -216,13 +241,13 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
         Get.to(() => CollectionDetailScreen(categoryId: service.id,title: service.name,));
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 40),
+        margin: const EdgeInsets.only(bottom: 25),
         child: Stack(
           clipBehavior: Clip.none,
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(75, 25, 20, 25),
+              padding: const EdgeInsets.fromLTRB(65, 18, 15, 18),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: const BorderRadius.only(
@@ -244,33 +269,39 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           (service.name ?? "").toUpperCase(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.montserrat(
                             color: const Color(0xFF1A1A1A),
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 0.5,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 6),
                         Text(
                           service.slug ?? "",
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.montserrat(
                             color: Colors.grey[600],
-                            fontSize: 12,
+                            fontSize: 11,
                             fontWeight: FontWeight.w500,
-                            height: 1.5,
+                            height: 1.3,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                   Container(
-                    height: 35,
-                    width: 35,
+                    height: 30,
+                    width: 30,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: const Color(0xFF1A1A1A).withOpacity(0.05),
@@ -278,7 +309,7 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
                     child: const Icon(
                       Icons.chevron_right_rounded,
                       color: Color(0xFF1A1A1A),
-                      size: 22,
+                      size: 20,
                     ),
                   ),
                 ],
@@ -286,10 +317,10 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
             ),
             Positioned(
               left: -35,
-              top: 10,
-              bottom: 10,
+              top: 8,
+              bottom: 8,
               child: Container(
-                width: 90,
+                width: 85,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25),
                   boxShadow: [
@@ -373,6 +404,17 @@ class _OurFeaturedServicesScreenState extends State<OurFeaturedServicesScreen> {
             hasMoreData = false;
           }
         }
+
+        // Auto-load next page if current items don't fill the tablet screen
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollController.hasClients &&
+              _scrollController.position.maxScrollExtent <= 0 &&
+              hasMoreData &&
+              isApiComplete.value &&
+              !isLoadingMore.value) {
+            loadMoreData();
+          }
+        });
       } else {
         hasMoreData = false;
       }

@@ -12,7 +12,6 @@ import 'package:gotilo_new/Constant/AppPref.dart';
 import 'package:gotilo_new/CustomeWidgets/CustomAppbar.dart';
 import 'package:gotilo_new/CustomeWidgets/SharedWidgets.dart';
 import 'package:gotilo_new/MyApplication/MyApplication.dart';
-import 'package:gotilo_new/Screens/AllCollection/CollectionDetailScreen.dart';
 import 'package:gotilo_new/Screens/AllListing/AllListingDetailScreen.dart';
 
 import '../../../CustomeWidgets/CustomDrawer.dart';
@@ -63,6 +62,21 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+    final bool isDesktop = screenWidth >= 1024;
+
+    int crossAxisCount = 1;
+    if (isDesktop) {
+      crossAxisCount = 3;
+    } else if (isTablet) {
+      crossAxisCount = 2;
+    }
+
+    double horizontalPadding = screenWidth * 0.05;
+    if (horizontalPadding < 16) horizontalPadding = 16;
+    if (horizontalPadding > 60) horizontalPadding = 60;
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: bgLight,
@@ -72,41 +86,54 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
         onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
       ),
       drawer: const CustomDrawer(initialRoute: 'user.favourite'),
-      body: ValueListenableBuilder(
-        valueListenable: isApiComplete,
-        builder: (context, apiDone, child) {
-          if (!apiDone && counter == 0) {
-            return const Center(child: CustomLoader(message: "Loading Favourites..",));
-          }
+      body: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 1440),
+          child: ValueListenableBuilder(
+            valueListenable: isApiComplete,
+            builder: (context, apiDone, child) {
+              if (!apiDone && counter == 0) {
+                return const Center(child: CustomLoader(message: "Loading Favourites..",));
+              }
 
-          return ValueListenableBuilder(
-            valueListenable: isDataAvailable,
-            builder: (context, dataExist, child) {
-              if (!dataExist) return _buildEmptyState();
+              return ValueListenableBuilder(
+                valueListenable: isDataAvailable,
+                builder: (context, dataExist, child) {
+                  if (!dataExist) return _buildEmptyState();
 
-              return RefreshIndicator(
-                onRefresh: callFavData,
-                color: primaryDark,
-                child: ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  itemCount: favData.length + (hasMoreData ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index < favData.length) {
-                      return _buildFavCard(favData[index], index);
-                    } else {
-                      // નીચે લોડિંગ ઇન્ડિકેટર બતાવવા માટે
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: Center(child: CircularProgressIndicator(strokeWidth: 2, color: primaryDark)),
-                      );
-                    }
-                  },
-                ),
+                  return RefreshIndicator(
+                    onRefresh: callFavData,
+                    color: primaryDark,
+                    child: GridView.builder(
+                      controller: _scrollController,
+                      padding: EdgeInsets.fromLTRB(horizontalPadding, 15, horizontalPadding, 30),
+                      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        mainAxisSpacing: 15,
+                        crossAxisSpacing: 15,
+                        mainAxisExtent: 140,
+                      ),
+                      itemCount: favData.length + (hasMoreData ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index < favData.length) {
+                          return _buildFavCard(favData[index], index);
+                        } else {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child: CircularProgressIndicator(strokeWidth: 2, color: primaryDark),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  );
+                },
               );
             },
-          );
-        },
+          ),
+        ),
       ),
     );
   }
@@ -214,13 +241,12 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
         Get.to(()=> AllListingDetailScreen(listId: data.listingId,));
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: SharedWidgets.cardBoxDecoration(),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              width: 120,
+              width: 110,
               child: AspectRatio(
                 aspectRatio: 1,
                 child: ClipRRect(
@@ -230,7 +256,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                     fit: BoxFit.cover,
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) return child;
-                      return const ShimmerLoading(width: 120, height: 120);
+                      return const ShimmerLoading(width: 110, height: 110);
                     },
                     errorBuilder: (context, error, stackTrace) => Container(
                       color: Colors.grey[200],
@@ -242,34 +268,45 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
                           child: Text(data.listingName ?? "",
-                              style: GoogleFonts.montserrat(fontWeight: FontWeight.w700, fontSize: 15, color: primaryDark),
+                              style: GoogleFonts.montserrat(fontWeight: FontWeight.w700, fontSize: 14, color: primaryDark),
                               maxLines: 1, overflow: TextOverflow.ellipsis),
                         ),
                         IconButton(
                           onPressed: () => _confirmDelete(data, index),
-                          icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                          icon: const Icon(Icons.delete_outline, color: Colors.red, size: 18),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          visualDensity: VisualDensity.compact,
                         ),
                       ],
                     ),
+                    const SizedBox(height: 2),
                     Row(
                       children: [
-                        const Icon(Icons.location_on, color: Colors.redAccent, size: 14),
+                        const Icon(Icons.location_on, color: Colors.redAccent, size: 12),
                         const SizedBox(width: 4),
-                        Text("${data.city}", style: GoogleFonts.montserrat(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey[700])),
+                        Expanded(
+                          child: Text("${data.city}", 
+                              style: GoogleFonts.montserrat(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.grey[700]),
+                              maxLines: 1, overflow: TextOverflow.ellipsis),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    Text(data.address ?? "", style: GoogleFonts.montserrat(fontSize: 11, color: Colors.grey[500]), maxLines: 2, overflow: TextOverflow.ellipsis),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 2),
+                    Text(data.address ?? "", 
+                        style: GoogleFonts.montserrat(fontSize: 10, color: Colors.grey[500]), 
+                        maxLines: 1, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 8),
                     _buildRatingBadge(data.rating ?? "0.0"),
                   ],
                 ),

@@ -63,6 +63,21 @@ class _BillingScreenState extends State<BillingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+    final bool isDesktop = screenWidth >= 1024;
+
+    int crossAxisCount = 1;
+    if (isDesktop) {
+      crossAxisCount = 3;
+    } else if (isTablet) {
+      crossAxisCount = 2;
+    }
+
+    double horizontalPadding = screenWidth * 0.05;
+    if (horizontalPadding < 16) horizontalPadding = 16;
+    if (horizontalPadding > 60) horizontalPadding = 60;
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: ModernHeritageApp.appBg,
@@ -79,29 +94,42 @@ class _BillingScreenState extends State<BillingScreen> {
         onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
       ),
       drawer: const CustomDrawer(initialRoute: 'user.billing'),
-      body: RefreshIndicator(
-        onRefresh: () async => callBilling(),
-        color: primaryDark,
-        child: ValueListenableBuilder(
-          valueListenable: isApiComplete,
-          builder: (context, done, child) {
-            if (!done && counter == 0) {
-              return const Center(child: CustomLoader(message: "Loading Billing..",));
-            }
-            if (billing.isEmpty) return _buildEmptyState();
-            return ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              itemCount: billing.length + (hasMore ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index < billing.length) {
-                  return _buildBillingCard(billing[index]);
-                } else {
-                  return _buildLoader();
+      body: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 1440),
+          child: RefreshIndicator(
+            onRefresh: () async => callBilling(),
+            color: primaryDark,
+            child: ValueListenableBuilder(
+              valueListenable: isApiComplete,
+              builder: (context, done, child) {
+                if (!done && counter == 0) {
+                  return const Center(child: CustomLoader(message: "Loading Billing..",));
                 }
+                if (billing.isEmpty) return _buildEmptyState();
+
+                return GridView.builder(
+                  controller: _scrollController,
+                  padding: EdgeInsets.fromLTRB(horizontalPadding, 12, horizontalPadding, 30),
+                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    mainAxisSpacing: 15,
+                    crossAxisSpacing: 15,
+                    mainAxisExtent: 185,
+                  ),
+                  itemCount: billing.length + (hasMore ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index < billing.length) {
+                      return _buildBillingCard(billing[index]);
+                    } else {
+                      return _buildLoader();
+                    }
+                  },
+                );
               },
-            );
-          },
+            ),
+          ),
         ),
       ),
     );
@@ -109,139 +137,143 @@ class _BillingScreenState extends State<BillingScreen> {
 
   Widget _buildBillingCard(UserBilling item) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 18),
       decoration: SharedWidgets.cardBoxDecoration(),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
-        child: Stack(
-          children: [
-            // Positioned(
-            //   left: 0, top: 0, bottom: 0,
-            //   child: Container(width: 5, color: primaryDark),
-            // ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
+        child: Padding(
+          padding: const EdgeInsets.all(15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: primaryDark.withOpacity(0.05),
-                          borderRadius: BorderRadius.circular(15),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: primaryDark.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(Icons.receipt_long_outlined, color: primaryDark, size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.listingTitle ?? "Unknown Service",
+                          style: GoogleFonts.montserrat(
+                            color: primaryDark,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 13,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        child: Icon(Icons.receipt_long_outlined, color: primaryDark, size: 24),
-                      ),
-                      const SizedBox(width: 15),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        const SizedBox(height: 4),
+                        Row(
                           children: [
-                            Text(
-                              item.listingTitle ?? "Unknown Service",
-                              style: GoogleFonts.montserrat(
-                                color: primaryDark,
-                                fontWeight: FontWeight.w800,
-                                fontSize: 15,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Icon(Icons.calendar_today_rounded, size: 12, color: Colors.grey[400]),
-                                const SizedBox(width: 5),
-                                Text(
-                                  item.billDate ?? "N/A",
-                                  style: GoogleFonts.montserrat(
-                                    color: Colors.grey[500],
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                            Icon(Icons.calendar_today_rounded, size: 10, color: Colors.grey[400]),
+                            const SizedBox(width: 5),
+                            Expanded(
+                              child: Text(
+                                item.billDate ?? "N/A",
+                                style: GoogleFonts.montserrat(
+                                  color: Colors.grey[500],
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                              ],
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                      loadingBillId == item.action
-                          ? SizedBox(
-                        height: 28,
-                        width: 28,
+                      ],
+                    ),
+                  ),
+                  loadingBillId == item.action
+                      ? SizedBox(
+                    height: 24,
+                    width: 28,
+                    child: Center(
+                      child: SizedBox(
+                        height: 18,
+                        width: 18,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2.5, color: primaryDark),
-                      )
-                          : IconButton(
-                        onPressed: () async {
-                          setState(() => loadingBillId = item.action.toString() ?? "");
-                          await _callBillHistory(billId: item.action.toString());
-                          setState(() => loadingBillId = "");
-
-                          if (billHistory != null) {
-                            _showDetailBottomSheet(billHistory!);
-                          }
-                        },
-                        icon: Icon(Icons.arrow_circle_right_outlined,
-                            color: primaryDark.withOpacity(0.6), size: 28),
-                        visualDensity: VisualDensity.compact,
+                            strokeWidth: 2.0, color: primaryDark),
                       ),
+                    ),
+                  )
+                      : IconButton(
+                    onPressed: () async {
+                      setState(() => loadingBillId = item.action.toString() ?? "");
+                      await _callBillHistory(billId: item.action.toString());
+                      setState(() => loadingBillId = "");
+
+                      if (billHistory != null) {
+                        _showDetailBottomSheet(billHistory!);
+                      }
+                    },
+                    icon: Icon(Icons.arrow_circle_right_outlined,
+                        color: primaryDark.withValues(alpha: 0.6), size: 24),
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: Divider(color: Color(0xFFF1F5F9), thickness: 1.0),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "PAYMENT MODE",
+                        style: GoogleFonts.montserrat(
+                          color: Colors.grey[400],
+                          fontSize: 8,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      _statusBadge(item.paymentMode ?? "N/A"),
                     ],
                   ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Divider(color: Color(0xFFF1F5F9), thickness: 1.5),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "PAYMENT MODE",
-                            style: GoogleFonts.montserrat(
-                              color: Colors.grey[400],
-                              fontSize: 9,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          _statusBadge(item.paymentMode ?? "N/A"),
-                        ],
+                      Text(
+                        "PAID AMOUNT",
+                        style: GoogleFonts.montserrat(
+                          color: Colors.grey[400],
+                          fontSize: 8,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
+                        ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            "PAID AMOUNT",
-                            style: GoogleFonts.montserrat(
-                              color: Colors.grey[400],
-                              fontSize: 9,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1,
-                            ),
-                          ),
-                          Text(
-                            "₹${item.paidAmount}",
-                            style: GoogleFonts.montserrat(
-                              color: primaryDark,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        "₹${item.paidAmount}",
+                        style: GoogleFonts.montserrat(
+                          color: primaryDark,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -451,7 +483,7 @@ class _BillingScreenState extends State<BillingScreen> {
       },
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: bgLight, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey.withOpacity(0.1))),
+        decoration: BoxDecoration(color: bgLight, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey.withValues(alpha: 0.1))),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

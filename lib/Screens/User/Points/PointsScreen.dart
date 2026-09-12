@@ -42,6 +42,21 @@ class _PointsScreenState extends State<PointsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+    final bool isDesktop = screenWidth >= 1024;
+
+    int crossAxisCount = 1;
+    if (isDesktop) {
+      crossAxisCount = 3;
+    } else if (isTablet) {
+      crossAxisCount = 2;
+    }
+
+    double horizontalPadding = screenWidth * 0.05;
+    if (horizontalPadding < 16) horizontalPadding = 16;
+    if (horizontalPadding > 60) horizontalPadding = 60;
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: bgLight,
@@ -51,55 +66,71 @@ class _PointsScreenState extends State<PointsScreen> {
         onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
       ),
       drawer: const CustomDrawer(initialRoute: 'user.point'),
-      body: ValueListenableBuilder(
-        valueListenable: isApiComplete,
-        builder: (context, apiDone, child) {
-          if (!apiDone) {
-            return const Center(child: CustomLoader(message: "Loading Point..",));
-          }
+      body: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 1440),
+          child: ValueListenableBuilder(
+            valueListenable: isApiComplete,
+            builder: (context, apiDone, child) {
+              if (!apiDone) {
+                return const Center(child: CustomLoader(message: "Loading Point..",));
+              }
 
-          return ValueListenableBuilder(
-            valueListenable: isDataAvailable,
-            builder: (context, dataExist, child) {
-              if (!dataExist) return _buildEmptyState();
+              return ValueListenableBuilder(
+                valueListenable: isDataAvailable,
+                builder: (context, dataExist, child) {
+                  if (!dataExist) return _buildEmptyState();
 
-              return RefreshIndicator(
-                onRefresh: callPoint,
-                color: primaryDark,
-                child: CustomScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  slivers: [
-                    SliverToBoxAdapter(child: _buildTotalSummaryCard()),
+                  return RefreshIndicator(
+                    onRefresh: callPoint,
+                    color: primaryDark,
+                    child: CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                      slivers: [
+                        SliverPadding(
+                          padding: EdgeInsets.symmetric(horizontal: horizontalPadding / 2),
+                          sliver: SliverToBoxAdapter(child: _buildTotalSummaryCard()),
+                        ),
 
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                        child: Text(
-                          "Points Breakdown",
-                          style: GoogleFonts.montserrat(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: primaryDark,
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(horizontalPadding, 10, horizontalPadding, 10),
+                            child: Text(
+                              "Points Breakdown",
+                              style: GoogleFonts.montserrat(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: primaryDark,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
 
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                          return _buildPointItem(point[index]);
-                        },
-                        childCount: point.length,
-                      ),
+                        SliverPadding(
+                          padding: EdgeInsets.fromLTRB(horizontalPadding, 0, horizontalPadding, 30),
+                          sliver: SliverGrid(
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: crossAxisCount,
+                              mainAxisSpacing: 12,
+                              crossAxisSpacing: 15,
+                              mainAxisExtent: 140,
+                            ),
+                            delegate: SliverChildBuilderDelegate(
+                                  (context, index) {
+                                return _buildPointItem(point[index]);
+                              },
+                              childCount: point.length,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 30)),
-                  ],
-                ),
+                  );
+                },
               );
             },
-          );
-        },
+          ),
+        ),
       ),
     );
   }
@@ -112,13 +143,13 @@ class _PointsScreenState extends State<PointsScreen> {
     }
 
     return Container(
-      margin: const EdgeInsets.all(20),
+      margin: const EdgeInsets.all(8.0),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: primaryDark,
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
-          BoxShadow(color: primaryDark.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 10))
+          BoxShadow(color: primaryDark.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 10))
         ],
         gradient: LinearGradient(
           colors: [primaryDark, const Color(0xFF1E293B)],
@@ -146,7 +177,7 @@ class _PointsScreenState extends State<PointsScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.08),
+              color: Colors.white.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
@@ -184,24 +215,23 @@ class _PointsScreenState extends State<PointsScreen> {
         Get.to(()=> PointDetailScreen(listingId: data.listingId.toString(),));
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: SharedWidgets.cardBoxDecoration(),
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(color: bgLight, shape: BoxShape.circle),
-                    child: Icon(Icons.wallet_giftcard_rounded, color: primaryDark, size: 20),
+                    child: Icon(Icons.wallet_giftcard_rounded, color: primaryDark, size: 18),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       data.listings?.listingTitle ?? "Rewards",
-                      style: GoogleFonts.montserrat(fontWeight: FontWeight.w700, fontSize: 14, color: primaryDark),
+                      style: GoogleFonts.montserrat(fontWeight: FontWeight.w700, fontSize: 13, color: primaryDark),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -212,9 +242,9 @@ class _PointsScreenState extends State<PointsScreen> {
             ),
 
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 15),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9).withOpacity(0.5),
+                color: const Color(0xFFF1F5F9).withValues(alpha: 0.5),
                 borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
               ),
               child: Row(
@@ -244,14 +274,14 @@ class _PointsScreenState extends State<PointsScreen> {
     );
   }
 
-  Widget _divider() => Container(height: 25, width: 1, color: Colors.grey.withOpacity(0.2));
+  Widget _divider() => Container(height: 25, width: 1, color: Colors.grey.withValues(alpha: 0.2));
 
   Widget _statusBadge(String status) {
     bool isActive = status == "Active";
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: isActive ? Colors.green.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+        color: isActive ? Colors.green.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(

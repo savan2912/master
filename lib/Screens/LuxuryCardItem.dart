@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gotilo_new/Screens/AllListing/AllListingDetailScreen.dart';
-import 'package:gotilo_new/Screens/HeritageHomeScreen.dart';
 import 'package:shimmer/shimmer.dart';
 import '../Api/Response/Home/ResponseHome.dart';
 

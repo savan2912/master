@@ -155,6 +155,21 @@ class _HotelBookingHistoryState extends State<HotelBookingHistory> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+    final bool isDesktop = screenWidth >= 1024;
+
+    int crossAxisCount = 1;
+    if (isDesktop) {
+      crossAxisCount = 3;
+    } else if (isTablet) {
+      crossAxisCount = 2;
+    }
+
+    double horizontalPadding = screenWidth * 0.05;
+    if (horizontalPadding < 14) horizontalPadding = 14;
+    if (horizontalPadding > 60) horizontalPadding = 60;
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: bgLight,
@@ -172,133 +187,163 @@ class _HotelBookingHistoryState extends State<HotelBookingHistory> {
         },
       ),
       drawer: const CustomDrawer(initialRoute: 'hotel.booking-history'),
-      body: ValueListenableBuilder(
-        valueListenable: isApiComplete,
-        builder: (context, apiDone, child) {
-          if (!apiDone && counter == 0) {
-            return const Center(child: CustomLoader(message: "Loading Hotel Booking History..",));
-          }
-          return ValueListenableBuilder(
-            valueListenable: isDataAvailable,
-            builder: (context, dataExist, child) {
-              if (!dataExist) return _buildEmptyState();
+      body: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 1440),
+          child: ValueListenableBuilder(
+            valueListenable: isApiComplete,
+            builder: (context, apiDone, child) {
+              if (!apiDone && counter == 0) {
+                return const Center(child: CustomLoader(message: "Loading Hotel Booking History..",));
+              }
+              return ValueListenableBuilder(
+                valueListenable: isDataAvailable,
+                builder: (context, dataExist, child) {
+                  if (!dataExist) return _buildEmptyState();
 
-              return RefreshIndicator(
-                onRefresh: callHotelBooking,
-                color: accentBlue,
-                child: ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  itemCount: bookingList.length + (isLoadingMore.value ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index < bookingList.length) {
-                      return _buildBookingCard(bookingList[index]);
-                    } else {
-                      return const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    }
-                  },
-                ),
+                  return RefreshIndicator(
+                    onRefresh: callHotelBooking,
+                    color: accentBlue,
+                    child: GridView.builder(
+                      controller: _scrollController,
+                      padding: EdgeInsets.fromLTRB(horizontalPadding, 15, horizontalPadding, 30),
+                      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        mainAxisSpacing: 15,
+                        crossAxisSpacing: 15,
+                        mainAxisExtent: 315,
+                      ),
+                      itemCount: bookingList.length + (isLoadingMore.value ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index < bookingList.length) {
+                          return _buildBookingCard(bookingList[index]);
+                        } else {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  );
+                },
               );
             },
-          );
-        },
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildBookingCard(HotelBooking data) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
       decoration: SharedWidgets.cardBoxDecoration(),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildStatusBadge("Booking: ${data.bookingStatus}", _getStatusColor(data.bookingStatus)),
-                _buildStatusBadge("Cancel: ${data.bookingCancellationStatus}", _getStatusColor(data.bookingCancellationStatus)),
-              ],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              color: primaryDark.withOpacity(0.02),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildStatusBadge("Booking: ${data.bookingStatus}", _getStatusColor(data.bookingStatus)),
+                  _buildStatusBadge("Cancel: ${data.bookingCancellationStatus}", _getStatusColor(data.bookingCancellationStatus)),
+                ],
+              ),
             ),
-          ),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        data.hotelName ?? "N/A",
-                        style: GoogleFonts.montserrat(fontWeight: FontWeight.w700, fontSize: 16, color: primaryDark),
-                      ),
-                      const SizedBox(height: 4),
-                      Text("Final Amount: ₹${data.finalAmount}",
-                          style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: accentBlue, fontSize: 14)),
-                    ],
-                  ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                data.hotelName ?? "N/A",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.montserrat(fontWeight: FontWeight.w800, fontSize: 15, color: primaryDark),
+                              ),
+                              const SizedBox(height: 4),
+                              Text("Final Amount: ₹${data.finalAmount}",
+                                  style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: accentBlue, fontSize: 13)),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          height: 38, width: 38,
+                          decoration: BoxDecoration(
+                            color: accentBlue.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              Get.to(()=> HotelBookingDetailScreen(bookingId: data.id.toString(),));
+                            },
+                            icon: Icon(Icons.visibility_outlined, color: accentBlue, size: 20),
+                            padding: EdgeInsets.zero,
+                            tooltip: "View Details",
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Divider(height: 1, thickness: 0.5),
+                    ),
+
+                    Row(
+                      children: [
+                        _buildDetailItem(Icons.calendar_today_outlined, "Check-In", data.checkInDate ?? "N/A"),
+                        const SizedBox(width: 15),
+                        _buildDetailItem(Icons.logout_outlined, "Check-Out", data.checkOutDate ?? "N/A"),
+                      ],
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    Row(
+                      children: [
+                        _buildDetailItem(Icons.hotel_outlined, "Rooms", "${data.totalRooms}"),
+                        const SizedBox(width: 15),
+                        _buildDetailItem(Icons.airline_seat_flat_outlined, "Mattress", "${data.totalMattress}"),
+                      ],
+                    ),
+
+                    const Spacer(),
+
+                    Row(
+                      children: [
+                        Expanded(child: _buildSecondaryButton(Icons.history, "Rooms", () {
+                          Get.to(()=> HotelRoomBookingHistory(bookingId: data.id.toString(),));
+                        })),
+                        const SizedBox(width: 8),
+                        Expanded(child: _buildSecondaryButton(Icons.room_service_outlined, "Services", () {
+                          Get.to(()=> HotelServiceBooking(bookingId: data.id.toString(),));
+                        })),
+                        const SizedBox(width: 8),
+                        _buildCancelButton(() => _showCancelDialog(data)),
+                      ],
+                    ),
+                  ],
                 ),
-                IconButton(
-                  onPressed: () {
-                    Get.to(()=> HotelBookingDetailScreen(bookingId: data.id.toString(),));
-                  },
-                  icon: Icon(Icons.visibility_outlined, color: primaryDark.withOpacity(0.7)),
-                  tooltip: "View Details",
-                ),
-              ],
+              ),
             ),
-          ),
-
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Divider(height: 1, thickness: 0.5),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildDetailItem(Icons.calendar_today_outlined, "Check-In", data.checkInDate ?? "N/A"),
-                _buildDetailItem(Icons.logout_outlined, "Check-Out", data.checkOutDate ?? "N/A"),
-              ],
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildDetailItem(Icons.hotel_outlined, "Rooms", "${data.totalRooms}"),
-                _buildDetailItem(Icons.airline_seat_flat_outlined, "Mattress", "${data.totalMattress}"),
-              ],
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                Expanded(child: _buildSecondaryButton(Icons.history, "Room History", () {
-                  Get.to(()=> HotelRoomBookingHistory(bookingId: data.id.toString(),));
-                })),
-                const SizedBox(width: 8),
-                Expanded(child: _buildSecondaryButton(Icons.room_service_outlined, "Services", () {
-                  Get.to(()=> HotelServiceBooking(bookingId: data.id.toString(),));
-                })),
-                const SizedBox(width: 8),
-                _buildCancelButton(() => _showCancelDialog(data)),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -19,6 +19,7 @@ import '../../ForgetPassword/ForgetPasswordScreen.dart';
 
 class ModernLoginScreen extends StatefulWidget {
   const ModernLoginScreen({super.key});
+
   static const Color appBg = Color(0xFFF0F4F7);
   static const Color textDark = Color(0xFF0D1B1E);
   static const Color primaryCyan = Color(0xFF00ACC1);
@@ -337,7 +338,7 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
         Expanded(
           child: TextButton(
             onPressed: () {
-              Get.off(()=> const ForgotPasswordScreen());
+              Get.off(() => const ForgotPasswordScreen());
             },
             child: Text(
               "Forgot Password?",
@@ -382,12 +383,14 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
                 } else if (_mobileController.text.isEmpty) {
                   SharedWidgets.showTopSnackBar(
                     context,
-                    message: "Please Enter Mobile Number",title: "fail"
+                    message: "Please Enter Mobile Number",
+                    title: "fail",
                   );
                 } else if (_passwordController.text.isEmpty) {
                   SharedWidgets.showTopSnackBar(
                     context,
-                    message: "Please Enter Password",title: "fail"
+                    message: "Please Enter Password",
+                    title: "fail",
                   );
                 }
               },
@@ -471,7 +474,6 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
     );
   }
 
-
   Future<void> _callLogin() async {
     var deviceTokenFuture = PushNotificationService.getSavedToken();
 
@@ -496,28 +498,36 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
         if (response != null) {
           if (response.result != null &&
               response.result!.toLowerCase().contains("pass")) {
-            AppPrefs.setUserId(response.data!.userId!);
+
+            await AppPrefs.setUserId(response.data!.userId!);
+
             if (context.mounted) {
               SharedWidgets.showTopSnackBar(
                 context,
-                message: response.message!,title: "pass"
+                message: response.message!,
+                title: "pass",
               );
             }
 
             if (response.data!.userId != null &&
                 response.data!.userId!.isNotEmpty) {
-              if(response.data!.isVerified==0){
-                Get.to(()=> OtpVerificationScreen(number: _mobileController.text,isLogin: true,));
-              }else{
-                Get.off(() => const Userdashboardscreen(),);
+              if (response.data!.isVerified == 0) {
+                Get.to(
+                  () => OtpVerificationScreen(
+                    number: _mobileController.text,
+                    isLogin: true,
+                  ),
+                );
+              } else {
+                Get.off(() => const Userdashboardscreen());
               }
-
             }
           } else {
             if (context.mounted) {
               SharedWidgets.showTopSnackBar(
                 context,
-                message: response.message ?? "Login Failed",title: "fail"
+                message: response.message ?? "Login Failed",
+                title: "fail",
               );
             }
           }
@@ -532,7 +542,11 @@ class _ModernLoginScreenState extends State<ModernLoginScreen> {
         }
       }
     } else {
-      SharedWidgets.showTopSnackBar(context, message: "No Internet Available",title:"fail");
+      SharedWidgets.showTopSnackBar(
+        context,
+        message: "No Internet Available",
+        title: "fail",
+      );
     }
   }
 }

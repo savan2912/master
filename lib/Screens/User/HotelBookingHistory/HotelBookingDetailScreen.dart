@@ -202,7 +202,7 @@ class _HotelBookingDetailScreenState extends State<HotelBookingDetailScreen> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: borderColor),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 5, offset: const Offset(0, 2))
+          BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 5, offset: const Offset(0, 2))
         ],
       ),
       child: child,
@@ -284,8 +284,8 @@ class _HotelBookingDetailScreenState extends State<HotelBookingDetailScreen> {
   Widget _buildHistoryRow(String label, String value, {bool isLast = false, bool isBold = false, bool highlight = false, bool isDiscount = false}) {
     return Container(
       decoration: BoxDecoration(
-        color: highlight ? primaryPink.withOpacity(0.05) : Colors.transparent,
-        border: isLast ? null : Border(bottom: BorderSide(color: borderColor.withOpacity(0.5))),
+        color: highlight ? primaryPink.withValues(alpha: 0.05) : Colors.transparent,
+        border: isLast ? null : Border(bottom: BorderSide(color: borderColor.withValues(alpha: 0.5))),
       ),
       child: Row(
         children: [

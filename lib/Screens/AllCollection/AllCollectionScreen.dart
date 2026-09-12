@@ -60,6 +60,11 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
   void initState() {
     super.initState();
     callAllCollection(reset: true);
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+        loadMore();
+      }
+    });
   }
 
   @override
@@ -137,6 +142,16 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
 
         hasMoreData = newData.isNotEmpty && newData.length >= limit;
         isDataAvailable.value = categories.isNotEmpty;
+
+        // Auto-load next page if current items don't fill the tablet/desktop screen
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollController.hasClients &&
+              _scrollController.position.maxScrollExtent <= 0 &&
+              hasMoreData &&
+              !isApiCalling) {
+            loadMore();
+          }
+        });
       } else {
         if (reset) categories.clear();
         hasMoreData = false;
@@ -149,7 +164,18 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
       isApiCalling = false;
       isLoadingMore = false;
       isApiComplete.value = true;
-      if (mounted) setState(() {});
+      if (mounted) {
+        setState(() {});
+        // Auto-load more if content doesn't fill screen (common on large screens/tablets)
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollController.hasClients &&
+              _scrollController.position.maxScrollExtent < 100 &&
+              hasMoreData &&
+              !isApiCalling) {
+            loadMore();
+          }
+        });
+      }
     }
   }
 
@@ -191,22 +217,31 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+
+    int crossAxisCount = 2;
+    if (screenWidth >= 1200) {
+      crossAxisCount = 6;
+    } else if (screenWidth >= 900) {
+      crossAxisCount = 4;
+    } else if (isTablet) {
+      crossAxisCount = 3;
+    }
+
+    double horizontalPadding = screenWidth * 0.05;
+    if (horizontalPadding < 14) horizontalPadding = 14;
+    if (horizontalPadding > 60) horizontalPadding = 60;
+
     return Scaffold(
       backgroundColor: ModernHeritageApp.appBg,
-      body: NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification scrollInfo) {
-          if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 150) {
-            loadMore();
-          }
-          return true;
-        },
-        child: CustomScrollView(
-          controller: _scrollController,
-          physics: const AlwaysScrollableScrollPhysics(
-            parent: BouncingScrollPhysics(),
-          ),
-          slivers: [
-            _buildAppBar(),
+      body: CustomScrollView(
+        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ),
+        slivers: [
+          _buildAppBar(),
 
             ValueListenableBuilder<bool>(
               valueListenable: isApiComplete,
@@ -238,14 +273,14 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
                     }
 
                     return SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
+                      padding: EdgeInsets.fromLTRB(horizontalPadding, 12, horizontalPadding, 10),
                       sliver: SliverGrid(
                         gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
+                        SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: crossAxisCount,
                           mainAxisSpacing: 14,
                           crossAxisSpacing: 14,
-                          childAspectRatio: 0.95,
+                          childAspectRatio: 0.9,
                         ),
                         delegate: SliverChildBuilderDelegate(
                               (context, index) {
@@ -279,15 +314,11 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   SliverAppBar _buildAppBar() {
     return SliverAppBar(
-      expandedHeight: 130,
-      collapsedHeight: 80,
-      toolbarHeight: 75,
       pinned: true,
       backgroundColor: const Color(0xFFFDFDFD),
       elevation: 0,
@@ -302,85 +333,67 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
         onPressed: _handleBack,
       )
           : const SizedBox(),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: IconButton(
-            icon: Icon(
-              isSearching ? Icons.close_rounded : Icons.search_rounded,
-              color: const Color(0xFF0D1B1E),
-              size: 28,
+      title: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        child: isSearching
+            ? Container(
+          key: const ValueKey("PremiumSearch"),
+          height: 40,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: const Color(0xFFE9ECEF),
+              width: 1.5,
             ),
-            onPressed: _toggleSearch,
           ),
-        ),
-      ],
-      flexibleSpace: FlexibleSpaceBar(
-        centerTitle: true,
-        expandedTitleScale: 1.0,
-        titlePadding:
-        EdgeInsets.only(bottom: isSearching ? 12 : 20, left: 0, right: 0),
-        title: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: isSearching
-              ? Container(
-            key: const ValueKey("PremiumSearch"),
-            height: 45,
-            margin: const EdgeInsets.symmetric(horizontal: 55),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(
-                color: const Color(0xFFE9ECEF),
-                width: 1.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: TextField(
-              controller: searchController,
-              autofocus: true,
-              textAlignVertical: TextAlignVertical.center,
-              style: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF0D1B1E),
-              ),
-              onChanged: _onSearchChanged,
-              decoration: InputDecoration(
-                hintText: "Search here...",
-                hintStyle: GoogleFonts.montserrat(
-                  fontSize: 13,
-                  color: Colors.grey.shade400,
-                ),
-                border: InputBorder.none,
-                prefixIcon: const Icon(
-                  Icons.search_rounded,
-                  size: 20,
-                  color: Color(0xFF0D1B1E),
-                ),
-                contentPadding: EdgeInsets.zero,
-                isDense: true,
-              ),
-            ),
-          )
-              : Text(
-            "COLLECTIONS",
-            key: const ValueKey("TitleText"),
-            style: GoogleFonts.poppins(
-              letterSpacing: 1.5,
-              fontWeight: FontWeight.w900,
-              fontSize: 18,
+          child: TextField(
+            controller: searchController,
+            autofocus: true,
+            style: GoogleFonts.montserrat(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
               color: const Color(0xFF0D1B1E),
             ),
+            onChanged: _onSearchChanged,
+            decoration: InputDecoration(
+              hintText: "Search here...",
+              hintStyle: GoogleFonts.montserrat(
+                fontSize: 12,
+                color: Colors.grey.shade400,
+              ),
+              border: InputBorder.none,
+              prefixIcon: const Icon(
+                Icons.search_rounded,
+                size: 18,
+                color: Color(0xFF0D1B1E),
+              ),
+              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            ),
+          ),
+        )
+            : Text(
+          "COLLECTIONS",
+          key: const ValueKey("TitleText"),
+          style: GoogleFonts.poppins(
+            letterSpacing: 1.5,
+            fontWeight: FontWeight.w900,
+            fontSize: 16,
+            color: const Color(0xFF0D1B1E),
           ),
         ),
       ),
+      actions: [
+        IconButton(
+          icon: Icon(
+            isSearching ? Icons.close_rounded : Icons.search_rounded,
+            color: const Color(0xFF0D1B1E),
+            size: 26,
+          ),
+          onPressed: _toggleSearch,
+        ),
+        const SizedBox(width: 5),
+      ],
     );
   }
 
@@ -394,64 +407,62 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
       ),
       child: Container(
         decoration: SharedWidgets.cardBoxDecoration(),
-        padding: const EdgeInsets.all(14.0),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 100,
-              width: double.infinity,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: iconColor.withOpacity(0.15),
-                  width: 1,
-                ),
-              ),
-              child: SizedBox(
-                height: 54,
-                width: 54,
-                child: (cat.icon != null && cat.icon!.contains('.svg'))
-                    ? SvgPicture.network(
-                  cat.icon!,
-                  fit: BoxFit.contain,
-                  colorFilter: ColorFilter.mode(
-                    iconColor,
-                    BlendMode.srcIn,
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: iconColor.withOpacity(0.15),
+                    width: 1,
                   ),
-                  placeholderBuilder: (_) => _shimmerCircle(),
-                )
-                    : CachedNetworkImage(
-                  imageUrl: cat.icon ?? "",
-                  fit: BoxFit.contain,
-                  color: iconColor,
-                  placeholder: (context, url) => _shimmerCircle(),
-                  errorWidget: (context, url, error) => Icon(
-                    Icons.category,
+                ),
+                child: SizedBox(
+                  height: 45,
+                  width: 45,
+                  child: (cat.icon != null && cat.icon!.contains('.svg'))
+                      ? SvgPicture.network(
+                    cat.icon!,
+                    fit: BoxFit.contain,
+                    colorFilter: ColorFilter.mode(
+                      iconColor,
+                      BlendMode.srcIn,
+                    ),
+                    placeholderBuilder: (_) => _shimmerCircle(),
+                  )
+                      : CachedNetworkImage(
+                    imageUrl: cat.icon ?? "",
+                    fit: BoxFit.contain,
                     color: iconColor,
-                    size: 28,
+                    placeholder: (context, url) => _shimmerCircle(),
+                    errorWidget: (context, url, error) => Icon(
+                      Icons.category,
+                      color: iconColor,
+                      size: 24,
+                    ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 12),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              child: Text(
-                cat.name ?? "",
-                maxLines: 1,
-                style: GoogleFonts.roboto(
-                  color: Colors.black87,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  height: 1.2,
-                ),
+            const SizedBox(height: 10),
+            Text(
+              cat.name ?? "",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.roboto(
+                color: Colors.black87,
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                height: 1.2,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -459,7 +470,7 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
                   "Explore",
                   style: GoogleFonts.montserrat(
                     color: Colors.black45,
-                    fontSize: 11.5,
+                    fontSize: 10,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -467,7 +478,7 @@ class _AllCollectionScreenState extends State<AllCollectionScreen> {
                 Icon(
                   Icons.arrow_forward_rounded,
                   color: iconColor.withOpacity(0.7),
-                  size: 14,
+                  size: 12,
                 ),
               ],
             ),

@@ -106,7 +106,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                       return Container(
                         padding: EdgeInsets.all(24 * _pulseController!.value),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF00F2FE).withOpacity(0.15 * (1 - _pulseController!.value + 0.2)),
+                          color: const Color(0xFF00F2FE).withValues(alpha: 0.15 * (1 - _pulseController!.value + 0.2)),
                           shape: BoxShape.circle,
                         ),
                         child: Container(
@@ -287,7 +287,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF00F2FE).withOpacity(0.3),
+              color: const Color(0xFF00F2FE).withValues(alpha: 0.3),
               blurRadius: 12,
               offset: const Offset(0, 4),
             )
@@ -378,7 +378,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
               height: 120,
               width: 120,
               decoration: BoxDecoration(
-                color: const Color(0xFF00F2FE).withOpacity(0.05),
+                color: const Color(0xFF00F2FE).withValues(alpha: 0.05),
                 shape: BoxShape.circle,
               ),
               child: ShaderMask(

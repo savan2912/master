@@ -184,6 +184,21 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+    final bool isDesktop = screenWidth >= 1024;
+
+    double expandedHeight = 280;
+    if (isDesktop) {
+      expandedHeight = 450;
+    } else if (isTablet) {
+      expandedHeight = 350;
+    }
+
+    double horizontalPadding = screenWidth * 0.05;
+    if (horizontalPadding < 20) horizontalPadding = 20;
+    if (horizontalPadding > 100) horizontalPadding = 100;
+
     return Scaffold(
       backgroundColor: ModernHeritageApp.appBg,
       floatingActionButton: ValueListenableBuilder(
@@ -216,229 +231,234 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                 return Visibility(
                   visible: value,
                   replacement: const Center(child: Text("No data")),
-                  child: NestedScrollView(
-                    controller: _scrollController,
-                    physics: const BouncingScrollPhysics(),
-                    headerSliverBuilder: (context, innerBoxIsScrolled) {
-                      return [
-                        SliverAppBar(
-                          expandedHeight: 280,
-                          pinned: true,
-                          stretch: true,
-                          backgroundColor: darkBlue,
-                          leadingWidth: _isSearching ? 20 : 60,
-                          leading: _isSearching
-                              ? const SizedBox.shrink()
-                              : _buildHeaderButton(
-                            Icons.arrow_back_ios_new,
-                                () => Navigator.pop(context),
-                          ),
-                          centerTitle: true,
-                          title: _isSearching
-                              ? _buildPremiumSearchBar()
-                              : ListenableBuilder(
-                            listenable: _scrollController,
-                            builder: (context, child) {
-                              double offset = _scrollController.hasClients
-                                  ? _scrollController.offset
-                                  : 0;
-                              double opacity = (offset / 180).clamp(
-                                0.0,
-                                1.0,
-                              );
-                              return Opacity(
-                                opacity: opacity,
-                                child: _buildMarqueeTitle(
-                                  "${listDetail!.listingTitle}",
-                                ),
-                              );
-                            },
-                          ),
-                          actions: [
-                            if (!_isSearching) ...[
-                              if (_tabController.index == 1) ...[
-                                _buildHeaderButton(Icons.add_shopping_cart, () {
-                                  if (AppPrefs.userId != "") {
-                                    Get.to(() => CartScreen(listingId: widget.listId));
-                                  } else {
-                                    SharedWidgets.showTopSnackBar(context, message: "Please Login First", title: "fail");
-                                  }
-                                }),
-                              ] else ...[
-                                _buildHeaderButton(Icons.share_outlined, () {
-                                  if (shareUrl != null && shareUrl != "") {
-                                    _showCustomShareSheet(context, shareUrl!);
-                                  }
-                                }),
-                                _buildHeaderButton(
-                                  isFav == 1 ? Icons.favorite_outlined : Icons.favorite_border,
-                                      () {
-                                    if (AppPrefs.userId != "") {
-                                      callAddFav();
-                                    } else {
-                                      SharedWidgets.showTopSnackBar(context, message: "Please Login First", title: "fail");
-                                    }
-                                  },
-                                ),
-                              ],
-                            ],
-                            const SizedBox(width: 8),
-                          ],
-                          flexibleSpace: FlexibleSpaceBar(
-                            background: Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                PageView.builder(
-                                  controller: _pageController,
-                                  itemCount: _bannerImages.length,
-                                  onPageChanged: (index) => setState(
-                                        () => _currentImageIndex = index,
-                                  ),
-                                  itemBuilder: (context, index) {
-                                    return Image.network(
-                                      _bannerImages[index].imagePath!,
-                                      fit: BoxFit.cover,
-                                    );
-                                  },
-                                ),
-                                const DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: [
-                                        Colors.black45,
-                                        Colors.transparent,
-                                        Colors.black54,
-                                      ],
+                  child: Center(
+                    child: Container(
+                      constraints: const BoxConstraints(maxWidth: 1440),
+                      child: NestedScrollView(
+                        controller: _scrollController,
+                        physics: const BouncingScrollPhysics(),
+                        headerSliverBuilder: (context, innerBoxIsScrolled) {
+                          return [
+                            SliverAppBar(
+                              expandedHeight: expandedHeight,
+                              pinned: true,
+                              stretch: true,
+                              backgroundColor: darkBlue,
+                              leadingWidth: _isSearching ? 20 : 60,
+                              leading: _isSearching
+                                  ? const SizedBox.shrink()
+                                  : _buildHeaderButton(
+                                Icons.arrow_back_ios_new,
+                                    () => Navigator.pop(context),
+                              ),
+                              centerTitle: true,
+                              title: _isSearching
+                                  ? _buildPremiumSearchBar()
+                                  : ListenableBuilder(
+                                listenable: _scrollController,
+                                builder: (context, child) {
+                                  double offset = _scrollController.hasClients
+                                      ? _scrollController.offset
+                                      : 0;
+                                  double opacity = (offset / 180).clamp(
+                                    0.0,
+                                    1.0,
+                                  );
+                                  return Opacity(
+                                    opacity: opacity,
+                                    child: _buildMarqueeTitle(
+                                      "${listDetail!.listingTitle}",
                                     ),
-                                  ),
-                                ),
+                                  );
+                                },
+                              ),
+                              actions: [
+                                if (!_isSearching) ...[
+                                  if (_tabController.index == 1) ...[
+                                    _buildHeaderButton(Icons.add_shopping_cart, () {
+                                      if (AppPrefs.userId != "") {
+                                        Get.to(() => CartScreen(listingId: widget.listId));
+                                      } else {
+                                        SharedWidgets.showTopSnackBar(context, message: "Please Login First", title: "fail");
+                                      }
+                                    }),
+                                  ] else ...[
+                                    _buildHeaderButton(Icons.share_outlined, () {
+                                      if (shareUrl != null && shareUrl != "") {
+                                        _showCustomShareSheet(context, shareUrl!);
+                                      }
+                                    }),
+                                    _buildHeaderButton(
+                                      isFav == 1 ? Icons.favorite_outlined : Icons.favorite_border,
+                                          () {
+                                        if (AppPrefs.userId != "") {
+                                          callAddFav();
+                                        } else {
+                                          SharedWidgets.showTopSnackBar(context, message: "Please Login First", title: "fail");
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ],
+                                const SizedBox(width: 8),
                               ],
-                            ),
-                          ),
-                        ),
-                        SliverToBoxAdapter(
-                          child: Container(
-                            color: ModernHeritageApp.appBg,
-                            padding: const EdgeInsets.only(top: 20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            _buildCategoryBadge("PREMIUM CAFE"),
-                                            const SizedBox(height: 8),
-                                            Text(
-                                              "${listDetail!.listingTitle}",
-                                              style: const TextStyle(
-                                                color: darkBlue,
-                                                fontSize: 26,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
+                              flexibleSpace: FlexibleSpaceBar(
+                                background: Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    PageView.builder(
+                                      controller: _pageController,
+                                      itemCount: _bannerImages.length,
+                                      onPageChanged: (index) => setState(
+                                            () => _currentImageIndex = index,
+                                      ),
+                                      itemBuilder: (context, index) {
+                                        return Image.network(
+                                          _bannerImages[index].imagePath!,
+                                          fit: BoxFit.cover,
+                                        );
+                                      },
+                                    ),
+                                    const DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            Colors.black45,
+                                            Colors.transparent,
+                                            Colors.black54,
                                           ],
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 15),
-                                SizedBox(
-                                  height: 65,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                                    itemCount: _bannerImages.length,
-                                    itemBuilder: (context, index) {
-                                      bool isSelected = _currentImageIndex == index;
-                                      return GestureDetector(
-                                        onTap: () {
-                                          if (mounted) {
-                                            _pageController.animateToPage(
-                                              index,
-                                              duration: const Duration(milliseconds: 300),
-                                              curve: Curves.easeInOut,
-                                            );
-                                          }
-                                        },
-                                        child: AnimatedContainer(
-                                          duration: const Duration(milliseconds: 200),
-                                          width: 65,
-                                          margin: const EdgeInsets.only(right: 12),
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(12),
-                                            border: Border.all(
-                                              color: isSelected ? primaryColor : Colors.grey.shade300,
-                                              width: 2,
-                                            ),
-                                            image: DecorationImage(
-                                              image: NetworkImage(_bannerImages[index].imagePath!),
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SliverPersistentHeader(
-                          pinned: true,
-                          delegate: _SliverAppBarDelegate(
-                            height: 75,
-                            child: Container(
-                              color: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF1F5F9),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: TabBar(
-                                  controller: _tabController,
-                                  onTap: (index) => setState(() {}),
-                                  indicatorSize: TabBarIndicatorSize.tab,
-                                  dividerColor: Colors.transparent,
-                                  indicator: BoxDecoration(
-                                    color: darkBlue,
-                                    borderRadius: BorderRadius.circular(18),
-                                  ),
-                                  labelColor: Colors.white,
-                                  unselectedLabelColor: const Color(0xFF64748B),
-                                  labelStyle: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  ),
-                                  tabs: const [
-                                    Tab(text: "Overview"),
-                                    Tab(text: "Products"),
+                                    ),
                                   ],
                                 ),
                               ),
                             ),
-                          ),
+                            SliverToBoxAdapter(
+                              child: Container(
+                                color: ModernHeritageApp.appBg,
+                                padding: const EdgeInsets.only(top: 20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                _buildCategoryBadge("PREMIUM CAFE"),
+                                                const SizedBox(height: 8),
+                                                Text(
+                                                  "${listDetail!.listingTitle}",
+                                                  style: TextStyle(
+                                                    color: darkBlue,
+                                                    fontSize: isTablet ? 32 : 26,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 15),
+                                    SizedBox(
+                                      height: isTablet ? 85 : 65,
+                                      child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                                        itemCount: _bannerImages.length,
+                                        itemBuilder: (context, index) {
+                                          bool isSelected = _currentImageIndex == index;
+                                          return GestureDetector(
+                                            onTap: () {
+                                              if (mounted) {
+                                                _pageController.animateToPage(
+                                                  index,
+                                                  duration: const Duration(milliseconds: 300),
+                                                  curve: Curves.easeInOut,
+                                                );
+                                              }
+                                            },
+                                            child: AnimatedContainer(
+                                              duration: const Duration(milliseconds: 200),
+                                              width: isTablet ? 85 : 65,
+                                              margin: const EdgeInsets.only(right: 12),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(12),
+                                                border: Border.all(
+                                                  color: isSelected ? primaryColor : Colors.grey.shade300,
+                                                  width: 2,
+                                                ),
+                                                image: DecorationImage(
+                                                  image: NetworkImage(_bannerImages[index].imagePath!),
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SliverPersistentHeader(
+                              pinned: true,
+                              delegate: _SliverAppBarDelegate(
+                                height: 75,
+                                child: Container(
+                                  color: Colors.white,
+                                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 12),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF1F5F9),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: TabBar(
+                                      controller: _tabController,
+                                      onTap: (index) => setState(() {}),
+                                      indicatorSize: TabBarIndicatorSize.tab,
+                                      dividerColor: Colors.transparent,
+                                      indicator: BoxDecoration(
+                                        color: darkBlue,
+                                        borderRadius: BorderRadius.circular(18),
+                                      ),
+                                      labelColor: Colors.white,
+                                      unselectedLabelColor: const Color(0xFF64748B),
+                                      labelStyle: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                      tabs: const [
+                                        Tab(text: "Overview"),
+                                        Tab(text: "Products"),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ];
+                        },
+                        body: TabBarView(
+                          controller: _tabController,
+                          children: [
+                            _buildOverviewContent(horizontalPadding),
+                            _buildProductsContent(horizontalPadding),
+                          ],
                         ),
-                      ];
-                    },
-                    body: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        _buildOverviewContent(),
-                        _buildProductsContent(),
-                      ],
+                      ),
                     ),
                   ),
                 );
@@ -501,7 +521,10 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
     );
   }
 
-  Widget _buildOverviewContent() {
+  Widget _buildOverviewContent(double horizontalPadding) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: const Duration(milliseconds: 800),
@@ -516,7 +539,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
         );
       },
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(horizontalPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -594,7 +617,7 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
             if(isEvent==1)
             const SizedBox(height: 12),
             _sectionHeader("Similar Listing"),
-            similarListData(similarList),
+            similarListData(similarList, isTablet),
             const SizedBox(height: 12),
             review(context),
             const SizedBox(height: 25),
@@ -868,11 +891,17 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
     );
   }
 
-  Widget similarListData(List<SimilarListing> items) {
-    return ListView.builder(
+  Widget similarListData(List<SimilarListing> items, bool isTablet) {
+    return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: items.length,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: isTablet ? 2 : 1,
+        mainAxisExtent: 115,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
       itemBuilder: (context, index) {
         final item = items[index];
         return GestureDetector(
@@ -886,39 +915,41 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
           },
           child: Card(
             color: Colors.white,
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            margin: EdgeInsets.zero,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             elevation: 2,
             child: Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(12),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(10),
                     child: Image.network(
                       item.image ?? '',
-                      width: 80,
-                      height: 80,
+                      width: 85,
+                      height: 85,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
-                        width: 80,
-                        height: 80,
-                        color: Colors.white,
-                        child: const Icon(Icons.image_not_supported),
+                        width: 85,
+                        height: 85,
+                        color: Colors.grey[100],
+                        child: const Icon(Icons.image_not_supported, color: Colors.grey),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 15),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           item.listingTitle ?? 'No Title',
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 15,
                             fontWeight: FontWeight.bold,
+                            color: const Color(0xFF1E293B),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -926,13 +957,13 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
                         const SizedBox(height: 6),
                         Row(
                           children: [
-                            const Icon(Icons.location_on, size: 14, color: Colors.grey),
+                            const Icon(Icons.location_on_rounded, size: 14, color: Colors.grey),
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
                                 item.address ?? 'No Address',
-                                style: TextStyle(
-                                  fontSize: 13,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 12,
                                   color: Colors.grey[600],
                                 ),
                                 maxLines: 2,
@@ -954,11 +985,19 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
   }
 
   Widget _buildAmenitiesGrid() {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    int crossAxisCount = 3;
+    if (screenWidth >= 1024) {
+      crossAxisCount = 6;
+    } else if (screenWidth >= 600) {
+      crossAxisCount = 4;
+    }
+
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
         mainAxisSpacing: 15,
         crossAxisSpacing: 15,
         childAspectRatio: 1,
@@ -1269,10 +1308,21 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
     );
   }
 
-  Widget _buildProductsContent() {
+  Widget _buildProductsContent(double horizontalPadding) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+    final bool isDesktop = screenWidth >= 1024;
+
+    int crossAxisCount = 2;
+    if (isDesktop) {
+      crossAxisCount = 4;
+    } else if (isTablet) {
+      crossAxisCount = 3;
+    }
+
     return Column(
       children: [
-        _buildModernSearchBar(),
+        _buildModernSearchBar(horizontalPadding),
         Expanded(
           child: NotificationListener<ScrollNotification>(
             onNotification: (ScrollNotification scrollInfo) {
@@ -1298,10 +1348,10 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
 
                 return GridView.builder(
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 100),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisExtent: 250,
+                  padding: EdgeInsets.fromLTRB(horizontalPadding, 10, horizontalPadding, 100),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    mainAxisExtent: isTablet ? 280 : 250,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
                   ),
@@ -1475,9 +1525,9 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
     );
   }
 
-  Widget _buildModernSearchBar() {
+  Widget _buildModernSearchBar(double horizontalPadding) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(18, 15, 18, 10),
+      padding: EdgeInsets.fromLTRB(horizontalPadding, 15, horizontalPadding, 10),
       child: Container(
         height: 52,
         decoration: BoxDecoration(
@@ -1755,8 +1805,12 @@ class _AllListingDetailScreenState extends State<AllListingDetailScreen>
   }
 
   Widget _buildMiniStat(IconData icon, String title, String sub, Color color) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    double width = screenWidth * 0.28;
+    if (width > 150) width = 150;
+
     return Container(
-      width: MediaQuery.of(context).size.width * 0.28,
+      width: width,
       padding: const EdgeInsets.symmetric(vertical: 18),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),

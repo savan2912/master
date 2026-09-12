@@ -48,7 +48,7 @@ class _CartScreenState extends State<CartScreen> {
   final Color primaryColor = const Color(0xFFF012BE);
   final Color darkBlue = const Color(0xFF1B2E3F);
   final Color bgColor = const Color(0xFFF8FAFC);
-  final Color softShadow = Colors.grey.withOpacity(0.1);
+  final Color softShadow = Colors.grey.withValues(alpha: 0.1);
   final Color textBlack = const Color(0xFF1B2E3F);
 
   double _dragPosition = 0;
@@ -171,7 +171,7 @@ class _CartScreenState extends State<CartScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: primaryColor.withOpacity(0.5), width: 1.5),
+        border: Border.all(color: primaryColor.withValues(alpha: 0.5), width: 1.5),
       ),
       child: Row(
         children: [
@@ -309,7 +309,7 @@ class _CartScreenState extends State<CartScreen> {
 
   Widget _stepCircle(String step, String label, bool isActive) {
     return Column(children: [
-      AnimatedContainer(duration: const Duration(milliseconds: 300), height: 28, width: 28, decoration: BoxDecoration(color: isActive ? primaryColor : Colors.grey[300], shape: BoxShape.circle, boxShadow: isActive ? [BoxShadow(color: primaryColor.withOpacity(0.3), blurRadius: 8)] : []), child: Center(child: Text(step, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)))),
+      AnimatedContainer(duration: const Duration(milliseconds: 300), height: 28, width: 28, decoration: BoxDecoration(color: isActive ? primaryColor : Colors.grey[300], shape: BoxShape.circle, boxShadow: isActive ? [BoxShadow(color: primaryColor.withValues(alpha: 0.3), blurRadius: 8)] : []), child: Center(child: Text(step, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)))),
       const SizedBox(height: 6),
       Text(label, style: TextStyle(fontSize: 11, color: isActive ? darkBlue : Colors.grey, fontWeight: FontWeight.bold)),
     ]);
@@ -320,7 +320,7 @@ class _CartScreenState extends State<CartScreen> {
   Widget _buildCartItem(Items item) {
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: darkBlue.withOpacity(0.04), blurRadius: 20, offset: const Offset(0, 10))]),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: darkBlue.withValues(alpha: 0.04), blurRadius: 20, offset: const Offset(0, 10))]),
       child: Row(children: [
         ClipRRect(borderRadius: BorderRadius.circular(18), child: Image.network(item.thumbnail ?? "", height: 80, width: 80, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Image.asset("assets/dry.png", height: 80, width: 80))),
         const SizedBox(width: 15),
@@ -330,7 +330,7 @@ class _CartScreenState extends State<CartScreen> {
               Expanded(child: Text(item.productName ?? "No Name", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: darkBlue), maxLines: 1, overflow: TextOverflow.ellipsis)),
               GestureDetector(
                 onTap: () => _showDeleteConfirmation(item),
-                child: Container(padding: const EdgeInsets.all(5), decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), shape: BoxShape.circle), child: const Icon(Icons.delete_outline, color: Colors.red, size: 20)),
+                child: Container(padding: const EdgeInsets.all(5), decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.1), shape: BoxShape.circle), child: const Icon(Icons.delete_outline, color: Colors.red, size: 20)),
               ),
             ]),
             const SizedBox(height: 8),

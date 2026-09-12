@@ -40,7 +40,8 @@ class _LatestReleaseScreenState extends State<LatestReleaseScreen> {
     _callAllLatestRelease(searchText: "", count: "0");
 
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.9) {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent * 0.9) {
         if (!isMoreLoading.value && hasMoreData && isApiComplete.value) {
           _loadMore();
         }
@@ -58,7 +59,11 @@ class _LatestReleaseScreenState extends State<LatestReleaseScreen> {
 
   void _loadMore() {
     currentCounter += 10;
-    _callAllLatestRelease(searchText: searchController.text, count: currentCounter.toString(), isLoadMore: true);
+    _callAllLatestRelease(
+      searchText: searchController.text,
+      count: currentCounter.toString(),
+      isLoadMore: true,
+    );
   }
 
   void _runFilter(String enteredKeyword) {
@@ -75,112 +80,193 @@ class _LatestReleaseScreenState extends State<LatestReleaseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+
+    int crossAxisCount = 1;
+    if (screenWidth >= 1200) {
+      crossAxisCount = 3;
+    } else if (isTablet) {
+      crossAxisCount = 2;
+    }
+
+    double horizontalPadding = screenWidth * 0.05;
+    if (horizontalPadding < 16) horizontalPadding = 16;
+    if (horizontalPadding > 60) horizontalPadding = 60;
+
     return Scaffold(
       backgroundColor: ModernHeritageApp.appBg,
-      body: CustomScrollView(
-        controller: _scrollController,
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 120.0,
-            pinned: true,
-            backgroundColor: const Color(0xFFFDFDFD),
-            surfaceTintColor: const Color(0xFFFDFDFD),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF0D1B1E), size: 18),
-              onPressed: () => Navigator.pop(context),
-            ),
-            title: isSearching
-                ? Container(
-              height: 45,
-              decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(15)),
-              child: TextField(
-                controller: searchController,
-                autofocus: true,
-                onChanged: (value) => _runFilter(value),
-                style: GoogleFonts.montserrat(fontSize: 14, fontWeight: FontWeight.w600),
-                decoration: InputDecoration(
-                  hintText: "Search releases...",
-                  hintStyle: GoogleFonts.montserrat(fontSize: 13, color: Colors.grey),
-                  border: InputBorder.none,
-                  prefixIcon: const Icon(Icons.search, size: 18, color: Colors.grey),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
+      body: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 1440),
+          child: CustomScrollView(
+            controller: _scrollController,
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              SliverAppBar(
+                pinned: true,
+                backgroundColor: const Color(0xFFFDFDFD),
+                surfaceTintColor: const Color(0xFFFDFDFD),
+                elevation: 0,
+                leading: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new,
+                    color: Color(0xFF0D1B1E),
+                    size: 18,
+                  ),
+                  onPressed: () => Navigator.pop(context),
                 ),
+                centerTitle: true,
+                title: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: isSearching
+                      ? Container(
+                          key: const ValueKey("SearchBar"),
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: TextField(
+                            controller: searchController,
+                            autofocus: true,
+                            onChanged: (value) => _runFilter(value),
+                            style: GoogleFonts.montserrat(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            decoration: InputDecoration(
+                              hintText: "Search releases...",
+                              hintStyle: GoogleFonts.montserrat(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                              border: InputBorder.none,
+                              prefixIcon: const Icon(
+                                Icons.search,
+                                size: 18,
+                                color: Colors.grey,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 10,
+                              ),
+                            ),
+                          ),
+                        )
+                      : Text(
+                          "LATEST RELEASES",
+                          key: const ValueKey("TitleText"),
+                          style: GoogleFonts.montserrat(
+                            letterSpacing: 2,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 16,
+                            color: const Color(0xFF0D1B1E),
+                          ),
+                        ),
+                ),
+                actions: [
+                  IconButton(
+                    icon: Icon(
+                      isSearching ? Icons.close_rounded : Icons.search_rounded,
+                      color: const Color(0xFF0D1B1E),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isSearching = !isSearching;
+                        if (!isSearching) {
+                          searchController.clear();
+                          _runFilter('');
+                        }
+                      });
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                ],
               ),
-            )
-                : null,
-            actions: [
-              IconButton(
-                icon: Icon(isSearching ? Icons.close_rounded : Icons.search_rounded, color: const Color(0xFF0D1B1E)),
-                onPressed: () {
-                  setState(() {
-                    isSearching = !isSearching;
-                    if (!isSearching) {
-                      searchController.clear();
-                      _runFilter('');
-                    }
-                  });
+
+              ValueListenableBuilder(
+                valueListenable: isApiComplete,
+                builder: (context, complete, child) {
+                  if (!complete && allProducts.isEmpty) {
+                    return const SliverFillRemaining(
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: Color(0xFF0D1B1E),
+                        ),
+                      ),
+                    );
+                  }
+                  return const SliverToBoxAdapter(child: SizedBox.shrink());
                 },
               ),
-              const SizedBox(width: 8),
-            ],
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: isSearching ? const SizedBox.shrink() : Text(
-                "LATEST RELEASES",
-                style: GoogleFonts.montserrat(letterSpacing: 2, fontWeight: FontWeight.w900, fontSize: 14, color: const Color(0xFF0D1B1E)),
-              ),
-            ),
-          ),
 
-          ValueListenableBuilder(
-            valueListenable: isApiComplete,
-            builder: (context, complete, child) {
-              if (!complete && allProducts.isEmpty) {
-                return const SliverFillRemaining(
-                  child: Center(child: CircularProgressIndicator(color: Color(0xFF0D1B1E))),
-                );
-              }
-              return const SliverToBoxAdapter(child: SizedBox.shrink());
-            },
-          ),
-
-          allProducts.isNotEmpty
-              ? SliverPadding(
-            padding: const EdgeInsets.only(top: 20),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                    (context, index) => _buildLuxuryReleaseCard(allProducts[index]),
-                childCount: allProducts.length,
-              ),
-            ),
-          )
-              : SliverFillRemaining(
-            child: Center(
-              child: Text(isApiComplete.value ? "No results found!" : "",
-                  style: GoogleFonts.montserrat(color: Colors.grey, fontWeight: FontWeight.w600)),
-            ),
-          ),
-
-          SliverToBoxAdapter(
-            child: ValueListenableBuilder(
-              valueListenable: isMoreLoading,
-              builder: (context, loading, child) {
-                return loading
-                    ? const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  child: Center(child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF0D1B1E))),
+              if (allProducts.isNotEmpty)
+                SliverPadding(
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    20,
+                    horizontalPadding,
+                    20,
+                  ),
+                  sliver: SliverGrid(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      mainAxisSpacing: 20,
+                      crossAxisSpacing: 20,
+                      childAspectRatio: crossAxisCount == 1 ? 1.05 : 0.85,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => _buildLuxuryReleaseCard(
+                        allProducts[index],
+                        crossAxisCount > 1,
+                      ),
+                      childCount: allProducts.length,
+                    ),
+                  ),
                 )
-                    : const SizedBox(height: 30);
-              },
-            ),
+              else if (isApiComplete.value)
+                SliverFillRemaining(
+                  child: Center(
+                    child: Text(
+                      "No results found!",
+                      style: GoogleFonts.montserrat(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+
+              SliverToBoxAdapter(
+                child: ValueListenableBuilder(
+                  valueListenable: isMoreLoading,
+                  builder: (context, loading, child) {
+                    return loading
+                        ? const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Color(0xFF0D1B1E),
+                              ),
+                            ),
+                          )
+                        : const SizedBox(height: 30);
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Future<void> _callAllLatestRelease({required String searchText, required String count, bool isLoadMore = false}) async {
+  Future<void> _callAllLatestRelease({
+    required String searchText,
+    required String count,
+    bool isLoadMore = false,
+  }) async {
     if (isLoadMore) {
       isMoreLoading.value = true;
     } else {
@@ -196,13 +282,13 @@ class _LatestReleaseScreenState extends State<LatestReleaseScreen> {
       }
 
       ResponseAllLatestRelease? response = await ApiCalls.callAllLatestRelease(
-          RequestAllLatestRelease(search: searchText, counter: count));
+        RequestAllLatestRelease(search: searchText, counter: count),
+      );
 
       if (response != null &&
           response.result != null &&
           response.result!.toLowerCase().contains("pass") &&
           response.data != null) {
-
         List<AllLatestRelease> fetchedData = response.data!;
 
         if (count == "0") {
@@ -229,63 +315,92 @@ class _LatestReleaseScreenState extends State<LatestReleaseScreen> {
     }
   }
 
-  Widget _buildLuxuryReleaseCard(AllLatestRelease item) {
+  Widget _buildLuxuryReleaseCard(AllLatestRelease item, bool isGrid) {
     return GestureDetector(
       onTap: () {
-        Get.to(()=> AllListingDetailScreen(listId: item.id,));
+        Get.to(() => AllListingDetailScreen(listId: item.id));
       },
       child: Container(
-        margin: const EdgeInsets.fromLTRB(20, 0, 20, 25),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [BoxShadow(color: const Color(0xFF0D1B1E).withOpacity(0.05), blurRadius: 20, offset: const Offset(0, 10))],
+          borderRadius: BorderRadius.circular(25),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF0D1B1E).withOpacity(0.05),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-                  child: CachedNetworkImage(
-                    imageUrl: item.listingImage ?? "",
-                    height: 200,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: Container(color: Colors.white, height: 200, width: double.infinity),
+            Expanded(
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(25),
                     ),
-                    errorWidget: (context, url, error) => Container(
-                      height: 200,
+                    child: CachedNetworkImage(
+                      imageUrl: item.listingImage ?? "",
+                      height: double.infinity,
                       width: double.infinity,
-                      color: Colors.grey[200],
-                      child: const Icon(Icons.broken_image, color: Colors.grey),
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(color: Colors.white),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: Colors.grey[200],
+                        child: const Icon(
+                          Icons.broken_image,
+                          color: Colors.grey,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-                Positioned(
-                  top: 15, right: 15,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.star_rounded, color: Color(0xFFFFB300), size: 18),
-                        const SizedBox(width: 4),
-                        Text(item.rating ?? "0.0", style: GoogleFonts.montserrat(fontWeight: FontWeight.bold, fontSize: 12)),
-                      ],
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.star_rounded,
+                            color: Color(0xFFFFB300),
+                            size: 16,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            item.rating ?? "0.0",
+                            style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(15),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -294,25 +409,83 @@ class _LatestReleaseScreenState extends State<LatestReleaseScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(item.listingTitle ?? "No Title", style: GoogleFonts.montserrat(fontSize: 16, fontWeight: FontWeight.w900, color: const Color(0xFF0D1B1E))),
-                            const SizedBox(height: 4),
-                            Text(item.serviceType ?? "", style: GoogleFonts.montserrat(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey[600])),
+                            Text(
+                              item.listingTitle ?? "No Title",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.montserrat(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w900,
+                                color: const Color(0xFF0D1B1E),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              item.serviceType ?? "",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.montserrat(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[600],
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                      Text(item.openClose ?? "", style: GoogleFonts.montserrat(fontSize: 15, fontWeight: FontWeight.w800, color: const Color(0xFF00ACC1))),
+                      Text(
+                        item.openClose ?? "",
+                        style: GoogleFonts.montserrat(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF00ACC1),
+                        ),
+                      ),
                     ],
                   ),
-                  const Padding(padding: EdgeInsets.symmetric(vertical: 15), child: Divider(height: 1, color: Color(0xFFF0F0F0))),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Divider(height: 1, color: Color(0xFFF0F0F0)),
+                  ),
                   Row(
                     children: [
-                      const Icon(Icons.location_on_outlined, color: Color(0xFF0D1B1E), size: 16),
-                      const SizedBox(width: 6),
-                      Expanded(child: Text(item.cityName ?? "", style: GoogleFonts.montserrat(fontSize: 11, fontWeight: FontWeight.w600, color: const Color(0xFF0D1B1E).withOpacity(0.7)))),
+                      const Icon(
+                        Icons.location_on_outlined,
+                        color: Color(0xFF0D1B1E),
+                        size: 14,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          item.cityName ?? "",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.montserrat(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF0D1B1E).withOpacity(0.7),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                        decoration: BoxDecoration(color: const Color(0xFF1A1A1A), borderRadius: BorderRadius.circular(15)),
-                        child: Text("EXPLORE", style: GoogleFonts.montserrat(fontSize: 10, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: 1)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1A1A1A),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          "EXPLORE",
+                          style: GoogleFonts.montserrat(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
                       ),
                     ],
                   ),

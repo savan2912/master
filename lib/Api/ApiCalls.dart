@@ -114,8 +114,11 @@ import 'package:gotilo_new/Api/Response/CrackDeal/ResponseCrackDeal.dart';
 import 'package:gotilo_new/Api/Response/Enquiry/ResponseAddEnquiry.dart';
 import 'package:gotilo_new/Api/Response/Fav/ResponseAddFav.dart';
 import 'package:gotilo_new/Api/Response/Home/ResponseHomeCollection.dart';
+import 'package:gotilo_new/Api/Response/Home/ResponseHomeEventAvailable.dart';
+import 'package:gotilo_new/Api/Response/Home/ResponseHomeHotelAvailable.dart';
 import 'package:gotilo_new/Api/Response/Home/ResponseHomeLatestRelease.dart';
 import 'package:gotilo_new/Api/Response/Home/ResponseHomeService.dart';
+import 'package:gotilo_new/Api/Response/Home/ResponseHomeServiceAvailable.dart';
 import 'package:gotilo_new/Api/Response/LatestListing/ResponseHomeLatestListing.dart';
 import 'package:gotilo_new/Api/Response/Login/ResponseLogin.dart';
 import 'package:gotilo_new/Api/Response/Logout/ResponseLogout.dart';
@@ -191,12 +194,12 @@ class ApiCalls {
   static Dio _getDio() {
     final dio = Dio();
 
-    dio.httpClientAdapter = IOHttpClientAdapter()
-      ..onHttpClientCreate = (HttpClient client) {
-        client.badCertificateCallback =
-            (X509Certificate cert, String host, int port) => true;
-        return client;
-      };
+    // dio.httpClientAdapter = IOHttpClientAdapter()
+    //   ..onHttpClientCreate = (HttpClient client) {
+    //     client.badCertificateCallback =
+    //         (X509Certificate cert, String host, int port) => true;
+    //     return client;
+    //   };
 
     return dio;
   }
@@ -222,6 +225,107 @@ class ApiCalls {
           log("Response Data = ${response.data}", name: TAG);
           //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
           return ResponseBanner.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+  static Future<ResponseHomeHotelAvailable?> callHomeHotelAvailable()
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio());
+    try {
+      log("Request URL = ${ApiList.urlHomeHotelAvailable}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlHomeHotelAvailable, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseHomeHotelAvailable.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+
+  static Future<ResponseHomeServiceAvailable?> callHomeServiceAvailable()
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio());
+    try {
+      log("Request URL = ${ApiList.urlHomeServiceAvailable}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlHomeServiceAvailable, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseHomeServiceAvailable.fromJson(response.data);
+        } else {
+          log("Response data = null", name: TAG);
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } on Exception catch (e) {
+      log("Error = $e", name: TAG);
+    }
+    return null;
+  }
+
+
+  static Future<ResponseHomeEventAvailable?> callHomeEventAvailable()
+  async {
+    //TODO: STEP 1 : HERE CHANGES REQUEST AND RESPONSE MODEL NAME
+    String TAG =
+        (_showLocationLogs == true ? Trace.current().frames[0].location : "") +
+            Trace.current().frames[0].member!;
+    FormData formData = FormData.fromMap(
+        ApiUtils.getRequestMapForDio());
+    try {
+      log("Request URL = ${ApiList.urlHomeEventAvailable}", name: TAG);
+      log("Request Data= ${formData.fields}", name: TAG);
+      //TODO: STEP 2 : HERE CHANGES REQUEST URL
+      Response response =
+      await _getDio().post(ApiList.urlHomeEventAvailable, data: formData);
+      log("Response status or statusCode  = ${response.statusCode}", name: TAG);
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) {
+          log("Response Data = ${response.data}", name: TAG);
+          //TODO: STEP 3 : HERE CHANGES RESPONSE MODEL NAME
+          return ResponseHomeEventAvailable.fromJson(response.data);
         } else {
           log("Response data = null", name: TAG);
           return null;

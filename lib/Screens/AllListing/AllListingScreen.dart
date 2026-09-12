@@ -129,6 +129,22 @@ class _AllListingScreenState extends State<AllListingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+
+    int crossAxisCount = 2;
+    if (screenWidth >= 1200) {
+      crossAxisCount = 5;
+    } else if (screenWidth >= 900) {
+      crossAxisCount = 4;
+    } else if (isTablet) {
+      crossAxisCount = 3;
+    }
+
+    double horizontalPadding = screenWidth * 0.05;
+    if (horizontalPadding < 20) horizontalPadding = 20;
+    if (horizontalPadding > 60) horizontalPadding = 60;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F8FB),
       body: CustomScrollView(
@@ -136,9 +152,6 @@ class _AllListingScreenState extends State<AllListingScreen> {
         physics: const BouncingScrollPhysics(),
         slivers: [
           SliverAppBar(
-            expandedHeight: 130,
-            collapsedHeight: 80,
-            toolbarHeight: 75,
             pinned: true,
             backgroundColor: const Color(0xFFF6F8FB),
             elevation: 0,
@@ -152,67 +165,57 @@ class _AllListingScreenState extends State<AllListingScreen> {
               onPressed: () => Navigator.pop(context),
             ),
             centerTitle: true,
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              expandedTitleScale: 1.0,
-              titlePadding: EdgeInsets.only(
-                bottom: isSearching ? 15 : 20,
-                left: 0,
-                right: 0,
-              ),
-              title: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: isSearching
-                    ? Container(
-                        key: const ValueKey("SearchBar"),
-                        height: 42,
-                        margin: const EdgeInsets.only(left: 55, right: 100),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(
-                            color: const Color(0xFFE9ECEF),
-                            width: 1.2,
-                          ),
-                        ),
-                        child: TextField(
-                          controller: searchController,
-                          autofocus: true,
-                          onChanged: _onSearchChanged,
-                          textAlignVertical: TextAlignVertical.center,
-                          style: GoogleFonts.montserrat(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: "Search...",
-                            hintStyle: GoogleFonts.montserrat(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                            border: InputBorder.none,
-                            prefixIcon: const Icon(
-                              Icons.search_rounded,
-                              size: 18,
-                              color: Color(0xFF0D1B1E),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                            ),
-                            isDense: true,
-                          ),
-                        ),
-                      )
-                    : Text(
-                        "EXPLORE ALL",
-                        style: GoogleFonts.montserrat(
-                          letterSpacing: 2,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 14,
-                          color: const Color(0xFF0D1B1E),
+            title: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: isSearching
+                  ? Container(
+                      key: const ValueKey("SearchBar"),
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(
+                          color: const Color(0xFFE9ECEF),
+                          width: 1.2,
                         ),
                       ),
-              ),
+                      child: TextField(
+                        controller: searchController,
+                        autofocus: true,
+                        onChanged: _onSearchChanged,
+                        textAlignVertical: TextAlignVertical.center,
+                        style: GoogleFonts.montserrat(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: "Search...",
+                          hintStyle: GoogleFonts.montserrat(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                          border: InputBorder.none,
+                          prefixIcon: const Icon(
+                            Icons.search_rounded,
+                            size: 18,
+                            color: Color(0xFF0D1B1E),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                          ),
+                          isDense: true,
+                        ),
+                      ),
+                    )
+                  : Text(
+                      "EXPLORE ALL",
+                      style: GoogleFonts.montserrat(
+                        letterSpacing: 2,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 14,
+                        color: const Color(0xFF0D1B1E),
+                      ),
+                    ),
             ),
             actions: [
               IconButton(
@@ -236,14 +239,14 @@ class _AllListingScreenState extends State<AllListingScreen> {
 
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(25, 10, 25, 5),
+              padding: EdgeInsets.fromLTRB(horizontalPadding + 5, 20, horizontalPadding + 5, 5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     "Discover Places",
                     style: GoogleFonts.montserrat(
-                      fontSize: 28,
+                      fontSize: isTablet ? 32 : 28,
                       fontWeight: FontWeight.w900,
                       color: const Color(0xFF0D1B1E),
                       letterSpacing: -1,
@@ -286,17 +289,17 @@ class _AllListingScreenState extends State<AllListingScreen> {
                   child: Center(child: Text("No data found")),
                 )
               : SliverPadding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding,
                     vertical: 25,
                   ),
                   sliver: SliverGrid(
                     gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
+                        SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: crossAxisCount,
                           mainAxisSpacing: 18,
                           crossAxisSpacing: 18,
-                          mainAxisExtent: 260,
+                          childAspectRatio: isTablet ? 0.75 : 0.65,
                         ),
                     delegate: SliverChildBuilderDelegate(
                       (context, index) =>
@@ -390,36 +393,39 @@ class _AllListingScreenState extends State<AllListingScreen> {
             Expanded(
               flex: 4,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(15, 2, 15, 12),
+                padding: const EdgeInsets.fromLTRB(12, 2, 12, 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item.categoryName?.toUpperCase() ?? "CATEGORY",
-                          style: GoogleFonts.montserrat(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w700,
-                            color: const Color(0xFF6C63FF),
-                            letterSpacing: 1.2,
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            item.categoryName?.toUpperCase() ?? "CATEGORY",
+                            style: GoogleFonts.montserrat(
+                              fontSize: 8,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF6C63FF),
+                              letterSpacing: 1.0,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          item.title ?? "No Title",
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.montserrat(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 13,
-                            color: const Color(0xFF0D1B1E),
-                            height: 1.2,
+                          const SizedBox(height: 2),
+                          Text(
+                            item.title ?? "No Title",
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 12,
+                              color: const Color(0xFF0D1B1E),
+                              height: 1.1,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -429,33 +435,37 @@ class _AllListingScreenState extends State<AllListingScreen> {
                             const Icon(
                               Icons.star_rounded,
                               color: Colors.orange,
-                              size: 16,
+                              size: 14,
                             ),
                             const SizedBox(width: 2),
                             Text(
                               item.rating ?? "0.0",
                               style: GoogleFonts.montserrat(
                                 fontWeight: FontWeight.w800,
-                                fontSize: 12,
+                                fontSize: 10,
                               ),
                             ),
                           ],
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFFEBF2),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            item.cityName ?? "City",
-                            style: GoogleFonts.montserrat(
-                              color: const Color(0xFFFF4081),
-                              fontWeight: FontWeight.w900,
-                              fontSize: 10,
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFEBF2),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              item.cityName ?? "City",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.montserrat(
+                                color: const Color(0xFFFF4081),
+                                fontWeight: FontWeight.w900,
+                                fontSize: 8,
+                              ),
                             ),
                           ),
                         ),

@@ -67,123 +67,147 @@ class _NewlyAddedListingState extends State<NewlyAddedListing> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isTablet = screenWidth >= 600;
+
+    int crossAxisCount = 1;
+    if (screenWidth >= 1200) {
+      crossAxisCount = 3;
+    } else if (isTablet) {
+      crossAxisCount = 2;
+    }
+
+    double horizontalPadding = screenWidth * 0.05;
+    if (horizontalPadding < 16) horizontalPadding = 16;
+    if (horizontalPadding > 60) horizontalPadding = 60;
+
     return Scaffold(
       backgroundColor: ModernHeritageApp.appBg,
-      body: CustomScrollView(
-        controller: _scrollController,
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 120,
-            pinned: true,
-            elevation: 0,
-            backgroundColor: const Color(0xFFFDFDFD),
-            surfaceTintColor: const Color(0xFFFDFDFD),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF0D1B1E), size: 18),
-              onPressed: () => Navigator.pop(context),
-            ),
-            actions: [
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    isSearchActive = !isSearchActive;
-                    if (!isSearchActive) {
-                      searchController.clear();
-                      callAllNewlyAdded(isFirstLoad: true);
-                    }
-                  });
-                },
-                icon: Icon(isSearchActive ? Icons.close : Icons.search, color: const Color(0xFF0D1B1E)),
-              )
-            ],
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              titlePadding: const EdgeInsets.only(bottom: 15),
-              title: isSearchActive
-                  ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50),
-                child: SizedBox(
-                  height: 32,
-                  child: TextField(
-                    controller: searchController,
-                    onChanged: onSearchChanged,
-                    autofocus: true,
-                    style: GoogleFonts.montserrat(fontSize: 13, color: Colors.black),
-                    decoration: InputDecoration(
-                      hintText: "Search...",
-                      hintStyle: GoogleFonts.montserrat(fontSize: 11, color: Colors.grey),
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(25), borderSide: BorderSide.none),
+      body: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 1440),
+          child: CustomScrollView(
+            controller: _scrollController,
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              SliverAppBar(
+                pinned: true,
+                elevation: 0,
+                backgroundColor: const Color(0xFFFDFDFD),
+                surfaceTintColor: const Color(0xFFFDFDFD),
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF0D1B1E), size: 18),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                centerTitle: true,
+                title: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: isSearchActive
+                      ? Container(
+                    key: const ValueKey("SearchBar"),
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(15),
                     ),
+                    child: TextField(
+                      controller: searchController,
+                      onChanged: onSearchChanged,
+                      autofocus: true,
+                      style: GoogleFonts.montserrat(fontSize: 13, fontWeight: FontWeight.w600),
+                      decoration: InputDecoration(
+                        hintText: "Search...",
+                        hintStyle: GoogleFonts.montserrat(fontSize: 12, color: Colors.grey),
+                        border: InputBorder.none,
+                        prefixIcon: const Icon(Icons.search, size: 18, color: Colors.grey),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                      ),
+                    ),
+                  )
+                      : Text(
+                    "NEWLY ADDED",
+                    key: const ValueKey("TitleText"),
+                    style: GoogleFonts.montserrat(color: const Color(0xFF0D1B1E), fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 2),
                   ),
                 ),
-              )
-                  : Text(
-                "NEWLY ADDED",
-                style: GoogleFonts.montserrat(color: const Color(0xFF0D1B1E), fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 2),
-              ),
-            ),
-          ),
-
-          ValueListenableBuilder(
-            valueListenable: isSearching,
-            builder: (context, loading, child) {
-              if (loading) {
-                return const SliverFillRemaining(
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: Color(0xFF00ACC1),
-                    ),
-                  ),
-                );
-              }
-
-              if (listings.isEmpty && isApiComplete.value) {
-                return const SliverFillRemaining(child: Center(child: Text("No listings found.")));
-              }
-
-              return SliverPadding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                      if (index == listings.length) {
-                        return ValueListenableBuilder(
-                          valueListenable: isLoadingMore,
-                          builder: (context, loadingMore, child) {
-                            return loadingMore
-                                ? const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 20),
-                              child: Center(child: CircularProgressIndicator(color: Color(0xFF00ACC1), strokeWidth: 2,)),
-                            )
-                                : const SizedBox.shrink();
-                          },
-                        );
-                      }
-                      return _buildOverlappingCard(listings[index]);
+                actions: [
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isSearchActive = !isSearchActive;
+                        if (!isSearchActive) {
+                          searchController.clear();
+                          callAllNewlyAdded(isFirstLoad: true);
+                        }
+                      });
                     },
-                    childCount: listings.length + 1,
+                    icon: Icon(isSearchActive ? Icons.close : Icons.search, color: const Color(0xFF0D1B1E)),
                   ),
-                ),
-              );
-            },
+                  const SizedBox(width: 8),
+                ],
+              ),
+
+              ValueListenableBuilder(
+                valueListenable: isSearching,
+                builder: (context, loading, child) {
+                  if (loading) {
+                    return const SliverFillRemaining(
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: Color(0xFF00ACC1),
+                        ),
+                      ),
+                    );
+                  }
+
+                  if (listings.isEmpty && isApiComplete.value) {
+                    return const SliverFillRemaining(child: Center(child: Text("No listings found.")));
+                  }
+
+                  return SliverPadding(
+                    padding: EdgeInsets.fromLTRB(horizontalPadding, 20, horizontalPadding, 20),
+                    sliver: SliverGrid(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 20,
+                        mainAxisExtent: 340,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                          if (index == listings.length) {
+                            return ValueListenableBuilder(
+                              valueListenable: isLoadingMore,
+                              builder: (context, loadingMore, child) {
+                                return loadingMore
+                                    ? const Center(child: CircularProgressIndicator(color: Color(0xFF00ACC1), strokeWidth: 2,))
+                                    : const SizedBox.shrink();
+                              },
+                            );
+                          }
+                          return _buildOverlappingCard(listings[index], crossAxisCount > 1);
+                        },
+                        childCount: listings.length + (hasMoreData ? 1 : 0),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildOverlappingCard(AllNewlyAdded item) {
+  Widget _buildOverlappingCard(AllNewlyAdded item, bool isGrid) {
     return GestureDetector(
       onTap: () {
         Get.to(()=> AllListingDetailScreen(listId: item.id,));
       },
       child: Container(
         height: 320,
-        margin: const EdgeInsets.only(bottom: 30),
+        margin: const EdgeInsets.only(bottom: 15),
         child: Stack(
           children: [
             Align(
@@ -191,7 +215,6 @@ class _NewlyAddedListingState extends State<NewlyAddedListing> {
               child: Container(
                 height: 180,
                 width: double.infinity,
-                margin: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(40),
@@ -203,7 +226,9 @@ class _NewlyAddedListingState extends State<NewlyAddedListing> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text(item.listingTitle ?? "Unknown", style: GoogleFonts.montserrat(color: const Color(0xFF0D1B1E), fontSize: 18, fontWeight: FontWeight.w900)),
+                      Text(item.listingTitle ?? "Unknown",
+                          maxLines: 1, overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.montserrat(color: const Color(0xFF0D1B1E), fontSize: 18, fontWeight: FontWeight.w900)),
                       const SizedBox(height: 5),
                       Text(item.description ?? "", maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.montserrat(color: Colors.grey[500], fontSize: 12, fontWeight: FontWeight.w500)),
                       const SizedBox(height: 15),
@@ -211,8 +236,12 @@ class _NewlyAddedListingState extends State<NewlyAddedListing> {
                         children: [
                           const Icon(Icons.location_on_rounded, color: Color(0xFF00ACC1), size: 16),
                           const SizedBox(width: 5),
-                          Text(item.cityName ?? "", style: GoogleFonts.montserrat(color: const Color(0xFF0D1B1E).withOpacity(0.7), fontSize: 12, fontWeight: FontWeight.w700)),
-                          const Spacer(),
+                          Expanded(
+                            child: Text(item.cityName ?? "",
+                                maxLines: 1, overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.montserrat(color: const Color(0xFF0D1B1E).withOpacity(0.7), fontSize: 12, fontWeight: FontWeight.w700)),
+                          ),
+                          const SizedBox(width: 10),
                           const Icon(Icons.arrow_forward_rounded, color: Color(0xFF1A1A1A), size: 20),
                         ],
                       ),
@@ -223,8 +252,8 @@ class _NewlyAddedListingState extends State<NewlyAddedListing> {
             ),
             Positioned(
               top: 0,
-              left: 40,
-              right: 40,
+              left: 20,
+              right: 20,
               child: Container(
                 height: 200,
                 decoration: BoxDecoration(
@@ -253,7 +282,7 @@ class _NewlyAddedListingState extends State<NewlyAddedListing> {
             ),
             Positioned(
               top: 150,
-              right: 55,
+              right: 35,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15),
                 child: BackdropFilter(
@@ -262,6 +291,7 @@ class _NewlyAddedListingState extends State<NewlyAddedListing> {
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     color: Colors.white.withOpacity(0.2),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(Icons.star_rounded, color: Colors.orangeAccent, size: 16),
                         const SizedBox(width: 4),
