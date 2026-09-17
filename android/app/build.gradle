@@ -36,13 +36,13 @@ android {
         release {
             keyAlias 'gotilo'
             keyPassword '123456'
-            storeFile file('C:\\Users\\PC-6\\StudioProjects\\gotilo_new\\android\\app\\gotilo.jks')
+            storeFile file('C:\\Users\\PC-11\\StudioProjects\\master\\android\\app\\gotilo.jks')
             storePassword '123456'
         }
         debug {
             keyAlias 'gotilo'
             keyPassword '123456'
-            storeFile file('C:\\Users\\PC-6\\StudioProjects\\gotilo_new\\android\\app\\gotilo.jks')
+            storeFile file('C:\\Users\\PC-11\\StudioProjects\\master\\android\\app\\gotilo.jks')
             storePassword '123456'
         }
     }
